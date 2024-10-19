@@ -119,7 +119,7 @@ string NewGame()
 // should the user be able to edit built in configurations? up to me! Ma arvan, et ei peaks saama.
 // voiks olla reset nupp ehk kui oled liiga palju confe teinud vms, siis saad tagasi resettida koik defaulti. v lis kustutada enda confe.
 
-// Reegleid peaks saama confida ka nii, et saab mangida tavalist tic-tac-toe-d, ehk 3x3 board ja grid ja 5+5 nuppu.
+// DONE: Reegleid peaks saama confida ka nii, et saab mangida tavalist tic-tac-toe-d, ehk 3x3 board ja grid ja 5+5 nuppu.
 
 // voimalikult vahe hard coded asju, ehk voimalikult palju lahtist ja confitavat
 
@@ -128,39 +128,3 @@ string NewGame()
 // boardi jms settinguid saab satestada eraldi - ehk player saab teha endale erinevad vaikesatted valmis optionsitest, 
 //   kus tal kusitakse kui suur board, kui suur grid ja koik muu ja mangu minnes kysitakse ainult et milliste valmiss2tetega  m2ngu minna
 // Menyy voiks ka arrowkeydega teha, mitte t2htede sisestamisega.
-
-//
-// MenuMain();
-// var choice:string? = Console.ReadLine();
-//
-// if (choice == 0)
-// {
-//     
-// }
-//
-// return;
-//
-//
-// static void MenuMain()
-// {
-//     MenuStart();
-//     
-//     Console.Clear();
-//     Console.WriteLine("TIC-TAC-TOE");
-//     Console.WriteLine("=============================");
-//     Console.WriteLine("O) Options");
-//     Console.WriteLine("N) New game");
-//     Console.WriteLine("L) Load game");
-//     Console.WriteLine("E) Exit");
-//     MenuEnd();
-// }
-//
-// static void MenuOptions()
-// {
-//     
-// }
-//
-// static void MenuEnd()
-// {
-//     
-// }
