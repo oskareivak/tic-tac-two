@@ -25,6 +25,12 @@ public class Menu
     };
 
     private EMenuLevel _menuLevel { get; set; }
+
+    public void SetMenuItemAction(string shortCut, Func<string> action)
+    {
+        var menuitem = MenuItems.Single(m => m.Shortcut == shortCut);
+        _menuItemExit.MenuItemAction = action;
+    }
     
     public Menu(EMenuLevel menuLevel, string menuHeader, List<MenuItem> menuItems)
     {
