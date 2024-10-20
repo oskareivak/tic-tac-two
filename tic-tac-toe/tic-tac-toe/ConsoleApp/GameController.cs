@@ -29,22 +29,47 @@ public static class GameController
         // ask input again, validate (again)
         // is the game over?
 
-        
         do
         {
             ConsoleUI.Visualizer.DrawBoard(gameInstance);
          
-            Console.Write("Give me coordinates <x,y> or save:");
+            Console.Write("Give me coordinates <x,y>:");
+            //  or save. To be added later.
             var input = Console.ReadLine()!;
-            var inputSplit = input.Split(",");
-            var inputX = int.Parse(inputSplit[0]);
-            var inputY = int.Parse(inputSplit[1]);
-            gameInstance.MakeAMove(inputX, inputY);
             
+            try
+            {   
+                var inputSplit = input.Split(",");
+                var inputX = int.Parse(inputSplit[0]);
+                var inputY = int.Parse(inputSplit[1]);
+                gameInstance.MakeAMove(inputX, inputY);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Please write the coordinates according to the formula below. Please make sure that your given coordinates actually fit on the board.");
+            }
+            
+            //check if X or O have won the game.
+            var winner = gameInstance.CheckForWin();
+            if (winner == EGamePiece.X)
+            {   
+                ConsoleUI.Visualizer.DrawBoard(gameInstance);
+                Console.WriteLine("X has won the game!");
+                break;
+            }
+            if (winner == EGamePiece.O)
+            {   
+                ConsoleUI.Visualizer.DrawBoard(gameInstance);
+                Console.WriteLine("O has won the game!");
+                break;
+            }
+            
+
         } while (true);
         
         // valideeri et seal on yldse koma, siis et on ainult yks koma(kas seda vaja?), split string and TRY parse, ja siis
         // validate coordinates that they actually fit on the board, is the piece there that you actually can make a move vms
+        return "Somebody won.";
     }
 
     private static string ChooseConfiguration()
@@ -62,7 +87,7 @@ public static class GameController
             });
         }
 
-        var configMenu = new Menu(EMenuLevel.Deep,
+        var configMenu = new Menu(EMenuLevel.Secondary,
             "TIC-TAC-TWO - choose game config",
             configMenuItems
             // isCustomMenu: true

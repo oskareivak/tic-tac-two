@@ -58,6 +58,79 @@ public class TicTacTwoBrain
             return true;
       }
 
+    public EGamePiece CheckForWin()
+{
+    int rows = _gameBoard.GetLength(0); // Y dimension
+    int cols = _gameBoard.GetLength(1); // X dimension
+    int winCondition = _gameConfiguration.WinCondition; 
+
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            // Only check if the current cell is not empty
+            if (_gameBoard[i, j] != EGamePiece.Empty)
+            {
+                EGamePiece piece = _gameBoard[i, j];
+
+                // Check horizontal
+                if (CheckDirection(i, j, 0, 1, piece, winCondition)) 
+                    return piece;
+
+                // Check vertical
+                if (CheckDirection(i, j, 1, 0, piece, winCondition)) 
+                    return piece;
+
+                // Check diagonal (\ direction)
+                if (CheckDirection(i, j, 1, 1, piece, winCondition)) 
+                    return piece;
+
+                // Check diagonal (/ direction)
+                if (CheckDirection(i, j, 1, -1, piece, winCondition)) 
+                    return piece;
+            }
+        }
+    }
+
+    return EGamePiece.Empty; // No winner
+}
+    
+private bool CheckDirection(int startRow, int startCol, int rowIncrement, int colIncrement, EGamePiece piece, int winCondition)
+{
+    int count = 0;
+
+    for (int k = 0; k < winCondition; k++)
+    {
+        int newRow = startRow + k * rowIncrement;
+        int newCol = startCol + k * colIncrement;
+
+        // Check bounds
+        if (newRow >= 0 && newRow < _gameBoard.GetLength(0) && newCol >= 0 && newCol < _gameBoard.GetLength(1))
+        {
+            if (_gameBoard[newRow, newCol] == piece)
+            {
+                count++;
+            }
+            else
+            {
+                break; 
+            }
+            
+            if (count == winCondition)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            break; 
+        }
+    }
+
+    return false;
+}
+
+      
       public void ResetGame()
       {
             _gameBoard = new EGamePiece[_gameBoard.GetLength(0), _gameBoard.GetLength(1)];

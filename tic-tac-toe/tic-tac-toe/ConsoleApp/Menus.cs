@@ -19,6 +19,12 @@ public static class Menus
                 Shortcut = "O",
                 Title = "O Starts",
                 MenuItemAction = DummyMethod
+            },
+            new MenuItem()
+            {
+                Shortcut = "C",
+                Title = "Make a new game configuration",
+                MenuItemAction = DummyMethod
             }
         ]);
 
@@ -27,16 +33,16 @@ public static class Menus
         "TIC-TAC-TOE", menuItems: [
             new MenuItem()
             {
-                Shortcut = "O",
-                Title = "Options",
-                MenuItemAction = OptionsMenu.Run
-            },
-            new MenuItem()
-            {
                 Shortcut = "N",
                 Title = "New game",
                 MenuItemAction = GameController.MainLoop
                 // MenuItemAction = NewGame
+            },
+            new MenuItem()
+            {
+                Shortcut = "O",
+                Title = "Options",
+                MenuItemAction = OptionsMenu.Run
             }
         ]);
 
