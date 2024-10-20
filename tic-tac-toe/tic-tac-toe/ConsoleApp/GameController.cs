@@ -61,10 +61,11 @@ public static class GameController
                 MenuItemAction = () => returnValue
             });
         }
-    
+
         var configMenu = new Menu(EMenuLevel.Deep,
             "TIC-TAC-TWO - choose game config",
             configMenuItems
+            // isCustomMenu: true
         );
 
         return configMenu.Run();

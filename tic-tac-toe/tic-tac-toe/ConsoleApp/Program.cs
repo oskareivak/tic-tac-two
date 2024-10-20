@@ -21,3 +21,5 @@ Menus.MainMenu.Run();
 // boardi jms settinguid saab satestada eraldi - ehk player saab teha endale erinevad vaikesatted valmis optionsitest, 
 //   kus tal kusitakse kui suur board, kui suur grid ja koik muu ja mangu minnes kysitakse ainult et milliste valmiss2tetega  m2ngu minna
 // Menyy voiks ka arrowkeydega teha, mitte t2htede sisestamisega.
+
+// teha vb conf valik, et kas saab ainult liigutada piece mis on gridi sees v kogu boardi ulatuses olevaid piece-sid
