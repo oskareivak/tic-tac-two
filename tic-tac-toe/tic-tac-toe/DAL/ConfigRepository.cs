@@ -8,16 +8,35 @@ public class ConfigRepository
     {
         new GameConfiguration()
         {
-            Name = "Classic"
+            Name = "Tic-Tac-Toe"
         },
-
+        
+        new GameConfiguration()
+        {
+            Name = "Tic-Tac-Two",
+            BoardSize = 5,
+            GridSize = 3,
+            WinCondition = 3,
+            MovePieceAfterNMoves = 2,
+        },
+        
         new GameConfiguration()
         {
             Name = "Big board",
-            BoardSizeWidth = 10,
-            BoardSizeHeight = 10,
+            BoardSize = 10,
+            GridSize = 4,
             WinCondition = 4,
             MovePieceAfterNMoves = 3,
+        },
+        
+        new GameConfiguration()
+        {
+            Name = "# Testing random",
+            BoardSize = 7,
+            GridSize = 4,
+            WinCondition = 4,
+            MovePieceAfterNMoves = 2,
+            WhoStarts = EGamePiece.O,
         },
     };
 

@@ -5,7 +5,9 @@ namespace ConsoleUI;
 public static class Visualizer
 {
     public static void DrawBoard(TicTacTwoBrain gameInstance)
-    {   
+    {
+        List<(int x, int y)> currentGridCoordinates = gameInstance.CurrentGridCoords;
+        
         Console.Write("   "); // Initial spacing before X-axis indexes
         for (var x = 0; x < gameInstance.DimX; x++)
         {
@@ -33,26 +35,59 @@ public static class Visualizer
         {   
             Console.Write(y + " |"); // visualizes y index
             for (var x = 0; x < gameInstance.DimX; x++)
-            {
+            {   
+                if (currentGridCoordinates.Contains((x, y)))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                }
+                
                 Console.Write(" " + DrawGamePiece(gameInstance.GameBoard[x, y]) + " ");
                 if (x != gameInstance.DimX - 1)
                 {
-                    Console.Write("|");
+                    if (currentGridCoordinates.Contains((x + 1, y)) || (currentGridCoordinates.Contains((x, y)) &&
+                                                                        currentGridCoordinates.Contains((x - 1, y))))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("║");
+                    }
+                    else
+                    {
+                        Console.Write("|");
+                    }
                 }
-
+                
+                Console.ResetColor();
             }
 
             Console.WriteLine();
+            
             if (y != gameInstance.DimY - 1)
             {   
                 Console.Write("  |"); // visualizes index border
                 for (var x = 0; x < gameInstance.DimX; x++)
-                { 
-                    Console.Write("---");
-                    if (x != gameInstance.DimX - 1)
+                {   
+                    if (currentGridCoordinates.Contains((x, y)) || currentGridCoordinates.Contains((x, y + 1)))
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write("===");
+                    }
+                    else
+                    {
+                        Console.Write("---");
+                    }
+                    
+                    if (x != gameInstance.DimX - 1)
+                    {   
+                        if (currentGridCoordinates.Contains((x + 1, y)) || 
+                            currentGridCoordinates.Contains((x, y + 1)) || 
+                            currentGridCoordinates.Contains((x + 1, y + 1)))
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                        }
                         Console.Write("+");
                     }
+                    
+                    Console.ResetColor();
                 }
 
                 Console.WriteLine();

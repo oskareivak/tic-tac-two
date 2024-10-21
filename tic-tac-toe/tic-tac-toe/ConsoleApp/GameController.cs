@@ -30,12 +30,30 @@ public static class GameController
         // is the game over?
 
         do
-        {
+        {   
+            Console.WriteLine();
             ConsoleUI.Visualizer.DrawBoard(gameInstance);
-         
+            
+            Console.Write($"It's {gameInstance.NextMoveBy}'s turn.\n");
             Console.Write("Give me coordinates <x,y>:");
             //  or save. To be added later.
             var input = Console.ReadLine()!;
+
+            if (gameInstance.DirectionMap.ContainsKey(input.ToLower()))
+            {
+                gameInstance.MoveGrid(input.ToLower());
+            }
+            else if (input.ToLower() == "exit")
+            {   
+                Console.WriteLine("\nDummy exiting...");
+                continue;
+            }
+            else if (input.ToLower() == "reset")
+            {
+                gameInstance.ResetGame();
+                Console.WriteLine("\nSuccessfully reset the game!");
+                continue;
+            }
             
             try
             {   
@@ -45,9 +63,10 @@ public static class GameController
                 gameInstance.MakeAMove(inputX, inputY);
             }
             catch (Exception e)
-            {
-                Console.WriteLine("Please write the coordinates according to the formula below. Please make sure that your given coordinates actually fit on the board.");
+            {   
+                Console.WriteLine("\nPlease write the coordinates according to the formula below. Please make sure that your given coordinates actually fit on the board.");
             }
+            
             
             //check if X or O have won the game.
             var winner = gameInstance.CheckForWin();

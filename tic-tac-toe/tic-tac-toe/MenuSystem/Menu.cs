@@ -24,7 +24,7 @@ public class Menu
         Title = "return to Main menu"
     };
 
-    private EMenuLevel _menuLevel { get; set; }
+    private EMenuLevel MenuLevel { get; set; }
 
     public void SetMenuItemAction(string shortCut, Func<string> action)
     {
@@ -47,15 +47,15 @@ public class Menu
         }
         
         MenuItems = menuItems;
-        _menuLevel = menuLevel;
+        MenuLevel = menuLevel;
         
         
-        if (_menuLevel != EMenuLevel.Main)
+        if (MenuLevel != EMenuLevel.Main)
         {
             MenuItems.Add(_menuItemReturn);
         }
         
-        if (_menuLevel == EMenuLevel.Deep)
+        if (MenuLevel == EMenuLevel.Deep)
         {
             MenuItems.Add(_menuItemReturnMain);
         }
@@ -91,7 +91,7 @@ public class Menu
             }
             
             if ((menuItem.Shortcut == _menuItemReturnMain.Shortcut || menuReturnValue == _menuItemReturnMain.Shortcut) 
-                && _menuLevel != EMenuLevel.Main)
+                && MenuLevel != EMenuLevel.Main)
             {
                 return _menuItemReturnMain.Shortcut;
             }
