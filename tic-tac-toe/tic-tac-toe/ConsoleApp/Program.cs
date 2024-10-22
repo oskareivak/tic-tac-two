@@ -1,6 +1,29 @@
-﻿using ConsoleApp;
+﻿using MenuSystem;
+namespace ConsoleApp;
 
-Menus.MainMenu.Run();
+public static class Program
+{
+    public static void Main(string[] args)
+    {
+        // Create a stack to track the menus
+        Stack<Menu> menuStack = new Stack<Menu>();
+
+        // Push the main menu onto the stack
+        menuStack.Push(Menus.MainMenu);
+
+        // Run the main menu
+        string result = Menus.MainMenu.Run(menuStack);
+
+        // Keep running until the user chooses to exit
+        while (result != "E")
+        {
+            var currentMenu = menuStack.Peek();
+            result = currentMenu.Run(menuStack);
+        }
+
+        Console.WriteLine("Exiting the program.");
+    }
+}
 
 
 // TODO: Gameboard ja grid saaks eraldada kasutades eri v2rve v ss symboleid.

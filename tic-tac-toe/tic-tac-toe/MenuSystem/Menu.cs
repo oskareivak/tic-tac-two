@@ -65,10 +65,10 @@ public class Menu
         // TODO: validate menu items for shortcut conflict (duplicates)!
     }
 
-    public string Run()
+    public string Run(Stack<Menu> menuStack)
     {
         
-        Console.Clear();
+        // Console.Clear();
 
         do
         {
@@ -79,9 +79,14 @@ public class Menu
             {
                 menuReturnValue = menuItem.MenuItemAction();
             }
-
+            
+            // return
             if (menuItem.Shortcut == _menuItemReturn.Shortcut)
             {
+                if (menuStack.Count > 0)
+                {
+                    menuStack.Pop();
+                }
                 return menuItem.Shortcut;
             }
             
@@ -90,10 +95,14 @@ public class Menu
                 return _menuItemExit.Shortcut;
             }
             
-            if ((menuItem.Shortcut == _menuItemReturnMain.Shortcut || menuReturnValue == _menuItemReturnMain.Shortcut) 
-                && MenuLevel != EMenuLevel.Main)
+            // go to main menu
+            if (menuItem.Shortcut == _menuItemReturnMain.Shortcut)
             {
-                return _menuItemReturnMain.Shortcut;
+                while (menuStack.Count > 1) 
+                {
+                    menuStack.Pop();
+                }
+                return menuItem.Shortcut;
             }
 
             if (!string.IsNullOrWhiteSpace(menuReturnValue))

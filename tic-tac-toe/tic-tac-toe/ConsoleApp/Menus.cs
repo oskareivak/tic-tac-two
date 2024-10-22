@@ -42,7 +42,7 @@ public static class Menus
             {
                 Shortcut = "O",
                 Title = "Options",
-                MenuItemAction = OptionsMenu.Run
+                MenuItemAction = () => OptionsMenu.Run(new Stack<Menu>())
             }
         ]);
 

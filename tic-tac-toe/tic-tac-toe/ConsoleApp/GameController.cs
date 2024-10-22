@@ -59,22 +59,51 @@ public static class GameController
             }
             else if (!input.Contains(','))
             {
-                Console.WriteLine($"\nInvalid direction: {input}");
+                Console.WriteLine($"\nInvalid command: {input}");
                 skip = true;
             }
 
             if (!skip)
             {
+                if (input.Contains(' '))
+                {
+                    var inputSplit = input.Split(" ");
+                    if (inputSplit[0].Contains(',') && inputSplit[1].Contains(','))
+                    {
+                        try
+                        {
+                            var splitFrom = inputSplit[0].Split(',');
+                            var splitTo = inputSplit[1].Split(',');
+                            var fromX = int.Parse(splitFrom[0]);
+                            var fromY = int.Parse(splitFrom[1]);
+                            var toX = int.Parse(splitTo[0]);
+                            var toY = int.Parse(splitTo[1]);
+                            gameInstance.MoveAPiece((fromX, fromY), (toX, toY));
+                            skip = true;
+                        }
+                        catch (Exception)
+                        {
+                            skip = true;
+                            Console.WriteLine("\nPlease write the coordinates according to the correct formula." +
+                                              "\nPlease make sure that your given coordinates actually fit on the board.");
+                        }
+                    }
+                }
+            }
+            
+            if (!skip)
+            {   
                 try
                 {   
                     var inputSplit = input.Split(",");
                     var inputX = int.Parse(inputSplit[0]);
                     var inputY = int.Parse(inputSplit[1]);
-                    gameInstance.MakeAMove(inputX, inputY);
+                    gameInstance.PlaceAPiece(inputX, inputY);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {   
-                    Console.WriteLine("\nPlease write the coordinates according to the formula below. Please make sure that your given coordinates actually fit on the board.");
+                    Console.WriteLine("\nPlease write the coordinates according to the formula below. " +
+                                      "\nPlease make sure that your given coordinates actually fit on the board.");
                 }
             }
             
@@ -83,13 +112,13 @@ public static class GameController
             if (winner == EGamePiece.X)
             {   
                 ConsoleUI.Visualizer.DrawBoard(gameInstance);
-                Console.WriteLine("X has won the game!");
+                Console.WriteLine("X has won the game!\n \n");
                 break;
             }
             if (winner == EGamePiece.O)
             {   
                 ConsoleUI.Visualizer.DrawBoard(gameInstance);
-                Console.WriteLine("O has won the game!");
+                Console.WriteLine("O has won the game!\n \n");
                 break;
             }
 
@@ -121,6 +150,6 @@ public static class GameController
             // isCustomMenu: true
         );
 
-        return configMenu.Run();
+        return configMenu.Run(new Stack<Menu>());
     }
 }
