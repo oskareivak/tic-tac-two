@@ -36,6 +36,13 @@ public class TicTacTwoBrain
           { "se", (1, 1) }, // South-East
           { "sw", (-1, 1) }  // South-West
       };
+      
+      private Dictionary<EGamePiece, int> _numberOfPiecesOnBoard = new()
+      {
+          { EGamePiece.X, 0 },
+          { EGamePiece.O, 0 },
+          { EGamePiece.Empty, _gameConfiguration.BoardSize * _gameConfiguration.BoardSize } 
+      };
 
       public EGamePiece[,] GameBoard
       {
@@ -86,14 +93,38 @@ public class TicTacTwoBrain
       public bool MakeAMove(int x, int y)
       {
             if (_gameBoard[x, y] != EGamePiece.Empty)
-            {
-                  return false;
+            {       
+                Console.WriteLine("\nYou can't place your piece on top of another piece!");
+                return false;
             }
-
+            if (!(_numberOfMovesMade / 2 >= _gameConfiguration.MovePieceAfterNMoves) &&
+                !CurrentGridCoords.Contains((x, y)))
+            {   
+                var movesNeeded = _gameConfiguration.MovePieceAfterNMoves * 2 - _numberOfMovesMade;
+                var plural = "";
+                if (movesNeeded > 1)
+                {
+                    plural = "s";
+                }
+                Console.WriteLine($"\nYou have to make {movesNeeded} " +
+                                  $"more move{plural} to place a piece outside the grid!");
+                return false;
+            }
+            if (_numberOfPiecesOnBoard.TryGetValue(NextMoveBy, out int pieceCount) &&
+                pieceCount >= _gameConfiguration.NumberOfPiecesPerPlayer)
+            {   
+                Console.WriteLine("\nYou dont have any more pieces!");
+                return false;
+            }
+            
             _gameBoard[x, y] = NextMoveBy;
+            
+            _numberOfPiecesOnBoard[NextMoveBy] += 1;
+            _numberOfPiecesOnBoard[EGamePiece.Empty] -= 1;
             
             // flip the next move maker/piece
             NextMoveBy = NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+          
             _numberOfMovesMade += 1;
                   
             return true;
@@ -113,7 +144,7 @@ public class TicTacTwoBrain
             {
                 plural = "s";
             }
-            Console.WriteLine($"You have to make {movesNeeded} " +
+            Console.WriteLine($"\nYou have to make {movesNeeded} " +
                               $"more move{plural} to move the grid!");
         }
         else if (DirectionMap.TryGetValue(direction, out (int x, int y) move))
@@ -128,11 +159,10 @@ public class TicTacTwoBrain
             
             CurrentGridCoords = newCoords;
             NextMoveBy = NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
-            _numberOfMovesMade += 1;
         }
         else
         {
-            Console.WriteLine($"Invalid direction: {direction}");
+            Console.WriteLine($"\nInvalid direction: {direction}");
         }
     }
       

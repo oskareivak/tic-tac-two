@@ -18,6 +18,7 @@ public class ConfigRepository
             GridSize = 3,
             WinCondition = 3,
             MovePieceAfterNMoves = 2,
+            NumberOfPiecesPerPlayer = 4,
         },
         
         new GameConfiguration()

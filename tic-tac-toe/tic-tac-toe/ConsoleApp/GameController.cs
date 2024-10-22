@@ -38,35 +38,45 @@ public static class GameController
             Console.Write("Give me coordinates <x,y>:");
             //  or save. To be added later.
             var input = Console.ReadLine()!;
-
-            if (gameInstance.DirectionMap.ContainsKey(input.ToLower()))
-            {
-                gameInstance.MoveGrid(input.ToLower());
-            }
-            else if (input.ToLower() == "exit")
+            var skip = false;
+            
+            
+            if (input.ToLower() == "exit")
             {   
                 Console.WriteLine("\nDummy exiting...");
                 continue;
             }
-            else if (input.ToLower() == "reset")
+            if (input.ToLower() == "reset")
             {
                 gameInstance.ResetGame();
                 Console.WriteLine("\nSuccessfully reset the game!");
                 continue;
             }
-            
-            try
-            {   
-                var inputSplit = input.Split(",");
-                var inputX = int.Parse(inputSplit[0]);
-                var inputY = int.Parse(inputSplit[1]);
-                gameInstance.MakeAMove(inputX, inputY);
+            if (gameInstance.DirectionMap.ContainsKey(input.ToLower()))
+            {
+                gameInstance.MoveGrid(input.ToLower());
+                skip = true;
             }
-            catch (Exception e)
-            {   
-                Console.WriteLine("\nPlease write the coordinates according to the formula below. Please make sure that your given coordinates actually fit on the board.");
+            else if (!input.Contains(','))
+            {
+                Console.WriteLine($"\nInvalid direction: {input}");
+                skip = true;
             }
-            
+
+            if (!skip)
+            {
+                try
+                {   
+                    var inputSplit = input.Split(",");
+                    var inputX = int.Parse(inputSplit[0]);
+                    var inputY = int.Parse(inputSplit[1]);
+                    gameInstance.MakeAMove(inputX, inputY);
+                }
+                catch (Exception e)
+                {   
+                    Console.WriteLine("\nPlease write the coordinates according to the formula below. Please make sure that your given coordinates actually fit on the board.");
+                }
+            }
             
             //check if X or O have won the game.
             var winner = gameInstance.CheckForWin();
@@ -82,7 +92,6 @@ public static class GameController
                 Console.WriteLine("O has won the game!");
                 break;
             }
-            
 
         } while (true);
         

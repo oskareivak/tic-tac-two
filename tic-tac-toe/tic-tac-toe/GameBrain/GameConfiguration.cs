@@ -18,6 +18,8 @@ public record struct GameConfiguration()
     // 0 - disabled
     public int MovePieceAfterNMoves { get; set; } = 0;
 
+    public int NumberOfPiecesPerPlayer { get; set; } = 5;
+
     public override string ToString()
     {
         return $"Board: {BoardSize} x {BoardSize}, grid: {GridSize} x {GridSize} to win: {WinCondition}, " +
