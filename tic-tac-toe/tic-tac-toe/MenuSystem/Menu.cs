@@ -26,14 +26,15 @@ public class Menu
     };
 
     private EMenuLevel MenuLevel { get; set; }
-
+    
+    private bool _isCustomMenu { get; set; }
     public void SetMenuItemAction(string shortCut, Func<string> action)
     {
         var menuitem = MenuItems.Single(m => m.Shortcut == shortCut);
         _menuItemExit.MenuItemAction = action;
     }
     
-    public Menu(EMenuLevel menuLevel, string menuHeader, List<MenuItem> menuItems)
+    public Menu(EMenuLevel menuLevel, string menuHeader, List<MenuItem> menuItems, bool isCustomMenu = false)
     {
         if (string.IsNullOrWhiteSpace(menuHeader))
         {
@@ -48,6 +49,7 @@ public class Menu
         }
         
         MenuItems = menuItems;
+        _isCustomMenu = isCustomMenu;
         MenuLevel = menuLevel;
         
         
@@ -65,52 +67,38 @@ public class Menu
         
     }
 
-    public string Run(Stack<Menu> menuStack)
+    public string Run()
     {
         do
-        {
-            var menuItem = DisplayMenuGetUserchoice();
+        {   
+            var menuItem = DisplayMenuGetUserChoice();
             var menuReturnValue = "";
 
             if (menuItem.MenuItemAction != null)
             {
                 menuReturnValue = menuItem.MenuItemAction();
+                if (_isCustomMenu) return menuReturnValue;
             }
 
-            // Handle "Return" option
             if (menuItem.Shortcut == _menuItemReturn.Shortcut)
-            {
-                if (menuStack.Count > 0)
-                {
-                    menuStack.Pop();
-                }
+            {   
                 return menuItem.Shortcut;
             }
 
-            // Handle "Exit" option
             if (menuItem.Shortcut == _menuItemExit.Shortcut || menuReturnValue == _menuItemExit.Shortcut)
             {
                 return _menuItemExit.Shortcut;
             }
 
-            // Handle "Return to Main Menu" option
-            if (menuItem.Shortcut == _menuItemReturnMain.Shortcut)
+            if ((menuItem.Shortcut == _menuItemReturnMain.Shortcut || menuReturnValue == _menuItemReturnMain.Shortcut) && MenuLevel != EMenuLevel.Main)
             {
-                while (menuStack.Count > 1)
-                {
-                    menuStack.Pop();
-                }
-                return menuItem.Shortcut;
+                return _menuItemReturnMain.Shortcut;
             }
 
-            if (!string.IsNullOrWhiteSpace(menuReturnValue))
-            {
-                return menuReturnValue;
-            }
         } while (true);
     }
 
-    private MenuItem DisplayMenuGetUserchoice()
+    private MenuItem DisplayMenuGetUserChoice()
     {
         var userInput = "";
         do

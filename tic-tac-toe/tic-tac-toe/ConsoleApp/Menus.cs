@@ -1,3 +1,4 @@
+using System.Collections;
 using DAL;
 using GameBrain;
 using MenuSystem;
@@ -9,6 +10,18 @@ public static class Menus
     
     private static readonly ConfigRepository ConfigRepository = new ConfigRepository();
     
+    public static readonly Menu DeepMenu = new Menu(
+        EMenuLevel.Deep,
+        "TIC-TAC-TOE DEEP", [
+            new MenuItem()
+            {
+                Shortcut = "T",
+                Title = "To be implemented...",
+            }
+        ]
+    );
+
+    
     public static readonly Menu OptionsMenu =
         new Menu(
         EMenuLevel.Secondary,
@@ -17,13 +30,13 @@ public static class Menus
             {
                 Shortcut = "X",
                 Title = "X Starts",
-                MenuItemAction = DummyMethod
+                MenuItemAction = DeepMenu.Run
             },
             new MenuItem()
             {
                 Shortcut = "O",
                 Title = "O Starts",
-                MenuItemAction = DummyMethod
+                MenuItemAction = DeepMenu.Run
             },
             new MenuItem()
             {
@@ -46,7 +59,7 @@ public static class Menus
             {
                 Shortcut = "O",
                 Title = "Options",
-                MenuItemAction = () => OptionsMenu.Run(new Stack<Menu>())
+                MenuItemAction = OptionsMenu.Run
             }
         ]);
 

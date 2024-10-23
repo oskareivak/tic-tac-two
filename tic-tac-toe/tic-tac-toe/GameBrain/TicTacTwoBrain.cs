@@ -71,8 +71,6 @@ public class TicTacTwoBrain
         return copyOfBoard;
     }
     
-      //hoida eraldi, et iga kord ei pea arvutama; et saaks ka muuta brainist. InGrid method, mis vaatab kas on gridis
-
     private List<(int x, int y)> _getInitialGridCoordinates()
     {   
         List<(int x, int y)> gridCoordinates = new List<(int x, int y)>();
@@ -235,41 +233,59 @@ public class TicTacTwoBrain
         }
     }
       
-    public EGamePiece CheckForWin()
+    public EGamePiece? CheckForWin()
 {
     int rows = _gameBoard.GetLength(0); // Y dimension
     int cols = _gameBoard.GetLength(1); // X dimension
     int winCondition = _gameConfiguration.WinCondition; 
 
+    bool xWins = false;
+    bool oWins = false;
+
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
-            // Only check if the current cell is not empty
             if (_gameBoard[i, j] != EGamePiece.Empty)
             {
                 EGamePiece piece = _gameBoard[i, j];
 
                 // Check horizontal
-                if (CheckDirection(i, j, 0, 1, piece, winCondition)) 
-                    return piece;
+                if (CheckDirection(i, j, 0, 1, piece, winCondition))
+                {
+                    if (piece == EGamePiece.X) xWins = true;
+                    if (piece == EGamePiece.O) oWins = true;
+                }
 
                 // Check vertical
-                if (CheckDirection(i, j, 1, 0, piece, winCondition)) 
-                    return piece;
+                if (CheckDirection(i, j, 1, 0, piece, winCondition))
+                {
+                    if (piece == EGamePiece.X) xWins = true;
+                    if (piece == EGamePiece.O) oWins = true;
+                }
 
                 // Check diagonal (\ direction)
-                if (CheckDirection(i, j, 1, 1, piece, winCondition)) 
-                    return piece;
+                if (CheckDirection(i, j, 1, 1, piece, winCondition))
+                {
+                    if (piece == EGamePiece.X) xWins = true;
+                    if (piece == EGamePiece.O) oWins = true;
+                }
 
                 // Check diagonal (/ direction)
-                if (CheckDirection(i, j, 1, -1, piece, winCondition)) 
-                    return piece;
+                if (CheckDirection(i, j, 1, -1, piece, winCondition))
+                {
+                    if (piece == EGamePiece.X) xWins = true;
+                    if (piece == EGamePiece.O) oWins = true;
+                }
             }
         }
     }
+    
+    if (xWins && oWins) return null; // tie
+    if (xWins) return EGamePiece.X;
+    if (oWins) return EGamePiece.O;
 
-    return EGamePiece.Empty; // No winner
+    return EGamePiece.Empty; // no winner
 }
     
 private bool CheckDirection(int startRow, int startCol, int rowIncrement, int colIncrement, EGamePiece piece, int winCondition)
@@ -281,7 +297,7 @@ private bool CheckDirection(int startRow, int startCol, int rowIncrement, int co
         int newRow = startRow + k * rowIncrement;
         int newCol = startCol + k * colIncrement;
 
-        // Check bounds
+        // check bounds
         if (newRow >= 0 && newRow < _gameBoard.GetLength(0) && newCol >= 0 && newCol < _gameBoard.GetLength(1))
         {   
             //check if it is the right piece AND that it is inside the grid
@@ -316,6 +332,3 @@ private bool CheckDirection(int startRow, int startCol, int rowIncrement, int co
             _numberOfMovesMade = 0;
       }
 }
-
-
-// board & grid eraldi

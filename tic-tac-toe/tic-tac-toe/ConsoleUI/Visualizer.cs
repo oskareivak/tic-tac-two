@@ -30,13 +30,13 @@ public static class Visualizer
         Console.Write("   "); // Align with Y-indexes
         for (var x = 0; x < gameInstance.DimX; x++)
         {
-            Console.Write("___"); // Print dashes to separate
+            Console.Write("___"); 
             if (x != gameInstance.DimX - 1)
             {
                 Console.Write("_"); // Adjust spacing
             }
         }
-        Console.WriteLine(); // Move to the next line
+        Console.WriteLine(); 
 
         
         for (var y = 0; y < gameInstance.DimY; y++)

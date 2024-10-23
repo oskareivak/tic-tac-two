@@ -29,16 +29,6 @@ public class ConfigRepository
             WinCondition = 4,
             MovePieceAfterNMoves = 3,
         },
-        
-        new GameConfiguration()
-        {
-            Name = "# Testing random",
-            BoardSize = 40,
-            GridSize = 38,
-            WinCondition = 45,
-            MovePieceAfterNMoves = 1,
-            WhoStarts = EGamePiece.X,
-        },
     };
 
     public List<string> GetConfigurationNames()

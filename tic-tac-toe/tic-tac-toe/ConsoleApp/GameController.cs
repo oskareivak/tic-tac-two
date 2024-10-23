@@ -23,12 +23,6 @@ public static class GameController
     
         var gameInstance = new TicTacTwoBrain(chosenConfig);
 
-        
-        // main loop of gameplay
-        // draw the board again
-        // ask input again, validate (again)
-        // is the game over?
-
         do
         {   
             Console.WriteLine();
@@ -109,6 +103,12 @@ public static class GameController
             
             //check if X or O have won the game.
             var winner = gameInstance.CheckForWin();
+            if (winner == null)
+            {
+                ConsoleUI.Visualizer.DrawBoard(gameInstance);
+                Console.WriteLine("It's a tie!");
+                break;
+            }
             if (winner == EGamePiece.X)
             {   
                 ConsoleUI.Visualizer.DrawBoard(gameInstance);
@@ -123,9 +123,6 @@ public static class GameController
             }
 
         } while (true);
-        
-        // valideeri et seal on yldse koma, siis et on ainult yks koma(kas seda vaja?), split string and TRY parse, ja siis
-        // validate coordinates that they actually fit on the board, is the piece there that you actually can make a move vms
         
         return "M";
     }
@@ -147,11 +144,11 @@ public static class GameController
 
         var configMenu = new Menu(EMenuLevel.Secondary,
             "TIC-TAC-TWO - choose game config",
-            configMenuItems
-            // isCustomMenu: true
+            configMenuItems,
+            isCustomMenu: true
         );
 
-        return configMenu.Run(new Stack<Menu>());
+        return configMenu.Run();
     }
     
     public static string NewConfiguration()
@@ -348,17 +345,6 @@ public static class GameController
             MainLoop();
 
             return "";
-            // return new GameConfiguration()
-            // {
-            //     Name = name,
-            //     BoardSize = boardSize,
-            //     GridSize = gridSize,
-            //     WinCondition = winCondition,
-            //     WhoStarts = whoStarts,
-            //     MovePieceAfterNMoves = movePieceAfterNMoves,
-            //     NumberOfPiecesPerPlayer = numberOfPiecesPerPlayer
-            // };
-
         } while (true);
 
         
