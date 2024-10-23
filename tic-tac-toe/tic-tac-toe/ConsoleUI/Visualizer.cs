@@ -11,7 +11,15 @@ public static class Visualizer
         Console.Write("   "); // Initial spacing before X-axis indexes
         for (var x = 0; x < gameInstance.DimX; x++)
         {
-            Console.Write(" " + x + " "); // X-axis index
+            if (x > 9)
+            {
+                Console.Write(" " + x); // X-axis index
+            }
+            else
+            {
+                Console.Write(" " + x + " "); // X-axis index
+
+            }
             if (x != gameInstance.DimX - 1)
             {
                 Console.Write(" "); // Adjust spacing between X indexes
@@ -32,8 +40,16 @@ public static class Visualizer
 
         
         for (var y = 0; y < gameInstance.DimY; y++)
-        {   
-            Console.Write(y + " |"); // visualizes y index
+        {
+            if (y > 9)
+            {
+                Console.Write(y + "|"); // visualizes y index 
+            }
+            else
+            {
+                Console.Write(y + " |"); // visualizes y index
+            }
+            
             for (var x = 0; x < gameInstance.DimX; x++)
             {   
                 if (currentGridCoordinates.Contains((x, y)))

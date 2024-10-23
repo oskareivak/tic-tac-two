@@ -33,11 +33,11 @@ public class ConfigRepository
         new GameConfiguration()
         {
             Name = "# Testing random",
-            BoardSize = 7,
-            GridSize = 4,
-            WinCondition = 4,
-            MovePieceAfterNMoves = 2,
-            WhoStarts = EGamePiece.O,
+            BoardSize = 40,
+            GridSize = 38,
+            WinCondition = 45,
+            MovePieceAfterNMoves = 1,
+            WhoStarts = EGamePiece.X,
         },
     };
 
@@ -52,5 +52,20 @@ public class ConfigRepository
     public GameConfiguration GetConfigurationByName(string name)
     {
         return _gameConfigurations.Single(c => c.Name == name);
+    }
+
+    public void AddConfiguration(string name, int boardSize, int gridSize, int winCondition, EGamePiece whoStarts, 
+                                int movePieceAfterNMoves, int numberOfPiecesPerPlayer)
+    {
+        _gameConfigurations.Add(new GameConfiguration()
+        {
+            Name = name,
+            BoardSize = boardSize,
+            GridSize = gridSize,
+            WinCondition = winCondition,
+            WhoStarts = whoStarts,
+            MovePieceAfterNMoves = movePieceAfterNMoves,
+            NumberOfPiecesPerPlayer = numberOfPiecesPerPlayer
+        });
     }
 }

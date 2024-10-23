@@ -1,9 +1,14 @@
+using DAL;
+using GameBrain;
 using MenuSystem;
 
 namespace ConsoleApp;
 
 public static class Menus
 {
+    
+    private static readonly ConfigRepository ConfigRepository = new ConfigRepository();
+    
     public static readonly Menu OptionsMenu =
         new Menu(
         EMenuLevel.Secondary,
@@ -24,7 +29,7 @@ public static class Menus
             {
                 Shortcut = "C",
                 Title = "Make a new game configuration",
-                MenuItemAction = DummyMethod
+                MenuItemAction = GameController.NewConfiguration
             }
         ]);
 
@@ -36,7 +41,6 @@ public static class Menus
                 Shortcut = "N",
                 Title = "New game",
                 MenuItemAction = GameController.MainLoop
-                // MenuItemAction = NewGame
             },
             new MenuItem()
             {

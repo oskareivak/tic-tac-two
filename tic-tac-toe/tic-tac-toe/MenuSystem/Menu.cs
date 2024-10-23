@@ -4,6 +4,7 @@ public class Menu
 {
     private string MenuHeader { get; set; }
     private static string _menuDivider = "=====================";
+    
     private List<MenuItem> MenuItems { get; set; }
 
     private MenuItem _menuItemExit = new MenuItem()
@@ -62,25 +63,21 @@ public class Menu
         
         MenuItems.Add(_menuItemExit);
         
-        // TODO: validate menu items for shortcut conflict (duplicates)!
     }
 
     public string Run(Stack<Menu> menuStack)
     {
-        
-        // Console.Clear();
-
         do
         {
             var menuItem = DisplayMenuGetUserchoice();
             var menuReturnValue = "";
-        
+
             if (menuItem.MenuItemAction != null)
             {
                 menuReturnValue = menuItem.MenuItemAction();
             }
-            
-            // return
+
+            // Handle "Return" option
             if (menuItem.Shortcut == _menuItemReturn.Shortcut)
             {
                 if (menuStack.Count > 0)
@@ -89,16 +86,17 @@ public class Menu
                 }
                 return menuItem.Shortcut;
             }
-            
+
+            // Handle "Exit" option
             if (menuItem.Shortcut == _menuItemExit.Shortcut || menuReturnValue == _menuItemExit.Shortcut)
             {
                 return _menuItemExit.Shortcut;
             }
-            
-            // go to main menu
+
+            // Handle "Return to Main Menu" option
             if (menuItem.Shortcut == _menuItemReturnMain.Shortcut)
             {
-                while (menuStack.Count > 1) 
+                while (menuStack.Count > 1)
                 {
                     menuStack.Pop();
                 }
