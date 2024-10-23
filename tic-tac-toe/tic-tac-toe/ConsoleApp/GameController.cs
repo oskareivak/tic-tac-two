@@ -10,7 +10,6 @@ public static class GameController
 
     public static string MainLoop()
     {   
-        var menuStack = new Stack<Menu>();
         var chosenConfigShortcut = ChooseConfiguration();
     
         if (!int.TryParse(chosenConfigShortcut, out var configNo))
