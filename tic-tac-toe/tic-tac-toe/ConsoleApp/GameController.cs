@@ -6,7 +6,9 @@ namespace ConsoleApp;
 
 public static class GameController
 {
-    private static readonly ConfigRepository ConfigRepository = new ConfigRepository();
+    private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryJson();
+    
+    private static readonly IGameRepository GameRepository = new GameRepositoryJson();
 
     public static string MainLoop()
     {   
@@ -33,8 +35,12 @@ public static class GameController
             //  or save. To be added later.
             var input = Console.ReadLine()!;
             var skip = false;
-            
-            
+
+            if (input.ToLower() == "save")
+            {
+                GameRepository.SaveGame(gameInstance.GetGameStateJson(), gameInstance.GetGameConfigName());
+                break;
+            }
             if (input.ToLower() == "exit")
             {   
                 Console.WriteLine("\nExiting...");

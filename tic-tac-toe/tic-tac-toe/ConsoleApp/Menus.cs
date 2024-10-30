@@ -8,7 +8,7 @@ namespace ConsoleApp;
 public static class Menus
 {
     
-    private static readonly ConfigRepository ConfigRepository = new ConfigRepository();
+    private static readonly ConfigRepositoryInMemory ConfigRepositoryInMemory = new ConfigRepositoryInMemory();
     
     public static readonly Menu DeepMenu = new Menu(
         EMenuLevel.Deep,

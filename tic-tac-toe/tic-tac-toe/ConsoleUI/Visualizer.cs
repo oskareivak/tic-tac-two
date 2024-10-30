@@ -57,7 +57,7 @@ public static class Visualizer
                     Console.ForegroundColor = ConsoleColor.Red;
                 }
                 
-                Console.Write(" " + DrawGamePiece(gameInstance.GameBoard[x, y]) + " ");
+                Console.Write(" " + DrawGamePiece(gameInstance.GameBoard[x][y]) + " ");
                 if (x != gameInstance.DimX - 1)
                 {
                     if (currentGridCoordinates.Contains((x + 1, y)) || (currentGridCoordinates.Contains((x, y)) &&

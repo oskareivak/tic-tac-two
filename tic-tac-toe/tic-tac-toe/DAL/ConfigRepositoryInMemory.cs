@@ -2,7 +2,7 @@
 
 namespace DAL;
 
-public class ConfigRepository
+public class ConfigRepositoryInMemory : IConfigRepository
 {
     private List<GameConfiguration> _gameConfigurations = new List<GameConfiguration>()
     {
