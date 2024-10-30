@@ -48,7 +48,7 @@ public class TicTacTwoBrain
     }
       
     public EGamePiece NextMoveBy => _gameState.NextMoveBy;
-    public List<(int x, int y)> CurrentGridCoordinates => _gameState.CurrentGridCoordinates;
+    public int[][] CurrentGridCoordinates => _gameState.CurrentGridCoordinates;
     
     public readonly Dictionary<string, (int x, int y)> DirectionMap = new()
     {
@@ -90,34 +90,54 @@ public class TicTacTwoBrain
         return copyOfBoard;
     }
     
-    private List<(int x, int y)> _getInitialGridCoordinates(GameConfiguration gameConfiguration)
-    {   
-        List<(int x, int y)> gridCoordinates = new List<(int x, int y)>();
-        
-        var topLeftCoord = ((gameConfiguration.BoardSize - gameConfiguration.GridSize) / 2, 
-            (gameConfiguration.BoardSize - gameConfiguration.GridSize) / 2);
-          
-        gridCoordinates.Add(topLeftCoord);
-          
+    // private List<(int x, int y)> _getInitialGridCoordinates(GameConfiguration gameConfiguration)
+    // {   
+    //     List<(int x, int y)> gridCoordinates = new List<(int x, int y)>();
+    //     
+    //     var topLeftCoord = ((gameConfiguration.BoardSize - gameConfiguration.GridSize) / 2, 
+    //         (gameConfiguration.BoardSize - gameConfiguration.GridSize) / 2);
+    //       
+    //     gridCoordinates.Add(topLeftCoord);
+    //       
+    //     for (int x = 0; x < gameConfiguration.GridSize; x++)
+    //     {
+    //         for (var y = 0; y < gameConfiguration.GridSize; y++)
+    //         {
+    //             gridCoordinates.Add((topLeftCoord.Item1 + x, topLeftCoord.Item2 + y));
+    //         }
+    //     }
+    //       
+    //     return gridCoordinates;
+    // }
+    
+    private int[][] _getInitialGridCoordinates(GameConfiguration gameConfiguration)
+    {
+        var gridCoordinates = new int[gameConfiguration.GridSize * gameConfiguration.GridSize][];
+        var topLeftCoord = (gameConfiguration.BoardSize - gameConfiguration.GridSize) / 2;
+
+        int index = 0;
         for (int x = 0; x < gameConfiguration.GridSize; x++)
         {
-            for (var y = 0; y < gameConfiguration.GridSize; y++)
+            for (int y = 0; y < gameConfiguration.GridSize; y++)
             {
-                gridCoordinates.Add((topLeftCoord.Item1 + x, topLeftCoord.Item2 + y));
+                gridCoordinates[index++] = new int[] { topLeftCoord + x, topLeftCoord + y };
             }
         }
-          
         return gridCoordinates;
     }
 
-    private List<(int x, int y)> _getBoardCoordinates(int boardSize)
+    private int[][] _getBoardCoordinates(int boardSize)
     {
-        List<(int x, int y)> coordinates = new();
+        
+        var coordinates = new int[boardSize * boardSize][];
+        int index = 0;
+        // List<(int x, int y)> coordinates = new();
         for (int x = 0; x < boardSize; x++)
         {
             for (int y = 0; y < boardSize; y++)
             {
-                coordinates.Add((x, y));
+                coordinates[index++] = new int[] { x, y };
+                // coordinates.Add((x, y));
             }
         }
         return coordinates;
@@ -132,7 +152,7 @@ public class TicTacTwoBrain
         }
         
         if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves) &&
-            !_gameState.CurrentGridCoordinates.Contains((x, y)))
+            !_gameState.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y))
         {   
             var movesNeeded = _gameState.GameConfiguration.MovePieceAfterNMoves * 2 - _gameState.NumberOfMovesMade;
             var plural = "";
@@ -210,9 +230,10 @@ public class TicTacTwoBrain
             return;
         }
         
-        List<(int x, int y)> newCoords = new List<(int x, int y)>();
-        int xShift;
-        int yShift;
+        // List<(int x, int y)> newCoords = new List<(int x, int y)>();
+        // int xShift;
+        // int yShift;
+        var newCoords = new List<int[]>();
 
         if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves))
         {
@@ -227,23 +248,24 @@ public class TicTacTwoBrain
         }
         else if (DirectionMap.TryGetValue(direction, out (int x, int y) move))
         {
-            xShift = move.x;
-            yShift = move.y;
+            // xShift = move.x;
+            // yShift = move.y;
             foreach (var coordinates in _gameState.CurrentGridCoordinates)
             {
-                var newCoord = (coordinates.x + xShift, coordinates.y + yShift);
+                // var newCoord = (coordinates.x + xShift, coordinates.y + yShift);
+                var newCoord = new int[] { coordinates[0] + move.x, coordinates[1] + move.y };
                 newCoords.Add(newCoord);
             }
 
             foreach (var coordinate in newCoords)
             {
-                if (!_gameState.BoardCoordinates.Contains(coordinate))
-                {   
+                if (!_gameState.BoardCoordinates.Any(coord => coord[0] == coordinate[0] && coord[1] == coordinate[1]))
+                {
                     Console.WriteLine("\nTry to keep the grid inside of the game board, ok?");
                     return;
                 }
             }
-            _gameState.CurrentGridCoordinates = newCoords;
+            _gameState.CurrentGridCoordinates = newCoords.ToArray();
             _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
         }
         else
@@ -320,7 +342,7 @@ private bool CheckDirection(int startRow, int startCol, int rowIncrement, int co
         if (newRow >= 0 && newRow < _gameState.GameBoard.Length && newCol >= 0 && newCol < _gameState.GameBoard[0].Length)
         {   
             //check if it is the right piece AND that it is inside the grid
-            if (_gameState.GameBoard[newRow][newCol] == piece && _gameState.CurrentGridCoordinates.Contains((newRow, newCol))) 
+            if (_gameState.GameBoard[newRow][newCol] == piece && _gameState.CurrentGridCoordinates.Any(coord => coord[0] == newRow && coord[1] == newCol)) 
             {
                 count++;
             }

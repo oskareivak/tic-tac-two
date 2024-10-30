@@ -11,15 +11,15 @@ public class GameState
     public EGamePiece NextMoveBy { get; set; }
     
 
-    public List<(int x, int y)> CurrentGridCoordinates { get; set; }
+    public int[][] CurrentGridCoordinates { get; set; }
 
-    public List<(int x, int y)> BoardCoordinates { get; set; }
+    public int[][] BoardCoordinates { get; set; }
       
     public int NumberOfMovesMade { get; set; }
 
     public Dictionary<EGamePiece, int> NumberOfPiecesOnBoard { get; set; }
 
-    public GameState(EGamePiece[][] gameBoard, EGamePiece nextMoveBy, GameConfiguration gameConfiguration, List<(int x, int y)> currentGridCoordinates, List<(int x, int y)> boardCoordinates, int numberOfMovesMade, Dictionary<EGamePiece, int> numberOfPiecesOnBoard)
+    public GameState(EGamePiece[][] gameBoard, EGamePiece nextMoveBy, GameConfiguration gameConfiguration, int[][] currentGridCoordinates, int[][] boardCoordinates, int numberOfMovesMade, Dictionary<EGamePiece, int> numberOfPiecesOnBoard)
     {
         GameBoard = gameBoard;
         GameConfiguration = gameConfiguration;

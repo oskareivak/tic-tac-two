@@ -6,7 +6,11 @@ public static class Visualizer
 {
     public static void DrawBoard(TicTacTwoBrain gameInstance)
     {
-        List<(int x, int y)> currentGridCoordinates = gameInstance.CurrentGridCoordinates;
+        // List<(int x, int y)> currentGridCoordinates = gameInstance.CurrentGridCoordinates;
+        
+        List<(int x, int y)> currentGridCoordinates = gameInstance.CurrentGridCoordinates
+            .Select(coord => (coord[0], coord[1]))
+            .ToList();
         
         Console.Write("   "); // Initial spacing before X-axis indexes
         for (var x = 0; x < gameInstance.DimX; x++)
