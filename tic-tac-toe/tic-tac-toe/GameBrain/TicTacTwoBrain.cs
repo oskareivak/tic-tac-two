@@ -6,24 +6,17 @@ public class TicTacTwoBrain
     private int DimensionY { get; set; } = 3;
 
     private readonly GameState _gameState;
-      
-      
+    
+    // Constructor for new game
     public TicTacTwoBrain(GameConfiguration gameConfiguration)
     {
-        // _gameConfiguration = gameConfiguration;
-        // _gameBoard = new EGamePiece[_gameConfiguration.BoardSize, _gameConfiguration.BoardSize];
-        // NextMoveBy = _gameConfiguration.WhoStarts;
-        // _numberOfMovesMade = 0;
-        // _boardCoordinates = _getBoardCoordinates();
-        // CurrentGridCoordinates = _getInitialGridCoordinates();
-
         _numberOfPiecesOnBoard = new Dictionary<EGamePiece, int>
         {
             { EGamePiece.X, 0 },
             { EGamePiece.O, 0 },
-            { EGamePiece.Empty, gameConfiguration.BoardSize * gameConfiguration.BoardSize } 
+            { EGamePiece.Empty, gameConfiguration.BoardSize * gameConfiguration.BoardSize }
         };
-        
+
         var initialGridCoordinates = _getInitialGridCoordinates(gameConfiguration);
         var boardCoordinates = _getBoardCoordinates(gameConfiguration.BoardSize);
 
@@ -32,11 +25,19 @@ public class TicTacTwoBrain
         {
             gameBoard[x] = new EGamePiece[gameConfiguration.BoardSize];
         }
-        
-        _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration, 
+
+        _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
             initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard);
     }
 
+    // Constructor for loading existing game
+    public TicTacTwoBrain(GameState gameState)
+    {
+        _gameState = gameState;
+        _numberOfPiecesOnBoard = gameState.NumberOfPiecesOnBoard;
+    }
+    
+    
     public string GetGameStateJson()
     {
         return _gameState.ToString();
@@ -89,26 +90,6 @@ public class TicTacTwoBrain
  
         return copyOfBoard;
     }
-    
-    // private List<(int x, int y)> _getInitialGridCoordinates(GameConfiguration gameConfiguration)
-    // {   
-    //     List<(int x, int y)> gridCoordinates = new List<(int x, int y)>();
-    //     
-    //     var topLeftCoord = ((gameConfiguration.BoardSize - gameConfiguration.GridSize) / 2, 
-    //         (gameConfiguration.BoardSize - gameConfiguration.GridSize) / 2);
-    //       
-    //     gridCoordinates.Add(topLeftCoord);
-    //       
-    //     for (int x = 0; x < gameConfiguration.GridSize; x++)
-    //     {
-    //         for (var y = 0; y < gameConfiguration.GridSize; y++)
-    //         {
-    //             gridCoordinates.Add((topLeftCoord.Item1 + x, topLeftCoord.Item2 + y));
-    //         }
-    //     }
-    //       
-    //     return gridCoordinates;
-    // }
     
     private int[][] _getInitialGridCoordinates(GameConfiguration gameConfiguration)
     {

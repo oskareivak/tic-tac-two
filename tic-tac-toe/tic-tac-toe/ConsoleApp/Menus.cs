@@ -26,18 +26,18 @@ public static class Menus
         new Menu(
         EMenuLevel.Secondary,
         "TIC-TAC-TOE Options", menuItems: [
-            new MenuItem()
-            {
-                Shortcut = "X",
-                Title = "X Starts",
-                MenuItemAction = DeepMenu.Run
-            },
-            new MenuItem()
-            {
-                Shortcut = "O",
-                Title = "O Starts",
-                MenuItemAction = DeepMenu.Run
-            },
+            // new MenuItem()
+            // {
+            //     Shortcut = "X",
+            //     Title = "X Starts",
+            //     MenuItemAction = DeepMenu.Run
+            // },
+            // new MenuItem()
+            // {
+            //     Shortcut = "O",
+            //     Title = "O Starts",
+            //     MenuItemAction = DeepMenu.Run
+            // },
             new MenuItem()
             {
                 Shortcut = "C",
@@ -53,7 +53,13 @@ public static class Menus
             {
                 Shortcut = "N",
                 Title = "New game",
-                MenuItemAction = GameController.MainLoop
+                MenuItemAction = () => GameController.MainLoop()
+            },
+            new MenuItem()
+            {
+                Shortcut = "L",
+                Title = "Load game",
+                MenuItemAction = GameController.LoadGame
             },
             new MenuItem()
             {

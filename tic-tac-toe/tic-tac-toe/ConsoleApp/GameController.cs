@@ -8,7 +8,6 @@ public static class GameController
 {
     // Use this for JSON file saving.
     private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryJson();
-    
     private static readonly IGameRepository GameRepository = new GameRepositoryJson();
     
     
@@ -16,20 +15,29 @@ public static class GameController
     // private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryInMemory();
 
     
-    public static string MainLoop()
-    {   
-        var chosenConfigShortcut = ChooseConfiguration();
-    
-        if (!int.TryParse(chosenConfigShortcut, out var configNo))
+    public static string MainLoop(GameState? gameState = null)
+    {
+        TicTacTwoBrain gameInstance;
+        if (gameState != null)
         {
-            return chosenConfigShortcut;
+            gameInstance = new TicTacTwoBrain(gameState);
         }
-
-        var chosenConfig = ConfigRepository.GetConfigurationByName(
-            ConfigRepository.GetConfigurationNames()[configNo]
-        );
+        else
+        {
+            var chosenConfigShortcut = ChooseConfiguration();
     
-        var gameInstance = new TicTacTwoBrain(chosenConfig);
+            if (!int.TryParse(chosenConfigShortcut, out var configNo))
+            {
+                return chosenConfigShortcut;
+            }
+
+            var chosenConfig = ConfigRepository.GetConfigurationByName(
+                ConfigRepository.GetConfigurationNames()[configNo]
+            );
+    
+            gameInstance = new TicTacTwoBrain(chosenConfig);
+        }
+        
 
         do
         {   
@@ -163,6 +171,45 @@ public static class GameController
         );
 
         return configMenu.Run();
+    }
+    
+    public static string LoadGame()
+    {
+        var gameMenuItems = new List<MenuItem>();
+        var gameNames = GameRepository.GetGameNames();
+        
+        if (gameNames.Count == 0)
+        {
+            Console.WriteLine("You don't have any saved games yet.");
+            return "";
+        }
+        
+        for (int i = 0; i < gameNames.Count; i++)
+        {
+            var returnValue = gameNames[i];
+            gameMenuItems.Add(new MenuItem()
+            {
+                Title = gameNames[i],
+                Shortcut = (i+1).ToString(),
+                MenuItemAction = () => returnValue
+            });
+        }
+
+        var gameMenu = new Menu(EMenuLevel.Secondary,
+            "TIC-TAC-TWO - choose game to load",
+            gameMenuItems,
+            isCustomMenu: true
+        );
+
+        var chosenGameName = gameMenu.Run();
+        if (chosenGameName == "E")
+        {
+            return "E";
+        }
+        
+        MainLoop(GameRepository.GetGameByName(chosenGameName));
+        
+        return "";
     }
     
     public static string NewConfiguration()

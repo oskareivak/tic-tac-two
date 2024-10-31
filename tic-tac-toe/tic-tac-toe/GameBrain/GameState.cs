@@ -18,7 +18,8 @@ public class GameState
     public int NumberOfMovesMade { get; set; }
 
     public Dictionary<EGamePiece, int> NumberOfPiecesOnBoard { get; set; }
-
+    
+    [JsonConstructor]
     public GameState(EGamePiece[][] gameBoard, EGamePiece nextMoveBy, GameConfiguration gameConfiguration, int[][] currentGridCoordinates, int[][] boardCoordinates, int numberOfMovesMade, Dictionary<EGamePiece, int> numberOfPiecesOnBoard)
     {
         GameBoard = gameBoard;
