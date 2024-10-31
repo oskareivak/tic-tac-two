@@ -6,10 +6,16 @@ namespace ConsoleApp;
 
 public static class GameController
 {
+    // Use this for JSON file saving.
     private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryJson();
     
     private static readonly IGameRepository GameRepository = new GameRepositoryJson();
+    
+    
+    // Use this for in-memory saving.
+    // private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryInMemory();
 
+    
     public static string MainLoop()
     {   
         var chosenConfigShortcut = ChooseConfiguration();
@@ -35,12 +41,14 @@ public static class GameController
             //  or save. To be added later.
             var input = Console.ReadLine()!;
             var skip = false;
-
+            
+            // Comment out when using in-memory saving:
             if (input.ToLower() == "save")
             {
                 GameRepository.SaveGame(gameInstance.GetGameStateJson(), gameInstance.GetGameConfigName());
                 break;
             }
+            
             if (input.ToLower() == "exit")
             {   
                 Console.WriteLine("\nExiting...");
