@@ -9,8 +9,8 @@ public class GameRepositoryJson : IGameRepository
     public void SaveGame(string jsonStateString, string gameConfigName)
     {
         var fileName = FileHelper.BasePath + 
-                       gameConfigName+ " " + 
-                       DateTime.Now.ToString("O") + 
+                       gameConfigName+ " | " + 
+                       DateTime.Now.ToString("f") + 
                        FileHelper.GameExtension;
         
         File.WriteAllText(fileName, jsonStateString);
@@ -40,4 +40,18 @@ public class GameRepositoryJson : IGameRepository
         var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(gameJsonStr);
         return gameState!;
     }
+    
+    public void DeleteGame(string name)
+    {
+        var fileToDelete = FileHelper.BasePath + name + FileHelper.GameExtension;
+        if (File.Exists(fileToDelete))
+        {
+            File.Delete(fileToDelete);
+        }
+        else
+        {
+            Console.WriteLine("Cannot find the file to delete.");
+        }
+    }
+    
 }

@@ -14,8 +14,8 @@ public static class GameController
     // Use this for in-memory saving.
     // private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryInMemory();
 
-    
-    public static string MainLoop(GameState? gameState = null)
+
+    public static string MainLoop(GameState? gameState = null, string? gameStateName = null)
     {
         TicTacTwoBrain gameInstance;
         if (gameState != null)
@@ -125,6 +125,13 @@ public static class GameController
             
             //check if X or O have won the game.
             var winner = gameInstance.CheckForWin();
+            
+            // Comment out when using in-memory saving:
+            if (gameState != null && gameStateName != null && winner != EGamePiece.Empty)
+            {
+                GameRepository.DeleteGame(gameStateName);
+            }
+            
             if (winner == null)
             {
                 ConsoleUI.Visualizer.DrawBoard(gameInstance);
@@ -202,12 +209,16 @@ public static class GameController
         );
 
         var chosenGameName = gameMenu.Run();
+        if (chosenGameName == "R")
+        {
+            return "R";
+        }
         if (chosenGameName == "E")
         {
             return "E";
         }
         
-        MainLoop(GameRepository.GetGameByName(chosenGameName));
+        MainLoop(GameRepository.GetGameByName(chosenGameName), chosenGameName);
         
         return "";
     }
