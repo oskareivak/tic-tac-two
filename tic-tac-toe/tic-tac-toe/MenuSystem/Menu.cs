@@ -22,7 +22,7 @@ public class Menu
     private MenuItem _menuItemReturnMain = new MenuItem()
     {
         Shortcut = "M",
-        Title = "return to Main menu"
+        Title = "Return to Main menu"
     };
 
     private EMenuLevel MenuLevel { get; set; }

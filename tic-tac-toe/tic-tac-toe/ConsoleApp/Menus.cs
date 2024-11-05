@@ -22,52 +22,102 @@ public static class Menus
     );
 
     
-    public static readonly Menu OptionsMenu =
-        new Menu(
+    // public static readonly Menu OptionsMenu =
+    //     new Menu(
+    //     EMenuLevel.Secondary,
+    //     "TIC-TAC-TOE Options", menuItems: [
+    //         new MenuItem()
+    //         {
+    //             Shortcut = "C",
+    //             Title = "Make a new game configuration",
+    //             MenuItemAction = GameController.NewConfiguration
+    //         },
+    //         new MenuItem()
+    //         {
+    //             Shortcut = "DC",
+    //             Title = "Delete a game configuration",
+    //             MenuItemAction = BigMenus.DeleteConfiguration
+    //         },
+    //         new MenuItem()
+    //         {
+    //             Shortcut = "DG",
+    //             Title = "Delete a saved game",
+    //             MenuItemAction = BigMenus.DeleteSavedGame
+    //         }
+    //     ]);
+    
+    public static readonly Menu OptionsMenu = new Menu(
         EMenuLevel.Secondary,
-        "TIC-TAC-TOE Options", menuItems: [
-            // new MenuItem()
-            // {
-            //     Shortcut = "X",
-            //     Title = "X Starts",
-            //     MenuItemAction = DeepMenu.Run
-            // },
-            // new MenuItem()
-            // {
-            //     Shortcut = "O",
-            //     Title = "O Starts",
-            //     MenuItemAction = DeepMenu.Run
-            // },
+        "TIC-TAC-TOE Options", new List<MenuItem>
+        {
             new MenuItem()
             {
                 Shortcut = "C",
                 Title = "Make a new game configuration",
                 MenuItemAction = GameController.NewConfiguration
-            }
-        ]);
-
+            },
+            Settings.UsingJson ? new MenuItem()
+            {
+                Shortcut = "DC",
+                Title = "Delete a game configuration",
+                MenuItemAction = BigMenus.DeleteConfiguration
+            } : null,
+            Settings.UsingJson ? new MenuItem()
+            {
+                Shortcut = "DG",
+                Title = "Delete a saved game",
+                MenuItemAction = BigMenus.DeleteSavedGame
+            } : null
+        }.Where(item => item != null).ToList()
+    );
+    
     public static Menu MainMenu = new Menu(
         EMenuLevel.Main,
-        "TIC-TAC-TOE", menuItems: [
+        "TIC-TAC-TOE", new List<MenuItem>
+        {
             new MenuItem()
             {
                 Shortcut = "N",
                 Title = "New game",
                 MenuItemAction = () => GameController.MainLoop()
             },
-            new MenuItem()
+            Settings.UsingJson ? new MenuItem()
             {
                 Shortcut = "L",
                 Title = "Load game",
-                MenuItemAction = GameController.LoadGame
-            },
+                MenuItemAction = BigMenus.LoadGame
+            } : null,
             new MenuItem()
             {
                 Shortcut = "O",
                 Title = "Options",
                 MenuItemAction = OptionsMenu.Run
             }
-        ]);
+        }.Where(item => item != null).ToList()
+    );
+    
+    // public static Menu MainMenu = new Menu(
+    //     EMenuLevel.Main,
+    //     "TIC-TAC-TOE", menuItems: [
+    //         new MenuItem()
+    //         {
+    //             Shortcut = "N",
+    //             Title = "New game",
+    //             MenuItemAction = () => GameController.MainLoop()
+    //         },
+    //         new MenuItem()
+    //         {
+    //             Shortcut = "L",
+    //             Title = "Load game",
+    //             MenuItemAction = BigMenus.LoadGame
+    //         },
+    //         new MenuItem()
+    //         {
+    //             Shortcut = "O",
+    //             Title = "Options",
+    //             MenuItemAction = OptionsMenu.Run
+    //         }
+    //     ]);
 
     private static string DummyMethod()
     {

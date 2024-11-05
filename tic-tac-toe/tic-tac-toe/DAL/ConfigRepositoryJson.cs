@@ -5,9 +5,6 @@ namespace DAL;
 
 public class ConfigRepositoryJson : IConfigRepository
 {
-    // private readonly string jsonExtension = FileHelper.ConfigExtension;
-    // private readonly string _basePath = FileHelper.BasePath;
-    
     public List<string> GetConfigurationNames()
     {
         CheckAndCreateInitialConfigs();
@@ -47,7 +44,18 @@ public class ConfigRepositoryJson : IConfigRepository
         File.WriteAllText(FileHelper.BasePath + name + FileHelper.ConfigExtension, configJsonStr);
     }
     
-    
+    public void DeleteConfiguration(string name)
+    {
+        var fileToDelete = FileHelper.BasePath + name + FileHelper.ConfigExtension;
+        if (File.Exists(fileToDelete))
+        {
+            File.Delete(fileToDelete);
+        }
+        else
+        {
+            Console.WriteLine("Cannot find the file to delete.");
+        }
+    }
     
     private void CheckAndCreateInitialConfigs()
     {

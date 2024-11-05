@@ -6,14 +6,22 @@ namespace ConsoleApp;
 
 public static class GameController
 {
-    // Use this for JSON file saving.
-    private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryJson();
-    private static readonly IGameRepository GameRepository = new GameRepositoryJson();
+    private static readonly IConfigRepository ConfigRepository;
+    private static readonly IGameRepository GameRepository;
     
-    
-    // Use this for in-memory saving.
-    // private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryInMemory();
-
+    static GameController()
+    {
+        if (Settings.UsingJson)
+        {
+            ConfigRepository = new ConfigRepositoryJson();
+            GameRepository = new GameRepositoryJson();
+        }
+        else
+        {
+            ConfigRepository = new ConfigRepositoryInMemory();
+            GameRepository = new NoOpGameRepository();
+        }
+    }
 
     public static string MainLoop(GameState? gameState = null, string? gameStateName = null)
     {
@@ -24,7 +32,7 @@ public static class GameController
         }
         else
         {
-            var chosenConfigShortcut = ChooseConfiguration();
+            var chosenConfigShortcut = BigMenus.ChooseConfiguration();
     
             if (!int.TryParse(chosenConfigShortcut, out var configNo))
             {
@@ -50,11 +58,18 @@ public static class GameController
             var input = Console.ReadLine()!;
             var skip = false;
             
-            // Comment out when using in-memory saving:
-            if (input.ToLower() == "save")
+            // Not used when using in-memory saving:
+            if (Settings.UsingJson)
             {
-                GameRepository.SaveGame(gameInstance.GetGameStateJson(), gameInstance.GetGameConfigName());
-                break;
+                if (input.ToLower() == "save")
+                {   
+                    if (gameState != null && gameStateName != null)
+                    {
+                        GameRepository.DeleteGame(gameStateName);
+                    }
+                    GameRepository.SaveGame(gameInstance.GetGameStateJson(), gameInstance.GetGameConfigName());
+                    break;
+                }
             }
             
             if (input.ToLower() == "exit")
@@ -126,10 +141,13 @@ public static class GameController
             //check if X or O have won the game.
             var winner = gameInstance.CheckForWin();
             
-            // Comment out when using in-memory saving:
-            if (gameState != null && gameStateName != null && winner != EGamePiece.Empty)
+            // Not used when using in-memory saving:
+            if (Settings.UsingJson)
             {
-                GameRepository.DeleteGame(gameStateName);
+                if (gameState != null && gameStateName != null && winner != EGamePiece.Empty)
+                {
+                    GameRepository.DeleteGame(gameStateName);
+                }
             }
             
             if (winner == null)
@@ -154,73 +172,6 @@ public static class GameController
         } while (true);
         
         return "M";
-    }
-
-    private static string ChooseConfiguration()
-    {
-        var configMenuItems = new List<MenuItem>();
-
-        for (int i = 0; i < ConfigRepository.GetConfigurationNames().Count; i++)
-        {
-            var returnValue = i.ToString();
-            configMenuItems.Add(new MenuItem()
-            {
-                Title = ConfigRepository.GetConfigurationNames()[i],
-                Shortcut = (i+1).ToString(),
-                MenuItemAction = () => returnValue
-            });
-        }
-
-        var configMenu = new Menu(EMenuLevel.Secondary,
-            "TIC-TAC-TWO - choose game config",
-            configMenuItems,
-            isCustomMenu: true
-        );
-
-        return configMenu.Run();
-    }
-    
-    public static string LoadGame()
-    {
-        var gameMenuItems = new List<MenuItem>();
-        var gameNames = GameRepository.GetGameNames();
-        
-        if (gameNames.Count == 0)
-        {
-            Console.WriteLine("You don't have any saved games yet.");
-            return "";
-        }
-        
-        for (int i = 0; i < gameNames.Count; i++)
-        {
-            var returnValue = gameNames[i];
-            gameMenuItems.Add(new MenuItem()
-            {
-                Title = gameNames[i],
-                Shortcut = (i+1).ToString(),
-                MenuItemAction = () => returnValue
-            });
-        }
-
-        var gameMenu = new Menu(EMenuLevel.Secondary,
-            "TIC-TAC-TWO - choose game to load",
-            gameMenuItems,
-            isCustomMenu: true
-        );
-
-        var chosenGameName = gameMenu.Run();
-        if (chosenGameName == "R")
-        {
-            return "R";
-        }
-        if (chosenGameName == "E")
-        {
-            return "E";
-        }
-        
-        MainLoop(GameRepository.GetGameByName(chosenGameName), chosenGameName);
-        
-        return "";
     }
     
     public static string NewConfiguration()

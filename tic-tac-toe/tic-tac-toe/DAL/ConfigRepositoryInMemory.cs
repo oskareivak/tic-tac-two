@@ -58,4 +58,9 @@ public class ConfigRepositoryInMemory : IConfigRepository
             NumberOfPiecesPerPlayer = numberOfPiecesPerPlayer
         });
     }
+    
+    public void DeleteConfiguration(string name)
+    {
+        return;
+    }
 }
