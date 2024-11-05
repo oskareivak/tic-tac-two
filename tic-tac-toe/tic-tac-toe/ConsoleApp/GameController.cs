@@ -32,7 +32,7 @@ public static class GameController
         }
         else
         {
-            var chosenConfigShortcut = BigMenus.ChooseConfiguration();
+            var chosenConfigShortcut = BigMenus.ChooseConfiguration(ConfigRepository);
     
             if (!int.TryParse(chosenConfigShortcut, out var configNo))
             {
@@ -234,7 +234,7 @@ public static class GameController
 
             if (gridSize == 0)
             {
-                string rule = "Grid side length must be between 3-40";
+                string rule = $"Grid side length must be between 3-{boardSize}"; // TODO: grid size must be max board size
                 Console.WriteLine("Enter grid side length:\n");
                 Console.WriteLine("(" + rule + ")");
                 
@@ -250,7 +250,7 @@ public static class GameController
                     continue;
                 }
                 
-                if (gridSizeInputInt is < 3 or > 40)
+                if (gridSizeInputInt < 3 || gridSizeInputInt > boardSize)
                 {
                     Console.WriteLine(rule);
                     continue;

@@ -6,13 +6,6 @@ namespace ConsoleApp;
 
 public class BigMenus
 {   
-    // // Use this for saving to JSON.
-    // private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryJson();
-    // private static readonly IGameRepository GameRepository = new GameRepositoryJson();
-    
-    // Use this for in-memory saving.
-    // private static readonly IConfigRepository ConfigRepository = new ConfigRepositoryInMemory();
-    
     private static readonly IConfigRepository ConfigRepository;
     private static readonly IGameRepository GameRepository;
     
@@ -85,7 +78,7 @@ public class BigMenus
         // User shouldn't actually reach this statement, but just in case (temporary precaution).
         if (!Settings.UsingJson)
         {
-            Console.WriteLine("Loading games is not supported in in-memory mode.");
+            Console.WriteLine("Deleting saved games is not supported in in-memory mode.");
             return "";
         }
         
@@ -135,16 +128,16 @@ public class BigMenus
         return "";
     }
     
-    public static string ChooseConfiguration()
+    public static string ChooseConfiguration(IConfigRepository configRepository)
     {
         var configMenuItems = new List<MenuItem>();
 
-        for (int i = 0; i < ConfigRepository.GetConfigurationNames().Count; i++)
+        for (int i = 0; i < configRepository.GetConfigurationNames().Count; i++)
         {
             var returnValue = i.ToString();
             configMenuItems.Add(new MenuItem()
             {
-                Title = ConfigRepository.GetConfigurationNames()[i],
+                Title = configRepository.GetConfigurationNames()[i],
                 Shortcut = (i+1).ToString(),
                 MenuItemAction = () => returnValue
             });
