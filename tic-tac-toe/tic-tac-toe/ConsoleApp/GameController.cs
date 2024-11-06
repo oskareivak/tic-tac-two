@@ -397,7 +397,9 @@ public static class GameController
 
             ConfigRepository.AddConfiguration(name, boardSize, gridSize, winCondition, whoStarts, 
                                                 movePieceAfterNMoves, numberOfPiecesPerPlayer);
-            MainLoop();
+            Console.WriteLine("Configuration saved!");
+            // MainLoop();
+            Menus.MainMenu.Run();
 
             return "";
         } while (true);
