@@ -1,4 +1,6 @@
-﻿namespace MenuSystem;
+﻿using System;
+
+namespace MenuSystem;
 
 public class MenuItem
 {
