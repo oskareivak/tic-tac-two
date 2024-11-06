@@ -184,7 +184,14 @@ public static class GameController
     }
     
     public static string NewConfiguration()
-    {
+    {   
+        var savedConfigs = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension);
+        if (savedConfigs.Length >= 103)
+        {
+            Console.WriteLine("You have reached the maximum number of saved configurations (100). Please delete some configurations before saving new ones.");
+            return "";
+        }
+        
         string name = "";
         int boardSize = 0;
         int gridSize = 0;
@@ -244,7 +251,7 @@ public static class GameController
 
             if (gridSize == 0)
             {
-                string rule = $"Grid side length must be between 3-{boardSize}"; // TODO: grid size must be max board size
+                string rule = $"Grid side length must be between 3-{boardSize}"; 
                 Console.WriteLine("\nEnter grid side length:");
                 Console.WriteLine("(" + rule + ")");
                 
