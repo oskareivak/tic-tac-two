@@ -35,13 +35,13 @@ public static class Menus
             {
                 Shortcut = "DC",
                 Title = "Delete a game configuration",
-                MenuItemAction = BigMenus.DeleteConfiguration
+                MenuItemAction = OptionsController.DeleteConfiguration
             } : null,
             Settings.UsingJson ? new MenuItem()
             {
                 Shortcut = "DG",
                 Title = "Delete a saved game",
-                MenuItemAction = BigMenus.DeleteSavedGame
+                MenuItemAction = OptionsController.DeleteSavedGame
             } : null
         }.Where(item => item != null).ToList()
     );
@@ -60,7 +60,7 @@ public static class Menus
             {
                 Shortcut = "L",
                 Title = "Load game",
-                MenuItemAction = BigMenus.LoadGame
+                MenuItemAction = OptionsController.LoadGame
             } : null,
             new MenuItem()
             {

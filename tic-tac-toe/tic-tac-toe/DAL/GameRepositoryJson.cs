@@ -6,14 +6,21 @@ public class GameRepositoryJson : IGameRepository
 {
     
     
-    public void SaveGame(string jsonStateString, string gameConfigName)
+    public bool SaveGame(string jsonStateString, string gameConfigName)
     {
+        var savedGames = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension);
+        if (savedGames.Length >= 100)
+        {
+            return false;
+        }
+        
         var fileName = FileHelper.BasePath + 
                        gameConfigName+ " | " + 
                        DateTime.Now.ToString("f") + 
                        FileHelper.GameExtension;
         
         File.WriteAllText(fileName, jsonStateString);
+        return true;
     }
 
     public List<string> GetGameNames()

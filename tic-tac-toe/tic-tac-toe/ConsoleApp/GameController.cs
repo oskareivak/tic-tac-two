@@ -32,7 +32,7 @@ public static class GameController
         }
         else
         {
-            var chosenConfigShortcut = BigMenus.ChooseConfiguration(ConfigRepository);
+            var chosenConfigShortcut = OptionsController.ChooseConfiguration(ConfigRepository);
     
             if (!int.TryParse(chosenConfigShortcut, out var configNo))
             {
@@ -67,8 +67,17 @@ public static class GameController
                     {
                         GameRepository.DeleteGame(gameStateName);
                     }
-                    GameRepository.SaveGame(gameInstance.GetGameStateJson(), gameInstance.GetGameConfigName());
-                    break;
+
+                    if (GameRepository.SaveGame(gameInstance.GetGameStateJson(), gameInstance.GetGameConfigName()))
+                    {
+                        Console.WriteLine("Game saved!");
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("You have reached the maximum number of saved games (100). Please delete some games before saving new ones.");
+                    }
+                    
                 }
             }
             
@@ -188,15 +197,16 @@ public static class GameController
         {
             if (name == "")
             {
-                Console.WriteLine("Enter a name for your new configuration:");
+                Console.WriteLine("\nEnter a name for your new configuration:");
+                
                 var nameInput = Console.ReadLine();
                 var existingConfigNames = ConfigRepository.GetConfigurationNames();
-                if (string.IsNullOrEmpty(nameInput))
+                
+                if (string.IsNullOrEmpty(nameInput) || nameInput.Length > 30)
                 {
-                    Console.WriteLine("New configuration's name can't be empty!");
+                    Console.WriteLine("Game name must be between 1-30 characters.");
                     continue;
                 }
-                
                 if (existingConfigNames.Contains(nameInput))
                 {
                     Console.WriteLine("Configuration name is already taken!");
@@ -209,7 +219,7 @@ public static class GameController
             if (boardSize == 0)
             {
                 string rule = "Board side length must be between 3-40";
-                Console.WriteLine("Enter board side length:");
+                Console.WriteLine("\nEnter board side length:");
                 Console.WriteLine("(" + rule + ")");
                 var boardSizeInput = Console.ReadLine();
                 int boardSizeInputInt;
@@ -235,7 +245,7 @@ public static class GameController
             if (gridSize == 0)
             {
                 string rule = $"Grid side length must be between 3-{boardSize}"; // TODO: grid size must be max board size
-                Console.WriteLine("Enter grid side length:\n");
+                Console.WriteLine("\nEnter grid side length:");
                 Console.WriteLine("(" + rule + ")");
                 
                 var gridSizeInput = Console.ReadLine();
@@ -262,7 +272,7 @@ public static class GameController
             if (winCondition == 0)
             {
                 string rule = $"Winning condition must be between 3-{gridSize}";
-                Console.WriteLine("Enter the number of pieces needed in a row to win:");
+                Console.WriteLine("\nEnter the number of pieces needed in a row to win:");
                 Console.WriteLine("(" + rule + ")");
                 
                 var winConditionInput = Console.ReadLine();
@@ -289,7 +299,7 @@ public static class GameController
             if (whoStarts == EGamePiece.Empty)
             {
                 string rule = "Enter either x or o";
-                Console.WriteLine("Enter the default piece who starts the game:");
+                Console.WriteLine("\nEnter the default piece who starts the game:");
                 Console.WriteLine("(" + rule + ")");
                 
                 var starterInput = Console.ReadLine();
@@ -312,8 +322,8 @@ public static class GameController
             if (movePieceAfterNMoves == 10000)
             {
                 string rule = "Enter a reasonable number.";
-                Console.WriteLine("Enter the number of moves that have to be made before you can place pieces outside" +
-                                    " of the grid, move the grid and move pieces");
+                Console.WriteLine("\nEnter the number of moves that have to be made before you can place pieces outside" +
+                                    " of the grid, move the grid and move pieces. (0 means that they are all disabled)");
                 Console.WriteLine("(" + rule + ")");
                 
                 var movePiecesAfterInput = Console.ReadLine();
@@ -339,8 +349,8 @@ public static class GameController
             
             if (numberOfPiecesPerPlayer == 0)
             {
-                string rule = $"Number must be between {winCondition}-80";
-                Console.WriteLine("Enter number of pieces per player:");
+                string rule = $"Number must be between {winCondition}-{boardSize * boardSize / 2 + 1}";
+                Console.WriteLine("\nEnter number of pieces per player:");
                 Console.WriteLine("(" + rule + ")");
                 var piecesPerPlayerInput = Console.ReadLine();
                 int piecesPerPlayerInputInt;
@@ -354,7 +364,7 @@ public static class GameController
                     continue;
                 }
                 
-                if (piecesPerPlayerInputInt < winCondition || piecesPerPlayerInputInt > 80)
+                if (piecesPerPlayerInputInt < winCondition || piecesPerPlayerInputInt > boardSize * boardSize / 2 + 1)
                 {
                     Console.WriteLine(rule);
                     continue;

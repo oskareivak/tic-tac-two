@@ -170,8 +170,9 @@ public class TicTacTwoBrain
         if (_gameState.GameConfiguration.MovePieceAfterNMoves == 0)
         {
             Console.WriteLine("\nYou cannot move pieces in this game configuration!");
+            return;
         }
-        else if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves))
+        if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves))
         {
             var movesNeeded = _gameState.GameConfiguration.MovePieceAfterNMoves * 2 - _gameState.NumberOfMovesMade;
             var plural = "";

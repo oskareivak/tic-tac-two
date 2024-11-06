@@ -41,7 +41,7 @@ public class Menu
             throw new ApplicationException("Menu header cannot be empty.");
         }
         
-        MenuHeader = menuHeader;
+        MenuHeader = "\n" + menuHeader;
         
         if (menuItems == null || menuItems.Count == 0)
         {
