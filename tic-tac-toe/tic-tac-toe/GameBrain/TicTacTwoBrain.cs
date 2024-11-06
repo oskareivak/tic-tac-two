@@ -8,7 +8,7 @@ public class TicTacTwoBrain
     private readonly GameState _gameState;
     
     // Constructor for new game
-    public TicTacTwoBrain(GameConfiguration gameConfiguration)
+    public TicTacTwoBrain(GameConfiguration gameConfiguration, string gameMode)
     {
         _numberOfPiecesOnBoard = new Dictionary<EGamePiece, int>
         {
@@ -27,7 +27,7 @@ public class TicTacTwoBrain
         }
 
         _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
-            initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard);
+            initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode);
     }
 
     // Constructor for loading existing game
@@ -46,6 +46,11 @@ public class TicTacTwoBrain
     public string GetGameConfigName()
     {
         return _gameState.GameConfiguration.Name;
+    }
+    
+    public string GetGameMode()
+    {
+        return _gameState.GameMode;
     }
       
     public EGamePiece NextMoveBy => _gameState.NextMoveBy;

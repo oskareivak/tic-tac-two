@@ -4,8 +4,6 @@ namespace DAL;
 
 public class GameRepositoryJson : IGameRepository
 {
-    
-    
     public bool SaveGame(string jsonStateString, string gameConfigName)
     {
         var savedGames = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension);

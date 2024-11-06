@@ -54,7 +54,7 @@ public static class Menus
             {
                 Shortcut = "N",
                 Title = "New game",
-                MenuItemAction = () => GameController.MainLoop()
+                MenuItemAction = OptionsController.ChooseGamemode
             },
             Settings.UsingJson ? new MenuItem()
             {

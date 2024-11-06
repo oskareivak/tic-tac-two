@@ -148,8 +148,43 @@ public class OptionsController
             configMenuItems,
             isCustomMenu: true
         );
-
+        
         return configMenu.Run();
+    }
+
+    public static string ChooseGamemode()
+    {
+        var gameModeMenuItems = new List<MenuItem>();
+        var gameModes = new List<string> { "PvP", "PvAI", "AIvAI" };
+        
+        for (int i = 0; i < gameModes.Count; i++)
+        {
+            var returnValue = gameModes[i];
+            gameModeMenuItems.Add(new MenuItem()
+            {
+                Title = gameModes[i],
+                Shortcut = (i+1).ToString(),
+                MenuItemAction = () => returnValue
+            });
+        }
+        
+        var gameModeMenu = new Menu(EMenuLevel.Secondary,
+            "TIC-TAC-TWO - choose game mode",
+            gameModeMenuItems,
+            isCustomMenu: true
+        );
+        var chosenGameMode = gameModeMenu.Run();
+        if (chosenGameMode == "R")
+        {
+            return "R";
+        }
+        if (chosenGameMode == "E")
+        {
+            return "E";
+        }
+
+        GameController.MainLoop(null, null, chosenGameMode);
+        return "";
     }
     
     public static string DeleteConfiguration()
