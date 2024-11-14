@@ -45,22 +45,24 @@ public static class GameController
 
             // var gameMode = OptionsController.ChooseGamemode();
             
-            gameInstance = new TicTacTwoBrain(chosenConfig, chosenGameMode);
+            // gameInstance = new TicTacTwoBrain(chosenConfig, chosenGameMode);
+            gameInstance = new TicTacTwoBrain(chosenConfig);
+
         }
         
-        var gameStateGameMode = gameInstance.GetGameMode();
-        if (gameStateGameMode == "PvP")
-        {
-            Console.WriteLine("You're playing against another player.");
-        }
-        else if (gameStateGameMode == "PvAI")
-        {
-            Console.WriteLine("You're playing against AI.");
-        }
-        else if (gameStateGameMode == "AIvAI")
-        {
-            Console.WriteLine("AI is playing against AI.");
-        }
+        // var gameStateGameMode = gameInstance.GetGameMode();
+        // if (gameStateGameMode == "PvP")
+        // {
+        //     Console.WriteLine("You're playing against another player.");
+        // }
+        // else if (gameStateGameMode == "PvAI")
+        // {
+        //     Console.WriteLine("You're playing against AI.");
+        // }
+        // else if (gameStateGameMode == "AIvAI")
+        // {
+        //     Console.WriteLine("AI is playing against AI.");
+        // }
 
         do
         {   
@@ -95,6 +97,13 @@ public static class GameController
                     
                 }
             }
+
+            // if (gameStateGameMode == "PvAI" && gameInstance.NextMoveBy == EGamePiece.O)
+            // {
+            //     AIBrain aiBrain = new AIBrain();
+            //     aiBrain.GetMove(gameInstance);
+            //     skip = true;
+            // }
             
             if (input.ToLower() == "exit")
             {   

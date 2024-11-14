@@ -8,7 +8,8 @@ public class TicTacTwoBrain
     private readonly GameState _gameState;
     
     // Constructor for new game
-    public TicTacTwoBrain(GameConfiguration gameConfiguration, string gameMode)
+    // public TicTacTwoBrain(GameConfiguration gameConfiguration, string gameMode)
+    public TicTacTwoBrain(GameConfiguration gameConfiguration)
     {
         _numberOfPiecesOnBoard = new Dictionary<EGamePiece, int>
         {
@@ -25,9 +26,11 @@ public class TicTacTwoBrain
         {
             gameBoard[x] = new EGamePiece[gameConfiguration.BoardSize];
         }
-
+        
+        // _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
+        //     initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode);
         _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
-            initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode);
+            initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard);
     }
 
     // Constructor for loading existing game
@@ -48,10 +51,10 @@ public class TicTacTwoBrain
         return _gameState.GameConfiguration.Name;
     }
     
-    public string GetGameMode()
-    {
-        return _gameState.GameMode;
-    }
+    // public string GetGameMode()
+    // {
+    //     return _gameState.GameMode;
+    // }
       
     public EGamePiece NextMoveBy => _gameState.NextMoveBy;
     public int[][] CurrentGridCoordinates => _gameState.CurrentGridCoordinates;
