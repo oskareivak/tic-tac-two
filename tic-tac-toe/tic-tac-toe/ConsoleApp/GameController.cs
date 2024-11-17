@@ -11,7 +11,7 @@ public static class GameController
     
     static GameController()
     {
-        if (Settings.UsingJson)
+        if (Settings.Mode == ESavingMode.Json)
         {
             ConfigRepository = new ConfigRepositoryJson();
             GameRepository = new GameRepositoryJson();
@@ -76,7 +76,7 @@ public static class GameController
             var skip = false;
             
             // Not used when using in-memory saving:
-            if (Settings.UsingJson)
+            if (Settings.Mode == ESavingMode.Json)
             {
                 if (input.ToLower() == "save")
                 {   
@@ -175,7 +175,7 @@ public static class GameController
             var winner = gameInstance.CheckForWin();
             
             // Not used when using in-memory saving:
-            if (Settings.UsingJson)
+            if (Settings.Mode == ESavingMode.Json)
             {
                 if (gameState != null && gameStateName != null && winner != EGamePiece.Empty)
                 {

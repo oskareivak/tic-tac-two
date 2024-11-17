@@ -11,7 +11,7 @@ public class OptionsController
     
     static OptionsController()
     {
-        if (Settings.UsingJson)
+        if (Settings.Mode == ESavingMode.Json)
         {
             ConfigRepository = new ConfigRepositoryJson();
             GameRepository = new GameRepositoryJson();
@@ -26,7 +26,7 @@ public class OptionsController
     public static string LoadGame()
     {   
         // User shouldn't actually reach this statement, but just in case (temporary precaution).
-        if (!Settings.UsingJson)
+        if (Settings.Mode != ESavingMode.Json)
         {
             Console.WriteLine("Loading games is not supported in in-memory mode.");
             return "";
@@ -76,7 +76,7 @@ public class OptionsController
     public static string DeleteSavedGame()
     {   
         // User shouldn't actually reach this statement, but just in case (temporary precaution).
-        if (!Settings.UsingJson)
+        if (Settings.Mode != ESavingMode.Json)
         {
             Console.WriteLine("Deleting saved games is not supported in in-memory mode.");
             return "";
@@ -190,7 +190,7 @@ public class OptionsController
     public static string DeleteConfiguration()
     {   
         // User shouldn't actually reach this statement, but just in case (temporary precaution).
-        if (!Settings.UsingJson)
+        if (Settings.Mode != ESavingMode.Json)
         {
             Console.WriteLine("Loading games is not supported in in-memory mode.");
             return "";

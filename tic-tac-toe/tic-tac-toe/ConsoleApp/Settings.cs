@@ -2,6 +2,6 @@ namespace ConsoleApp;
 
 public static class Settings
 {   
-    // True when using JSON, false when using in-memory saving.
-    public const bool UsingJson = true;
+    // Choose the saving mode for game. Options: Memory, Json, Database
+    public const ESavingMode Mode = ESavingMode.Json;
 }
