@@ -54,7 +54,8 @@ public static class Menus
             {
                 Shortcut = "N",
                 Title = "New game",
-                MenuItemAction = OptionsController.ChooseGamemode
+                // MenuItemAction = OptionsController.ChooseGamemode Uncomment when AI is implemented
+                MenuItemAction = () => GameController.MainLoop(null, null, null)
             },
             Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database ? new MenuItem()
             {
