@@ -1,6 +1,7 @@
 using DAL;
 using GameBrain;
 using MenuSystem;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConsoleApp;
 
@@ -16,7 +17,16 @@ public class OptionsController
             ConfigRepository = new ConfigRepositoryJson();
             GameRepository = new GameRepositoryJson();
         }
-        else
+        if (Settings.Mode == ESavingMode.Database)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionsBuilder.UseSqlite($"Data Source={FileHelper.BasePath}app.db");
+            var context = new AppDbContext(optionsBuilder.Options);
+
+            ConfigRepository = new ConfigRepositoryDb(context);
+            GameRepository = new GameRepositoryDb(context);
+        }
+        if (Settings.Mode == ESavingMode.Memory)
         {
             ConfigRepository = new ConfigRepositoryInMemory();
             GameRepository = new NoOpGameRepository();
@@ -26,7 +36,7 @@ public class OptionsController
     public static string LoadGame()
     {   
         // User shouldn't actually reach this statement, but just in case (temporary precaution).
-        if (Settings.Mode != ESavingMode.Json)
+        if (Settings.Mode != ESavingMode.Json && Settings.Mode != ESavingMode.Database)
         {
             Console.WriteLine("Loading games is not supported in in-memory mode.");
             return "";
@@ -76,7 +86,7 @@ public class OptionsController
     public static string DeleteSavedGame()
     {   
         // User shouldn't actually reach this statement, but just in case (temporary precaution).
-        if (Settings.Mode != ESavingMode.Json)
+        if (Settings.Mode != ESavingMode.Json && Settings.Mode != ESavingMode.Database)
         {
             Console.WriteLine("Deleting saved games is not supported in in-memory mode.");
             return "";
@@ -190,9 +200,9 @@ public class OptionsController
     public static string DeleteConfiguration()
     {   
         // User shouldn't actually reach this statement, but just in case (temporary precaution).
-        if (Settings.Mode != ESavingMode.Json)
+        if (Settings.Mode != ESavingMode.Json && Settings.Mode != ESavingMode.Database)
         {
-            Console.WriteLine("Loading games is not supported in in-memory mode.");
+            Console.WriteLine("Deleting configurations is not supported in in-memory mode.");
             return "";
         }
         
@@ -219,7 +229,7 @@ public class OptionsController
         }
 
         var configMenu = new Menu(EMenuLevel.Deep,
-            "TIC-TAC-TWO - delete game config",
+            "TIC-TAC-TWO - delete game configuraton (Deleting a game configuration also deletes all saved games using it.)",
             configMenuItems,
             isCustomMenu: true
         );
@@ -244,8 +254,15 @@ public class OptionsController
             return "";
         }
         
-        ConfigRepository.DeleteConfiguration(chosenConfigName);
-        Console.WriteLine("Configuration deleted successfully.");
+        try
+        {
+            ConfigRepository.DeleteConfiguration(chosenConfigName);
+            Console.WriteLine("Configuration deleted successfully.");
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            Console.WriteLine("The configuration could not be deleted because it was modified or deleted by another process.");
+        }
 
         return "";
     }

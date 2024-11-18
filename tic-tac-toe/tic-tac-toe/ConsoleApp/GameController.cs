@@ -1,6 +1,7 @@
 using DAL;
 using GameBrain;
 using MenuSystem;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConsoleApp;
 
@@ -15,6 +16,15 @@ public static class GameController
         {
             ConfigRepository = new ConfigRepositoryJson();
             GameRepository = new GameRepositoryJson();
+        }
+        else if (Settings.Mode == ESavingMode.Database)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionsBuilder.UseSqlite($"Data Source={FileHelper.BasePath}app.db");
+            var context = new AppDbContext(optionsBuilder.Options);
+
+            ConfigRepository = new ConfigRepositoryDb(context);
+            GameRepository = new GameRepositoryDb(context);
         }
         else
         {
@@ -76,7 +86,7 @@ public static class GameController
             var skip = false;
             
             // Not used when using in-memory saving:
-            if (Settings.Mode == ESavingMode.Json)
+            if (Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database)
             {
                 if (input.ToLower() == "save")
                 {   
@@ -175,7 +185,7 @@ public static class GameController
             var winner = gameInstance.CheckForWin();
             
             // Not used when using in-memory saving:
-            if (Settings.Mode == ESavingMode.Json)
+            if (Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database)
             {
                 if (gameState != null && gameStateName != null && winner != EGamePiece.Empty)
                 {
@@ -208,9 +218,10 @@ public static class GameController
     }
     
     public static string NewConfiguration()
-    {   
-        var savedConfigs = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension);
-        if (savedConfigs.Length >= 103)
+    {
+        // var savedConfigs = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension);
+        var savedConfigsCount = ConfigRepository.GetConfigurationNames().Count;
+        if (savedConfigsCount >= 103)
         {
             Console.WriteLine("You have reached the maximum number of saved configurations (100). Please delete some configurations before saving new ones.");
             return "";

@@ -31,13 +31,13 @@ public static class Menus
                 Title = "Make a new game configuration",
                 MenuItemAction = GameController.NewConfiguration
             },
-            Settings.Mode == ESavingMode.Json ? new MenuItem()
+            Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database ? new MenuItem()
             {
                 Shortcut = "DC",
                 Title = "Delete a game configuration",
                 MenuItemAction = OptionsController.DeleteConfiguration
             } : null,
-            Settings.Mode == ESavingMode.Json ? new MenuItem()
+            Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database ? new MenuItem()
             {
                 Shortcut = "DG",
                 Title = "Delete a saved game",
@@ -56,7 +56,7 @@ public static class Menus
                 Title = "New game",
                 MenuItemAction = OptionsController.ChooseGamemode
             },
-            Settings.Mode == ESavingMode.Json ? new MenuItem()
+            Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database ? new MenuItem()
             {
                 Shortcut = "L",
                 Title = "Load game",
