@@ -80,7 +80,8 @@ public static class GameController
             ConsoleUI.Visualizer.DrawBoard(gameInstance);
             
             Console.Write($"It's {gameInstance.NextMoveBy}'s turn.\n");
-            Console.Write("Give me coordinates <x,y>:");
+            // Console.Write("Give me coordinates <x,y>:");
+            Console.Write(">");
             //  or save. To be added later.
             var input = Console.ReadLine()!;
             var skip = false;
@@ -260,7 +261,7 @@ public static class GameController
 
             if (boardSize == 0)
             {
-                string rule = "Board side length must be between 3-40";
+                string rule = "Board side length must be between 3-30";
                 Console.WriteLine("\nEnter board side length:");
                 Console.WriteLine("(" + rule + ")");
                 var boardSizeInput = Console.ReadLine();
@@ -275,7 +276,7 @@ public static class GameController
                     continue;
                 }
                 
-                if (boardSizeInputInt is < 3 or > 40)
+                if (boardSizeInputInt is < 3 or > 30)
                 {
                     Console.WriteLine(rule);
                     continue;

@@ -13,7 +13,7 @@ public class GameRepositoryJson : IGameRepository
         }
         
         var fileName = FileHelper.BasePath + 
-                       gameConfigName+ " | " + 
+                       gameConfigName + " | " + 
                        DateTime.Now.ToString("f") + 
                        FileHelper.GameExtension;
         

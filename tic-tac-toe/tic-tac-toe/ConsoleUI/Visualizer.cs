@@ -11,6 +11,27 @@ public static class Visualizer
         List<(int x, int y)> currentGridCoordinates = gameInstance.CurrentGridCoordinates
             .Select(coord => (coord[0], coord[1]))
             .ToList();
+
+        List<string> guide = [];
+        if (gameInstance.CanPlacePiece())
+        {
+            guide.Add("   | * Place a piece by writing coordinates: X,Y");
+        }
+        if (gameInstance.CanMovePieceOrMoveGrid())
+        {   
+            if (gameInstance.CanPlacePieceOutsideGrid())
+            {
+                guide.Add("   |   (You can now also place a piece outside of the grid)");
+            }
+            guide.Add("   | * Move a piece by writing coordinates: X,Y X,Y");
+            guide.Add("   | * Move the grid by writing a direction acronym: ");
+            guide.Add("   |   N, S, E, W, NE, NW, SE, SW");
+        }
+        guide.Add("   | * Save the game by writing: save");
+        guide.Add("   | * Reset the game by writing: reset");
+        guide.Add("   | * Exit the game by writing: exit");
+        var guideLinesPrinted = 0;
+        var guideStartRow = Math.Max(0, gameInstance.DimY - guide.Count);
         
         Console.Write("   "); // Initial spacing before X-axis indexes
         for (var x = 0; x < gameInstance.DimX; x++)
@@ -78,6 +99,13 @@ public static class Visualizer
                 
                 Console.ResetColor();
             }
+            
+            // Prints guide for user next to board.
+            if (guideLinesPrinted < guide.Count && y >= gameInstance.DimY - guide.Count / 2)
+            {
+                Console.Write(guide[guideLinesPrinted]);
+                guideLinesPrinted++;
+            }
 
             Console.WriteLine();
             
@@ -109,7 +137,14 @@ public static class Visualizer
                     
                     Console.ResetColor();
                 }
-
+                
+                // Prints guide for user next to board.
+                if (guideLinesPrinted < guide.Count && y >= gameInstance.DimY - guide.Count / 2 - 1)
+                {
+                    Console.Write(guide[guideLinesPrinted]);
+                    guideLinesPrinted++;
+                }
+                
                 Console.WriteLine();
             }
         }

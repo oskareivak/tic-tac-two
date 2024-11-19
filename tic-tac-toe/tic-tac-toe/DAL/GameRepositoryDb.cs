@@ -11,13 +11,21 @@ public class GameRepositoryDb : IGameRepository
     {
         _context = context;
     }
-    
+
     public bool SaveGame(string jsonStateString, string gameConfigName)
-    {
+    {   
+        if (_context.SavedGames.Count() >= 100)
+        {
+            return false;
+        }
+        
         var config = _context.Configurations
             .FirstOrDefault(c => c.Name == gameConfigName);
 
-        if (config == null) throw new Exception("Configuration not found");
+        if (config == null)
+        {
+            throw new Exception("Configuration not found");
+        }
 
         var newGame = new SavedGame
         {
@@ -30,19 +38,25 @@ public class GameRepositoryDb : IGameRepository
         _context.SaveChanges();
         return true;
     }
-    
+
     public List<string> GetGameNames()
     {
         return _context.SavedGames
             .OrderBy(g => g.CreatedAtDateTime)
-            .Select(g => g.CreatedAtDateTime)
+            .Select(g => $"{g.Configuration.Name} | {g.CreatedAtDateTime}")
             .ToList();
     }
-    
+
     public GameState GetGameByName(string name)
     {
+        var parts = name.Split(" | ");
+        if (parts.Length != 2) throw new Exception("Invalid game name format");
+
+        var configName = parts[0];
+        var createdAt = parts[1];
+
         var game = _context.SavedGames
-            .FirstOrDefault(g => g.CreatedAtDateTime == name);
+            .FirstOrDefault(g => g.Configuration.Name == configName && g.CreatedAtDateTime == createdAt);
 
         if (game == null) throw new Exception("Game not found");
 
@@ -50,10 +64,17 @@ public class GameRepositoryDb : IGameRepository
 
         return System.Text.Json.JsonSerializer.Deserialize<GameState>(game.State) ?? throw new Exception("Deserialization failed");
     }
-    
-    public void DeleteGame(string name){
+
+    public void DeleteGame(string name)
+    {
+        var parts = name.Split(" | ");
+        if (parts.Length != 2) throw new Exception("Invalid game name format");
+
+        var configName = parts[0];
+        var createdAt = parts[1];
+
         var game = _context.SavedGames
-            .FirstOrDefault(g => g.CreatedAtDateTime == name);
+            .FirstOrDefault(g => g.Configuration.Name == configName && g.CreatedAtDateTime == createdAt);
 
         if (game == null) throw new Exception("Game not found");
 

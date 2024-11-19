@@ -16,5 +16,5 @@ public class SavedGame
 
     // Expose the Foreign Key
     public int ConfigurationId { get; set; }
-    public Configuration? Configuration { get; set; }
+    public Configuration Configuration { get; set; } = default!;
 }

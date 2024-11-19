@@ -265,108 +265,141 @@ public class TicTacTwoBrain
     }
       
     public EGamePiece? CheckForWin()
-{
-    int rows = _gameState.GameBoard.Length; // Y dimension
-    int cols = _gameState.GameBoard[0].Length; // X dimension
-    int winCondition = _gameState.GameConfiguration.WinCondition; 
-
-    bool xWins = false;
-    bool oWins = false;
-
-    for (int i = 0; i < rows; i++)
     {
-        for (int j = 0; j < cols; j++)
+        int rows = _gameState.GameBoard.Length; // Y dimension
+        int cols = _gameState.GameBoard[0].Length; // X dimension
+        int winCondition = _gameState.GameConfiguration.WinCondition; 
+
+        bool xWins = false;
+        bool oWins = false;
+
+        for (int i = 0; i < rows; i++)
         {
-            if (_gameState.GameBoard[i][j] != EGamePiece.Empty)
+            for (int j = 0; j < cols; j++)
             {
-                EGamePiece piece = _gameState.GameBoard[i][j];
-
-                // Check horizontal
-                if (CheckDirection(i, j, 0, 1, piece, winCondition))
+                if (_gameState.GameBoard[i][j] != EGamePiece.Empty)
                 {
-                    if (piece == EGamePiece.X) xWins = true;
-                    if (piece == EGamePiece.O) oWins = true;
-                }
+                    EGamePiece piece = _gameState.GameBoard[i][j];
+    
+                    // Check horizontal
+                    if (CheckDirection(i, j, 0, 1, piece, winCondition))
+                    {
+                        if (piece == EGamePiece.X) xWins = true;
+                        if (piece == EGamePiece.O) oWins = true; 
+                    }
 
-                // Check vertical
-                if (CheckDirection(i, j, 1, 0, piece, winCondition))
-                {
-                    if (piece == EGamePiece.X) xWins = true;
-                    if (piece == EGamePiece.O) oWins = true;
-                }
+                    // Check vertical
+                    if (CheckDirection(i, j, 1, 0, piece, winCondition))
+                    {
+                        if (piece == EGamePiece.X) xWins = true;
+                        if (piece == EGamePiece.O) oWins = true;
+                    }
 
-                // Check diagonal (\ direction)
-                if (CheckDirection(i, j, 1, 1, piece, winCondition))
-                {
-                    if (piece == EGamePiece.X) xWins = true;
-                    if (piece == EGamePiece.O) oWins = true;
-                }
+                    // Check diagonal (\ direction)
+                    if (CheckDirection(i, j, 1, 1, piece, winCondition))
+                    {
+                         if (piece == EGamePiece.X) xWins = true;
+                        if (piece == EGamePiece.O) oWins = true;
+                    }
 
-                // Check diagonal (/ direction)
-                if (CheckDirection(i, j, 1, -1, piece, winCondition))
-                {
-                    if (piece == EGamePiece.X) xWins = true;
-                    if (piece == EGamePiece.O) oWins = true;
+                    // Check diagonal (/ direction)
+                    if (CheckDirection(i, j, 1, -1, piece, winCondition))
+                    {
+                        if (piece == EGamePiece.X) xWins = true;
+                        if (piece == EGamePiece.O) oWins = true;
+                    }
                 }
             }
         }
+    
+        if (xWins && oWins) return null; // tie
+        if (xWins) return EGamePiece.X;
+        if (oWins) return EGamePiece.O;
+
+        return EGamePiece.Empty; // no winner
     }
     
-    if (xWins && oWins) return null; // tie
-    if (xWins) return EGamePiece.X;
-    if (oWins) return EGamePiece.O;
-
-    return EGamePiece.Empty; // no winner
-}
-    
-private bool CheckDirection(int startRow, int startCol, int rowIncrement, int colIncrement, EGamePiece piece, int winCondition)
-{
-    int count = 0;
-
-    for (int k = 0; k < winCondition; k++)
+    private bool CheckDirection(int startRow, int startCol, int rowIncrement, int colIncrement, EGamePiece piece, int winCondition)
     {
-        int newRow = startRow + k * rowIncrement;
-        int newCol = startCol + k * colIncrement;
+        int count = 0;
 
-        // check bounds
-        if (newRow >= 0 && newRow < _gameState.GameBoard.Length && newCol >= 0 && newCol < _gameState.GameBoard[0].Length)
-        {   
-            //check if it is the right piece AND that it is inside the grid
-            if (_gameState.GameBoard[newRow][newCol] == piece && _gameState.CurrentGridCoordinates.Any(coord => coord[0] == newRow && coord[1] == newCol)) 
-            {
-                count++;
+        for (int k = 0; k < winCondition; k++)
+        {
+            int newRow = startRow + k * rowIncrement;
+            int newCol = startCol + k * colIncrement;
+
+            // check bounds
+            if (newRow >= 0 && newRow < _gameState.GameBoard.Length && newCol >= 0 && newCol < _gameState.GameBoard[0].Length)
+            {   
+                //check if it is the right piece AND that it is inside the grid
+                if (_gameState.GameBoard[newRow][newCol] == piece && _gameState.CurrentGridCoordinates.Any(coord => coord[0] == newRow && coord[1] == newCol)) 
+                {
+                    count++;
+                }
+                else
+                {
+                    break; 
+                }
+            
+                if (count == winCondition)
+                {
+                    return true;
+                }
             }
             else
             {
                 break; 
             }
-            
-            if (count == winCondition)
-            {
-                return true;
-            }
         }
-        else
+
+        return false;
+    }
+      
+    public void ResetGame() 
+    { 
+        var gameBoard = new EGamePiece[_gameState.GameConfiguration.BoardSize][];
+        for (var x = 0; x < gameBoard.Length; x++) 
         {
-            break; 
+            gameBoard[x] = new EGamePiece[_gameState.GameConfiguration.BoardSize];
         }
+          
+        _gameState.GameBoard = gameBoard;
+        _gameState.NextMoveBy = _gameState.GameConfiguration.WhoStarts;
+        _gameState.NumberOfMovesMade = 0;
     }
 
-    return false;
-}
+    public bool CanPlacePiece()
+    {
+        if (_numberOfPiecesOnBoard.TryGetValue(_gameState.NextMoveBy, out int pieceCount) &&
+            pieceCount >= _gameState.GameConfiguration.NumberOfPiecesPerPlayer)
+        {
+            return false;
+        }
 
-      
-      public void ResetGame()
-      {
-          
-          var gameBoard = new EGamePiece[_gameState.GameConfiguration.BoardSize][];
-          for (var x = 0; x < gameBoard.Length; x++)
-          {
-              gameBoard[x] = new EGamePiece[_gameState.GameConfiguration.BoardSize];
-          }
-          
-          _gameState.GameBoard = gameBoard;
-          _gameState.NextMoveBy = _gameState.GameConfiguration.WhoStarts;
-          _gameState.NumberOfMovesMade = 0;
-      }
+        return true;
+    }
+
+    public bool CanPlacePieceOutsideGrid()
+    {
+        if (_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves &&
+            !(_numberOfPiecesOnBoard.TryGetValue(_gameState.NextMoveBy, out int pieceCount) &&
+             pieceCount >= _gameState.GameConfiguration.NumberOfPiecesPerPlayer))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool CanMovePieceOrMoveGrid()
+    {
+        if (_gameState.GameConfiguration.MovePieceAfterNMoves != 0 &&
+            _gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves)
+        {
+            return true;
+        }
+
+        return false;
+    }
+    
 }
