@@ -1,6 +1,5 @@
 using DAL;
 using GameBrain;
-using MenuSystem;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConsoleApp;
@@ -35,10 +34,10 @@ public static class GameController
 
     public static string MainLoop(GameState? gameState = null, string? gameStateName = null, string? chosenGameMode = null)
     {
-        TicTacTwoBrain gameInstance;
+        TicTacTwoBrain gameEngine;
         if (gameState != null)
         {
-            gameInstance = new TicTacTwoBrain(gameState);
+            gameEngine = new TicTacTwoBrain(gameState);
         }
         else
         {
@@ -55,12 +54,12 @@ public static class GameController
 
             // var gameMode = OptionsController.ChooseGamemode();
             
-            // gameInstance = new TicTacTwoBrain(chosenConfig, chosenGameMode);
-            gameInstance = new TicTacTwoBrain(chosenConfig);
+            // gameEngine = new TicTacTwoBrain(chosenConfig, chosenGameMode);
+            gameEngine = new TicTacTwoBrain(chosenConfig);
 
         }
         
-        // var gameStateGameMode = gameInstance.GetGameMode();
+        // var gameStateGameMode = gameEngine.GetGameMode();
         // if (gameStateGameMode == "PvP")
         // {
         //     Console.WriteLine("You're playing against another player.");
@@ -77,9 +76,9 @@ public static class GameController
         do
         {   
             Console.WriteLine();
-            ConsoleUI.Visualizer.DrawBoard(gameInstance);
+            ConsoleUI.Visualizer.DrawBoard(gameEngine);
             
-            Console.Write($"It's {gameInstance.NextMoveBy}'s turn.\n");
+            Console.Write($"It's {gameEngine.NextMoveBy}'s turn.\n");
             // Console.Write("Give me coordinates <x,y>:");
             Console.Write(">");
             //  or save. To be added later.
@@ -96,7 +95,7 @@ public static class GameController
                         GameRepository.DeleteGame(gameStateName);
                     }
 
-                    if (GameRepository.SaveGame(gameInstance.GetGameStateJson(), gameInstance.GetGameConfigName()))
+                    if (GameRepository.SaveGame(gameEngine.GetGameStateJson(), gameEngine.GetGameConfigName()))
                     {
                         Console.WriteLine("Game saved!");
                         break;
@@ -109,10 +108,10 @@ public static class GameController
                 }
             }
 
-            // if (gameStateGameMode == "PvAI" && gameInstance.NextMoveBy == EGamePiece.O)
+            // if (gameStateGameMode == "PvAI" && gameEngine.NextMoveBy == EGamePiece.O)
             // {
             //     AIBrain aiBrain = new AIBrain();
-            //     aiBrain.GetMove(gameInstance);
+            //     aiBrain.GetMove(gameEngine);
             //     skip = true;
             // }
             
@@ -123,13 +122,13 @@ public static class GameController
             }
             if (input.ToLower() == "reset")
             {
-                gameInstance.ResetGame();
+                gameEngine.ResetGame();
                 Console.WriteLine("\nSuccessfully reset the game!");
                 continue;
             }
-            if (gameInstance.DirectionMap.ContainsKey(input.ToLower()))
+            if (gameEngine.DirectionMap.ContainsKey(input.ToLower()))
             {
-                gameInstance.MoveGrid(input.ToLower());
+                gameEngine.MoveGrid(input.ToLower());
                 skip = true;
             }
             else if (!input.Contains(','))
@@ -153,7 +152,7 @@ public static class GameController
                             var fromY = int.Parse(splitFrom[1]);
                             var toX = int.Parse(splitTo[0]);
                             var toY = int.Parse(splitTo[1]);
-                            gameInstance.MoveAPiece((fromX, fromY), (toX, toY));
+                            gameEngine.MoveAPiece((fromX, fromY), (toX, toY));
                             skip = true;
                         }
                         catch (Exception)
@@ -173,7 +172,7 @@ public static class GameController
                     var inputSplit = input.Split(",");
                     var inputX = int.Parse(inputSplit[0]);
                     var inputY = int.Parse(inputSplit[1]);
-                    gameInstance.PlaceAPiece(inputX, inputY);
+                    gameEngine.PlaceAPiece(inputX, inputY);
                 }
                 catch (Exception)
                 {   
@@ -183,7 +182,7 @@ public static class GameController
             }
             
             //check if X or O have won the game.
-            var winner = gameInstance.CheckForWin();
+            var winner = gameEngine.CheckForWin();
             
             // Not used when using in-memory saving:
             if (Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database)
@@ -196,19 +195,19 @@ public static class GameController
             
             if (winner == null)
             {
-                ConsoleUI.Visualizer.DrawBoard(gameInstance);
+                ConsoleUI.Visualizer.DrawBoard(gameEngine);
                 Console.WriteLine("It's a tie!");
                 break;
             }
             if (winner == EGamePiece.X)
             {   
-                ConsoleUI.Visualizer.DrawBoard(gameInstance);
+                ConsoleUI.Visualizer.DrawBoard(gameEngine);
                 Console.WriteLine("X has won the game!");
                 break;
             }
             if (winner == EGamePiece.O)
             {   
-                ConsoleUI.Visualizer.DrawBoard(gameInstance);
+                ConsoleUI.Visualizer.DrawBoard(gameEngine);
                 Console.WriteLine("O has won the game!");
                 break;
             }

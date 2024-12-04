@@ -12,7 +12,27 @@ public class IndexModel : PageModel
         _logger = logger;
     }
 
+    [BindProperty(SupportsGet = true)] 
+    public string? Error { get; set; }
+    
+    [BindProperty] 
+    public string? UserName { get; set; }
+    
     public void OnGet()
     {
+    }
+
+    public IActionResult OnPost()
+    {
+        UserName = UserName?.Trim();
+        
+        if (!string.IsNullOrWhiteSpace(UserName))
+        {
+            return RedirectToPage("./Home", new { userName = UserName });
+        }
+
+        Error = "Please enter a username.";
+        
+        return Page();   
     }
 }

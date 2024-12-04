@@ -1,5 +1,7 @@
 using DAL;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Configuration;
+using ConsoleApp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,14 +10,32 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
                        throw new InvalidOperationException("Connection string 'DefaultConnection' not found");
 
-
 // Replace the placeholder with the actual path
 connectionString = connectionString.Replace("PLACEHOLDER", $"{FileHelper.BasePath}app.db");
 
+// register "how to create a db when somebody asks for it" 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(connectionString));
 
+// create new one every time
+//builder.Services
+//  .addTransient<>(); - create new one every time
+//  .addSingleton<>(); - create one and reuse it
+//  .addScoped<>(); - create new one per request
+
+if (ConsoleApp.Settings.Mode == ESavingMode.Json)
+{
+    builder.Services.AddScoped<IConfigRepository, ConfigRepositoryJson>();
+    builder.Services.AddScoped<IGameRepository, GameRepositoryJson>();
+}
+else if (ConsoleApp.Settings.Mode == ESavingMode.Database) {
+    builder.Services.AddScoped<IConfigRepository, ConfigRepositoryDb>();
+    builder.Services.AddScoped<IGameRepository, GameRepositoryDb>();
+
+}
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter(); 
+
 
 builder.Services.AddRazorPages();
 
@@ -33,12 +53,12 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.MapStaticAssets();
 
 app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapRazorPages();
+app.MapRazorPages().WithStaticAssets();
 
 app.Run();

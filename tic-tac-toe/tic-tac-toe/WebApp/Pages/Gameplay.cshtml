@@ -1,0 +1,38 @@
+@page
+@model WebApp.Pages.Gameplay
+
+@{
+    var fontSize = (600 / Model.TicTacTwoBrain.DimY / 2) + "px"; // Adjust the calculation as needed
+    var borderSize = Model.TicTacTwoBrain.DimY > 15 ? "3px" : "6px"; // Adjust the calculation as needed
+}
+
+<form id="dragForm" method="post" action="/Gameplay/MovePiece">
+    <input type="hidden" name="from" id="from">
+    <input type="hidden" name="to" id="to">
+    <div class="game-board" style="--grid-size:@Model.TicTacTwoBrain.DimY; --font-size:@fontSize; 
+        --border:@borderSize">
+        @for (int x = 0; x < Model.TicTacTwoBrain.DimY; x++)
+        {
+            for (int y = 0; y < Model.TicTacTwoBrain.DimY; y++)
+            {
+                var boxId = $"box{x},{y}";
+                if (Model.TicTacTwoBrain.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y))
+                {
+                    <a href="#" class="grid" id="@boxId" draggable="true" ondragstart="document.getElementById('from').value='@boxId'"
+                       ondrop="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();"
+                       onclick="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();">
+                        @Html.Raw(ConsoleUI.Visualizer.DrawGamePiece(Model.TicTacTwoBrain.GameBoard[x][y]))
+                    </a>
+                }
+                else
+                {
+                    <a href="#" class="board" id="@boxId" draggable="true" ondragstart="document.getElementById('from').value='@boxId'"
+                       ondrop="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();"
+                       onclick="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();">
+                        @Html.Raw(ConsoleUI.Visualizer.DrawGamePiece(Model.TicTacTwoBrain.GameBoard[x][y]))
+                    </a>
+                }
+            }
+        }
+    </div>
+</form>

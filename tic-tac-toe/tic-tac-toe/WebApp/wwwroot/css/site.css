@@ -20,3 +20,56 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.form-group {
+  margin-bottom: 0.8em;
+}
+
+:root {
+  --board-size: 700px; /* Default size, can be changed dynamically */
+  --grid-size: 3; /* Default grid size, can be changed dynamically */
+  --font-size: 4em; /* Default font size, can be changed dynamically */
+  --border: 6px solid gray;
+}
+
+.game-board {
+  width: var(--board-size);
+  height: var(--board-size);
+  margin: 0 auto;
+  background-color: darkgray;
+  color: #fff;
+  border: 6px solid darkgray;
+  border-radius: 10px;
+
+  display: grid;
+  grid-template-columns: repeat(var(--grid-size), 1fr);
+  grid-template-rows: repeat(var(--grid-size), 1fr);
+}
+
+.board {
+  border: var(--border) solid gray;
+  /*border: 6px solid gray;*/
+  /*border-radius: 3px;*/
+  font-family: Helvetica;
+  font-weight: bold;
+  font-size: var(--font-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.grid{
+  border: var(--border) solid LightCoral;
+  /*border: 6px solid LightCoral;*/
+  /*border-radius: 3px;*/
+  font-family: Helvetica;
+  font-weight: bold;
+  font-size: var(--font-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}

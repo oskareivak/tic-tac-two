@@ -12,7 +12,7 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container">
-            <a class="navbar-brand" asp-area="" asp-page="/Index">WebApp</a>
+            <a class="navbar-brand" asp-area="" asp-page="/Index">Tic-Tac-Two</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -22,15 +22,26 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Configurations/Index">Configurations</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/SavedGames/Index">Games</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                    </li>
+                    
+                    @if (!string.IsNullOrWhiteSpace(ViewData["UserName"] as string))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Configurations/Index">Load game</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Configurations/Index">Options</a>
+                        </li>
+                    }
+
+                    @if (ViewData["UserName"] as string == "admin")
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Configurations/Index">Configurations</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/SavedGames/Index">Games</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>

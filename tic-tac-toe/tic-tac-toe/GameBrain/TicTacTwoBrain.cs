@@ -2,9 +2,6 @@
 
 public class TicTacTwoBrain
 {
-    private int DimensionX { get; set; } = 3;
-    private int DimensionY { get; set; } = 3;
-
     private readonly GameState _gameState;
     
     // Constructor for new game

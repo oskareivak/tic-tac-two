@@ -17,7 +17,7 @@ public class GameRepositoryDb : IGameRepository
         if (_context.SavedGames.Count() >= 100)
         {
             return false;
-        }
+        } 
         
         var config = _context.Configurations
             .FirstOrDefault(c => c.Name == gameConfigName);
@@ -80,5 +80,10 @@ public class GameRepositoryDb : IGameRepository
 
         _context.SavedGames.Remove(game);
         _context.SaveChanges();
+    }
+
+    public SavedGame GetSavedGame(int gameId)
+    {
+        return _context.SavedGames.First(g => g.Id == gameId);
     }
 }

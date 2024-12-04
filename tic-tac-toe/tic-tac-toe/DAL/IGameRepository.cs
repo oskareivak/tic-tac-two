@@ -1,3 +1,4 @@
+using Domain;
 using GameBrain;
 
 namespace DAL;
@@ -8,4 +9,5 @@ public interface IGameRepository
     public List<string> GetGameNames();
     public GameState GetGameByName(string name);
     public void DeleteGame(string name);
+    public SavedGame GetSavedGame(int gameId);
 }

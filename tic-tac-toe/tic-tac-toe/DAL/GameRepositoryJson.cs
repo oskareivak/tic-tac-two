@@ -1,3 +1,4 @@
+using Domain;
 using GameBrain;
 
 namespace DAL;
@@ -58,5 +59,9 @@ public class GameRepositoryJson : IGameRepository
             Console.WriteLine("Cannot find the file to delete.");
         }
     }
-    
+
+    public SavedGame GetSavedGame(int gameId)
+    {
+        throw new NotImplementedException();
+    }
 }

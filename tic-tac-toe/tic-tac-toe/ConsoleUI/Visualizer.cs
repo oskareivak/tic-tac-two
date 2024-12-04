@@ -150,7 +150,18 @@ public static class Visualizer
         }
     }
     
-    private static string DrawGamePiece(EGamePiece piece)
+    public static string DrawGamePiece(EGamePiece piece)
+    {
+        switch (piece)
+        {
+            case EGamePiece.O: return "O";
+            case EGamePiece.X: return "X";
+        }
+
+        return " ";
+    }
+    
+    public static string GamePieceToStringTemporary(EGamePiece piece)
     {
         switch (piece)
         {
