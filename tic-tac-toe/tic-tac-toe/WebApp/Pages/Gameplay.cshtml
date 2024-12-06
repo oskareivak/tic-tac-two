@@ -16,13 +16,13 @@
 
 <style>
     :root {
-        --base-font-size: @baseFontSize; /* Dynamically set from Razor */
-        --small-font-size: @smallFontSize; /* Dynamically set from Razor */
-        --smallest-font-size: @smallestFontSize; /* Dynamically set from Razor */
-        --border-size: @baseBorderSize; /* Dynamically set from Razor */
+        --base-font-size: @baseFontSize;
+        --small-font-size: @smallFontSize;
+        --smallest-font-size: @smallestFontSize;
+        --border-size: @baseBorderSize;
         --small-border-size: @smallBorderSize;
         --smallest-border-size: @smallestBorderSize;
-        --grid-size: @gridSize; /* Dynamically set from Razor */
+        --grid-size: @gridSize;
     }
 </style>
 
@@ -36,15 +36,19 @@
         <!-- Center Column (Game Board) -->
         <div class="col-md-8 d-flex justify-content-center">
             <form id="dragForm" method="post">
-                <input type="hidden" name="From" id="from">
-                <input type="hidden" name="To" id="to">
+                <!-- Using asp-for for From and To hidden inputs -->
+                <input type="hidden" asp-for="From" id="from">
+                <input type="hidden" asp-for="To" id="to">
                 <div class="game-board">
                     @for (int x = 0; x < Model.GameEngine.DimY; x++)
                     {
                         for (int y = 0; y < Model.GameEngine.DimY; y++)
                         {
                             var boxId = $"{x},{y}";
-                            if (Model.GameEngine.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y))
+                            var isPiecePresent = Model.GameEngine.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y);
+
+                            <!-- No change to drag-and-drop logic, keeping it as is -->
+                            @if (isPiecePresent)
                             {
                                 <a href="#" class="grid" id="@boxId" draggable="true"
                                    ondragstart="document.getElementById('from').value='@boxId'"
@@ -70,24 +74,26 @@
             </form>
         </div>
 
-        <!-- Right Column (Arrow Buttons in a Proper 3x3 Grid) -->
+        <!-- Right Column (Arrow Buttons) -->
         <div class="col-md-2 d-flex justify-content-center align-items-center">
-            <div class="arrow-grid">
-                <!-- Top Row -->
-                <button class="btn btn-primary arrow-btn" aria-label="Arrow Top Left">&#8598;</button>
-                <button class="btn btn-primary arrow-btn" aria-label="Arrow Up">&#8593;</button>
-                <button class="btn btn-primary arrow-btn" aria-label="Arrow Top Right">&#8599;</button>
+            <form method="post" id="arrowForm">
+                <div class="arrow-grid">
+                    <!-- Top row -->
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="nw" aria-label="Arrow Top Left">&#8598;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="w" aria-label="Arrow Up">&#8593;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="sw" aria-label="Arrow Top Right">&#8599;</button>
 
-                <!-- Middle Row -->
-                <button class="btn btn-primary arrow-btn" aria-label="Arrow Left">&#8592;</button>
-                <div class="empty-cell"></div> <!-- Middle Empty Cell -->
-                <button class="btn btn-primary arrow-btn" aria-label="Arrow Right">&#8594;</button>
+                    <!-- Middle row -->
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="n" aria-label="Arrow Left">&#8592;</button>
+                    <div class="empty-cell"></div> <!-- Middle Empty Cell -->
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="s" aria-label="Arrow Right">&#8594;</button>
 
-                <!-- Bottom Row -->
-                <button class="btn btn-primary arrow-btn" aria-label="Arrow Bottom Left">&#8601;</button>
-                <button class="btn btn-primary arrow-btn" aria-label="Arrow Down">&#8595;</button>
-                <button class="btn btn-primary arrow-btn" aria-label="Arrow Bottom Right">&#8600;</button>
-            </div>
+                    <!-- Bottom row -->
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="ne" aria-label="Arrow Bottom Left">&#8601;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="e" aria-label="Arrow Down">&#8595;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="se" aria-label="Arrow Bottom Right">&#8600;</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

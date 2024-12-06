@@ -38,15 +38,18 @@ body {
 .game-board {
     width: var(--board-size);
     height: var(--board-size);
-    margin: 1em 1em;
-    background-color: darkgray;
+    margin: 1em;
+    background: linear-gradient(135deg, rgba(173, 216, 230, 0.7), rgba(70, 130, 180, 0.8)); /* Light blue gradient */
     color: #fff;
-    border: 6px solid darkgray;
-    border-radius: 10px;
-
+    border: 6px solid #4682b4; /* Steel blue border */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: grid;
     grid-template-columns: repeat(var(--grid-size), 1fr);
     grid-template-rows: repeat(var(--grid-size), 1fr);
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center
 }
 
 .board {
@@ -57,25 +60,42 @@ body {
 }
 
 .grid {
-    border: var(--border-size) solid LightCoral;
+    border: var(--border-size) solid #E80C0C;
     /*border: 6px solid LightCoral;*/
     /*border-radius: 3px;*/
 }
 
 .board, .grid {
-    font-family: Helvetica;
-    font-weight: bold;
-    font-size: var(--base-font-size);
+    background: rgba(173, 216, 230, 0.4); /* Light background for empty cells */
+    /*border: 2px solid #4682b4; !* Subtle blue border for both board and grid *!*/
+    border-radius: 8px; /* Rounded corners */
     display: flex;
     justify-content: center;
     align-items: center;
     text-decoration: none;
     color: inherit;
+    font-family: Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: var(--base-font-size);
+    transition: all 0.3s ease-in-out; /* Smooth transition */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow effect */
 }
 
+/* Hover effect for board and grid */
+.board:hover, .grid:hover {
+    background: rgba(70, 130, 180, 0.6); /* Darker hover effect */
+    transform: scale(1.05); /* Slight scale-up effect */
+    box-shadow: 0 4px 8px rgba(70, 130, 180, 0.2); /* Glow effect */
+}
+
+/* Active state (when dragging) */
+.grid:active, .board:active {
+    transform: scale(1.1); /* Slightly scale up the target cell */
+    background: rgba(70, 130, 180, 0.5); /* Highlighted background */
+}
 
 #moveMaker {
-    text-align: left; 
+    text-align: left;
     font-size: var(--small-font-size);
 }
 
@@ -83,11 +103,12 @@ body {
 .arrow-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
-    grid-template-rows: repeat(3, 1fr);   /* 3 equal rows */
+    grid-template-rows: repeat(3, 1fr);    /* 3 equal rows */
     gap: 0.5rem; /* Space between buttons */
     justify-content: center; /* Center grid horizontally */
     align-items: center; /* Center grid vertically */
     width: fit-content; /* Adjust width to fit content */
+    margin: auto;
 }
 
 /* Styling for each arrow button */
@@ -95,19 +116,41 @@ body {
     width: 3rem;
     height: 3rem;
     font-size: 1.5rem; /* Adjust size of arrows */
-    border-radius: 10%; /* Rounded corners */
+    border-radius: 50%; /* Fully rounded */
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    background: linear-gradient(123deg, #DC143C, #FD0C0C); /* Gradient background for buttons */
+    color: #fff; /* White icon color */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+    border: none; /* Remove default border */
+    transition: all 0.3s ease-in-out; /* Smooth hover effect */
 }
 
-/* Styling for the middle empty cell */
-.empty-cell {
-    width: 3rem;
-    height: 3rem;
-    background: transparent; /* Empty space */
-    pointer-events: none; /* Disable interactions */
+.arrow-btn:hover {
+    transform: scale(1.1); /* Slightly increase button size */
+    box-shadow: 0 4px 8px rgba(240, 0, 0, 0.7); /* Glow effect */
+}
+
+.arrow-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(240, 0, 0, 0.7); /* Focus ring with pink glow */
+}
+
+/*!* Empty cell styling *!*/
+/*.empty-cell {*/
+/*    width: 3rem;*/
+/*    height: 3rem;*/
+/*    background: rgba(173, 216, 230, 0.3); !* Slightly transparent background *!*/
+/*    border: 2px solid #4682b4; !* Matching border color *!*/
+/*    pointer-events: none; !* Disable interactions *!*/
+/*    transition: all 0.3s ease-in-out; !* Smooth transition *!*/
+/*}*/
+
+/* Smooth transition effect when dragging over an empty cell */
+.grid.drag-over, .board.drag-over {
+    background: rgba(70, 130, 180, 0.4); /* Light highlight when dragging */
+    transform: scale(1.05); /* Scale up the hovered cell */
 }
 
 @media (max-width: 945px) {
@@ -122,13 +165,13 @@ body {
     }
 
     .grid {
-        border: var(--small-border-size) solid LightCoral;
+        border: var(--small-border-size) solid #E80C0C;
     }
 
     .board {
         border: var(--small-border-size) solid gray;
     }
-    
+
 }
 
 @media (max-width: 510px) {
@@ -143,7 +186,7 @@ body {
     }
 
     .grid {
-        border: var(--smallest-border-size) solid LightCoral;
+        border: var(--smallest-border-size) solid #E80C0C;
     }
 
     .board {

@@ -17,15 +17,13 @@ public class Gameplay : PageModel
         _gameRepository = gameRepository;
     }
     
-    // [BindProperty(SupportsGet = true)] public int GameId { get; set; } = default!;
-
-    [BindProperty(SupportsGet = true)]
-    public EGamePiece NextMoveBy
-    {
-        get => _nextMoveBy;
-        set => _nextMoveBy = value;
-    }
+    [BindProperty]
+    public string ArrowDirection { get; set; } = string.Empty;
     
+    // Bind properties for model binding
+    [BindProperty(SupportsGet = true)] 
+    public EGamePiece NextMoveBy { get; set; }
+
     [BindProperty(SupportsGet = true)] 
     public int ConfigurationId { get; set; }
 
@@ -41,16 +39,19 @@ public class Gameplay : PageModel
     [BindProperty(SupportsGet = true)] 
     public string UserName { get; set; } = default!;
     
-    [BindProperty(SupportsGet = true)] public string? Error { get; set; }
+    [BindProperty(SupportsGet = true)] 
+    public string? Error { get; set; }
     
     [BindProperty]
-    public string From { get; set; } = default!;
+    public string From { get; set; } = default!;  // From property
 
     [BindProperty]
-    public string To { get; set; } = default!;
+    public string To { get; set; } = default!;    // To property
 
-    [BindProperty(SupportsGet = true)] public string State { get; set; } = default!;
-    
+    [BindProperty(SupportsGet = true)] 
+    public string State { get; set; } = default!;
+
+    // OnGet method to handle page load and set up the game engine
     public IActionResult OnGet()
     {   
         if (string.IsNullOrEmpty(UserName))
@@ -60,55 +61,29 @@ public class Gameplay : PageModel
         
         ViewData["UserName"] = UserName;
         
-        // Log the ConfigurationName value
-        // ViewData["ConfigurationId"] = ConfigurationId;
-        
-        // ViewData["ConfigurationId"] = ConfigurationId;
-        
-        
-        // var dbGame = _gameRepository.GetSavedGame(GameId);
-        
-        // var gameStateJson = System.Text.Json.JsonSerializer.Deserialize<GameState>(dbGame.State) 
-        //                     ?? throw new Exception("Deserialization failed");
-
-        // TicTacTwoBrain = new TicTacTwoBrain(gameStateJson);
-        
-        // var config = _configRepository.GetConfigurationById(ConfigurationId);
-        // var config = _configRepository.GetConfigurationByName()
-
+        // Initialize game engine or load saved state
         if (IsNewGame)
         {
             var config = _configRepository.GetConfigurationByName(ConfigurationName);
             GameEngine = new TicTacTwoBrain(config);
-        
         }
         else
         {
             if (!string.IsNullOrEmpty(State))
             {
-                // TODO: vota postist sisse.
-                // TicTacTwoBrain = ;
-                // _gameRepository.SaveGame();
-                // TicTacTwoBrain.GetGameStateJson();
-                
                 GameState gameState = TicTacTwoBrain.FromJson(State);
-                GameEngine  = new TicTacTwoBrain(gameState);
+                GameEngine = new TicTacTwoBrain(gameState);
             }
-            
         }
-        
-        
-        
+
         NextMoveBy = GameEngine.NextMoveBy;
         
         return Page();
     }
-    
+
+    // OnPost method to handle the drag-and-drop actions
     public IActionResult OnPost()
     {
-        // TODO: remove later
-        Console.WriteLine($"From: {From}, To: {To}");
-        
         // Ensure GameEngine is initialized
         if (GameEngine == null)
         {
@@ -123,18 +98,26 @@ public class Gameplay : PageModel
                 GameEngine = new TicTacTwoBrain(config);
             }
         }
-        if (string.IsNullOrEmpty(From))
+
+        // Make different moves.
+        var skip = false;
+        if (!string.IsNullOrEmpty(ArrowDirection))
         {
-            // place piece
+            GameEngine.MoveGrid(ArrowDirection);
+            skip = true;
+            Console.WriteLine($"arrowdirection {ArrowDirection}");
+        }
+        
+        if (string.IsNullOrEmpty(From) && !skip)
+        {
             var splitTo = To.Split(',');
             var toX = int.Parse(splitTo[0]);
             var toY = int.Parse(splitTo[1]);
             
             GameEngine.PlaceAPiece(toX, toY);
         }
-        else if (!string.IsNullOrEmpty(From) && !string.IsNullOrEmpty(To))
+        else if (!string.IsNullOrEmpty(From) && !string.IsNullOrEmpty(To) && !skip)
         {
-            // move piece
             var splitFrom = From.Split(',');
             var splitTo = To.Split(',');
             var fromX = int.Parse(splitFrom[0]);
@@ -145,9 +128,35 @@ public class Gameplay : PageModel
             GameEngine.MoveAPiece((fromX, fromY), (toX, toY));
         }
         
+        //check if X or O have won the game.
+        // var winner = GameEngine.CheckForWin();
+            
+        // // Not used when using in-memory saving:
+        // if (Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database)
+        // {
+        //     if (gameState != null && gameStateName != null && winner != EGamePiece.Empty)
+        //     {
+        //         GameRepository.DeleteGame(gameStateName);
+        //     }
+        // }
+            
+        // if (winner == null)
+        // {
+        //     // Tie
+        //     
+        // }
+        // if (winner == EGamePiece.X)
+        // {   
+        //     // X won
+        //     
+        // }
+        // if (winner == EGamePiece.O)
+        // {   
+        //     // O won
+        //     
+        // }
+
         UserName = UserName.Trim();
-        
-        // var brainJson = System.Text.Json.JsonSerializer.Serialize(TicTacTwoBrain);
         var stateJson = GameEngine.GetGameStateJson();
 
         if (!string.IsNullOrWhiteSpace(UserName))
@@ -156,8 +165,6 @@ public class Gameplay : PageModel
         }
 
         Error = "Please enter a username.";
-
         return RedirectToPage("./Home", new { error = Error });
     }
-    
 }

@@ -260,7 +260,7 @@ public static class GameController
 
             if (boardSize == 0)
             {
-                string rule = "Board side length must be between 3-30";
+                string rule = "Board side length must be between 3-20";
                 Console.WriteLine("\nEnter board side length:");
                 Console.WriteLine("(" + rule + ")");
                 var boardSizeInput = Console.ReadLine();
@@ -275,7 +275,7 @@ public static class GameController
                     continue;
                 }
                 
-                if (boardSizeInputInt is < 3 or > 30)
+                if (boardSizeInputInt is < 3 or > 20)
                 {
                     Console.WriteLine(rule);
                     continue;
