@@ -399,4 +399,9 @@ public class TicTacTwoBrain
         return false;
     }
     
+    public static GameState FromJson(string json)
+    {
+        return System.Text.Json.JsonSerializer.Deserialize<GameState>(json)!;
+    }
+    
 }

@@ -1,3 +1,4 @@
+using Domain;
 using GameBrain;
 
 namespace DAL;
@@ -12,4 +13,6 @@ public interface IConfigRepository
         int movePieceAfterNMoves, int numberOfPiecesPerPlayer);
 
     public void DeleteConfiguration(string name);
+    
+    public GameConfiguration GetConfigurationById(int id);
 }

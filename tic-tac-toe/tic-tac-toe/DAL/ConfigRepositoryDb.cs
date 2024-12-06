@@ -93,4 +93,26 @@ public class ConfigRepositoryDb : IConfigRepository
         _context.Configurations.Remove(config);
         _context.SaveChanges();
     }
+
+    public GameConfiguration GetConfigurationById(int id)
+    {
+        // return _context.Configurations.First(c => c.Id == id);
+        // return _context.SavedGames.First(g => g.Id == gameId);
+        
+        var config = _context.Configurations
+            .FirstOrDefault(c => c.Id == id);
+
+        if (config == null) throw new Exception("Configuration not found");
+
+        return new GameConfiguration
+        {
+            Name = config.Name,
+            BoardSize = config.BoardSize,
+            GridSize = config.GridSize,
+            WinCondition = config.WinCondition,
+            WhoStarts = (EGamePiece)config.WhoStarts,
+            MovePieceAfterNMoves = config.MovePieceAfterNMoves,
+            NumberOfPiecesPerPlayer = config.NumberOfPiecesPerPlayer
+        };
+    }
 }

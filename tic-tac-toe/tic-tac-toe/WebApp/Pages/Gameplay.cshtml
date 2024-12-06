@@ -1,38 +1,93 @@
 @page
+@using GameBrain
 @model WebApp.Pages.Gameplay
 
 @{
-    var fontSize = (600 / Model.TicTacTwoBrain.DimY / 2) + "px"; // Adjust the calculation as needed
-    var borderSize = Model.TicTacTwoBrain.DimY > 15 ? "3px" : "6px"; // Adjust the calculation as needed
+    var baseFontSize = (600 / Model.GameEngine.DimY / 2) + "px"; // Base font size
+    var smallFontSize = (600 / Model.GameEngine.DimY / 3) + "px"; // Small font size
+    var smallestFontSize = (600 / Model.GameEngine.DimY / 5) + "px"; // Smallest font size
+
+    var baseBorderSize = Model.GameEngine.DimY > 15 ? "3px" : "6px"; // Border size
+    var smallBorderSize = (Model.GameEngine.DimY > 15 ? 3 : 6) / 1.5 + "px"; // Border size
+    var smallestBorderSize = (Model.GameEngine.DimY > 15 ? 3 : 6) / 2 + "px"; // Border size
+
+    var gridSize = Model.GameEngine.DimY; // Grid size
 }
 
-<form id="dragForm" method="post" action="/Gameplay/MovePiece">
-    <input type="hidden" name="from" id="from">
-    <input type="hidden" name="to" id="to">
-    <div class="game-board" style="--grid-size:@Model.TicTacTwoBrain.DimY; --font-size:@fontSize; 
-        --border:@borderSize">
-        @for (int x = 0; x < Model.TicTacTwoBrain.DimY; x++)
-        {
-            for (int y = 0; y < Model.TicTacTwoBrain.DimY; y++)
-            {
-                var boxId = $"box{x},{y}";
-                if (Model.TicTacTwoBrain.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y))
-                {
-                    <a href="#" class="grid" id="@boxId" draggable="true" ondragstart="document.getElementById('from').value='@boxId'"
-                       ondrop="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();"
-                       onclick="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();">
-                        @Html.Raw(ConsoleUI.Visualizer.DrawGamePiece(Model.TicTacTwoBrain.GameBoard[x][y]))
-                    </a>
-                }
-                else
-                {
-                    <a href="#" class="board" id="@boxId" draggable="true" ondragstart="document.getElementById('from').value='@boxId'"
-                       ondrop="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();"
-                       onclick="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();">
-                        @Html.Raw(ConsoleUI.Visualizer.DrawGamePiece(Model.TicTacTwoBrain.GameBoard[x][y]))
-                    </a>
-                }
-            }
-        }
+<style>
+    :root {
+        --base-font-size: @baseFontSize; /* Dynamically set from Razor */
+        --small-font-size: @smallFontSize; /* Dynamically set from Razor */
+        --smallest-font-size: @smallestFontSize; /* Dynamically set from Razor */
+        --border-size: @baseBorderSize; /* Dynamically set from Razor */
+        --small-border-size: @smallBorderSize;
+        --smallest-border-size: @smallestBorderSize;
+        --grid-size: @gridSize; /* Dynamically set from Razor */
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <!-- Left Column (MoveMaker) -->
+        <div class="col-md-2 d-flex align-items-center" id="moveMaker">
+            <span class="badge bg-secondary">It's @Model.NextMoveBy's turn</span>
+        </div>
+
+        <!-- Center Column (Game Board) -->
+        <div class="col-md-8 d-flex justify-content-center">
+            <form id="dragForm" method="post">
+                <input type="hidden" name="From" id="from">
+                <input type="hidden" name="To" id="to">
+                <div class="game-board">
+                    @for (int x = 0; x < Model.GameEngine.DimY; x++)
+                    {
+                        for (int y = 0; y < Model.GameEngine.DimY; y++)
+                        {
+                            var boxId = $"{x},{y}";
+                            if (Model.GameEngine.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y))
+                            {
+                                <a href="#" class="grid" id="@boxId" draggable="true"
+                                   ondragstart="document.getElementById('from').value='@boxId'"
+                                   ondragover="event.preventDefault()"
+                                   ondrop="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();"
+                                   onclick="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();">
+                                    @Html.Raw(ConsoleUI.Visualizer.DrawGamePiece(Model.GameEngine.GameBoard[x][y]))
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="#" class="board" id="@boxId" draggable="true"
+                                   ondragstart="document.getElementById('from').value='@boxId'"
+                                   ondragover="event.preventDefault()"
+                                   ondrop="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();"
+                                   onclick="document.getElementById('to').value='@boxId'; document.getElementById('dragForm').submit();">
+                                    @Html.Raw(ConsoleUI.Visualizer.DrawGamePiece(Model.GameEngine.GameBoard[x][y]))
+                                </a>
+                            }
+                        }
+                    }
+                </div>
+            </form>
+        </div>
+
+        <!-- Right Column (Arrow Buttons in a Proper 3x3 Grid) -->
+        <div class="col-md-2 d-flex justify-content-center align-items-center">
+            <div class="arrow-grid">
+                <!-- Top Row -->
+                <button class="btn btn-primary arrow-btn" aria-label="Arrow Top Left">&#8598;</button>
+                <button class="btn btn-primary arrow-btn" aria-label="Arrow Up">&#8593;</button>
+                <button class="btn btn-primary arrow-btn" aria-label="Arrow Top Right">&#8599;</button>
+
+                <!-- Middle Row -->
+                <button class="btn btn-primary arrow-btn" aria-label="Arrow Left">&#8592;</button>
+                <div class="empty-cell"></div> <!-- Middle Empty Cell -->
+                <button class="btn btn-primary arrow-btn" aria-label="Arrow Right">&#8594;</button>
+
+                <!-- Bottom Row -->
+                <button class="btn btn-primary arrow-btn" aria-label="Arrow Bottom Left">&#8601;</button>
+                <button class="btn btn-primary arrow-btn" aria-label="Arrow Down">&#8595;</button>
+                <button class="btn btn-primary arrow-btn" aria-label="Arrow Bottom Right">&#8600;</button>
+            </div>
+        </div>
     </div>
-</form>
+</div>

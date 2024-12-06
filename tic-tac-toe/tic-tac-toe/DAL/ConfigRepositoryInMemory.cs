@@ -1,4 +1,5 @@
-﻿using GameBrain;
+﻿using Domain;
+using GameBrain;
 
 namespace DAL;
 
@@ -62,5 +63,10 @@ public class ConfigRepositoryInMemory : IConfigRepository
     public void DeleteConfiguration(string name)
     {
         return;
+    }
+
+    public GameConfiguration GetConfigurationById(int id)
+    {
+        throw new NotImplementedException();
     }
 }

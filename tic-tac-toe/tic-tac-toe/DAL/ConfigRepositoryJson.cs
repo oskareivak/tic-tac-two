@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Domain;
 using GameBrain;
 
 namespace DAL;
@@ -56,7 +57,12 @@ public class ConfigRepositoryJson : IConfigRepository
             Console.WriteLine("Cannot find the file to delete.");
         }
     }
-    
+
+    public GameConfiguration GetConfigurationById(int id)
+    {
+        throw new NotImplementedException();
+    }
+
     private void CheckAndCreateInitialConfigs()
     {
         if (!Directory.Exists(FileHelper.BasePath))

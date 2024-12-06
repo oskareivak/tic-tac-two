@@ -1,75 +1,163 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 .form-group {
-  margin-bottom: 0.8em;
+    margin-bottom: 0.8em;
 }
 
 :root {
-  --board-size: 700px; /* Default size, can be changed dynamically */
-  --grid-size: 3; /* Default grid size, can be changed dynamically */
-  --font-size: 4em; /* Default font size, can be changed dynamically */
-  --border: 6px solid gray;
+    --base-font-size: 4em; /* Default font size, will be overridden */
+    --small-font-size: 2em;
+    --smallest-font-size: 1em;
+
+    --border-size: 6px; /* Default border size, will be overridden */
+    --small-border-size: 4px;
+    --smallest-border-size: 2px;
+
+    --board-size: 700px; /* Default size, can be changed dynamically */
+    --grid-size: 3; /* Default grid size, can be changed dynamically */
 }
 
 .game-board {
-  width: var(--board-size);
-  height: var(--board-size);
-  margin: 0 auto;
-  background-color: darkgray;
-  color: #fff;
-  border: 6px solid darkgray;
-  border-radius: 10px;
+    width: var(--board-size);
+    height: var(--board-size);
+    margin: 1em 1em;
+    background-color: darkgray;
+    color: #fff;
+    border: 6px solid darkgray;
+    border-radius: 10px;
 
-  display: grid;
-  grid-template-columns: repeat(var(--grid-size), 1fr);
-  grid-template-rows: repeat(var(--grid-size), 1fr);
+    display: grid;
+    grid-template-columns: repeat(var(--grid-size), 1fr);
+    grid-template-rows: repeat(var(--grid-size), 1fr);
 }
 
 .board {
-  border: var(--border) solid gray;
-  /*border: 6px solid gray;*/
-  /*border-radius: 3px;*/
-  font-family: Helvetica;
-  font-weight: bold;
-  font-size: var(--font-size);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-decoration: none;
-  color: inherit;
+    border: var(--border-size) solid gray;
+    /*border: 6px solid gray;*/
+    /*border-radius: 3px;*/
+
 }
 
-.grid{
-  border: var(--border) solid LightCoral;
-  /*border: 6px solid LightCoral;*/
-  /*border-radius: 3px;*/
-  font-family: Helvetica;
-  font-weight: bold;
-  font-size: var(--font-size);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-decoration: none;
-  color: inherit;
+.grid {
+    border: var(--border-size) solid LightCoral;
+    /*border: 6px solid LightCoral;*/
+    /*border-radius: 3px;*/
+}
+
+.board, .grid {
+    font-family: Helvetica;
+    font-weight: bold;
+    font-size: var(--base-font-size);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+
+#moveMaker {
+    text-align: left; 
+    font-size: var(--small-font-size);
+}
+
+/* Arrow Grid Layout: Proper 3x3 Grid */
+.arrow-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    grid-template-rows: repeat(3, 1fr);   /* 3 equal rows */
+    gap: 0.5rem; /* Space between buttons */
+    justify-content: center; /* Center grid horizontally */
+    align-items: center; /* Center grid vertically */
+    width: fit-content; /* Adjust width to fit content */
+}
+
+/* Styling for each arrow button */
+.arrow-btn {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.5rem; /* Adjust size of arrows */
+    border-radius: 10%; /* Rounded corners */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+/* Styling for the middle empty cell */
+.empty-cell {
+    width: 3rem;
+    height: 3rem;
+    background: transparent; /* Empty space */
+    pointer-events: none; /* Disable interactions */
+}
+
+@media (max-width: 945px) {
+    :root {
+        --board-size: 500px;
+        /*--dynamic-font-size: calc(var(--base-font-size) * 0.7);*/
+        --border: 3px;
+    }
+
+    .board, .grid {
+        font-size: var(--small-font-size);
+    }
+
+    .grid {
+        border: var(--small-border-size) solid LightCoral;
+    }
+
+    .board {
+        border: var(--small-border-size) solid gray;
+    }
+    
+}
+
+@media (max-width: 510px) {
+    :root {
+        --board-size: 300px;
+        /*--dynamic-font-size: calc(var(--base-font-size) * 0.4);*/
+        --border: 1px;
+    }
+
+    .board, .grid {
+        font-size: var(--smallest-font-size);
+    }
+
+    .grid {
+        border: var(--smallest-border-size) solid LightCoral;
+    }
+
+    .board {
+        border: var(--smallest-border-size) solid gray;
+    }
+
+    .arrow-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1.25rem;
+    }
+
+    .empty-cell {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
 }
