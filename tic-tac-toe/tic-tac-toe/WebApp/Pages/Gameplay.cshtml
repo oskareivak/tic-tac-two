@@ -27,18 +27,32 @@
 </style>
 
 <div class="container">
+    @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage))
+    {
+        <div class="alert alert-success" role="alert">
+            @Model.GameOverMessage
+        </div>
+    }
     <div class="row">
-        <!-- Left Column (MoveMaker) -->
+        
         <div class="col-md-2 d-flex align-items-center" id="moveMaker">
-            <span class="badge bg-secondary">It's @Model.NextMoveBy's turn</span>
+            @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage))
+            {
+                <span class="badge bg-secondary"></span>
+            }
+            else
+            {
+                <span class="badge bg-secondary">It's @Model.NextMoveBy's turn</span>
+            }
         </div>
 
-        <!-- Center Column (Game Board) -->
         <div class="col-md-8 d-flex justify-content-center">
             <form id="dragForm" method="post">
-                <!-- Using asp-for for From and To hidden inputs -->
-                <input type="hidden" asp-for="From" id="from">
-                <input type="hidden" asp-for="To" id="to">
+                @if (string.IsNullOrWhiteSpace(Model.GameOverMessage))
+                {
+                    <input type="hidden" asp-for="From" id="from">
+                    <input type="hidden" asp-for="To" id="to">
+                }
                 <div class="game-board">
                     @for (int x = 0; x < Model.GameEngine.DimY; x++)
                     {
@@ -47,7 +61,6 @@
                             var boxId = $"{x},{y}";
                             var isPiecePresent = Model.GameEngine.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y);
 
-                            <!-- No change to drag-and-drop logic, keeping it as is -->
                             @if (isPiecePresent)
                             {
                                 <a href="#" class="grid" id="@boxId" draggable="true"
@@ -74,26 +87,44 @@
             </form>
         </div>
 
-        <!-- Right Column (Arrow Buttons) -->
         <div class="col-md-2 d-flex justify-content-center align-items-center">
-            <form method="post" id="arrowForm">
+            @if (string.IsNullOrWhiteSpace(Model.GameOverMessage))
+            {
+                <form method="post" id="arrowForm">
+                    <div class="arrow-grid">
+                        <!-- Top row -->
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="nw" aria-label="Arrow Top Left">&#8598;</button>
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="w" aria-label="Arrow Up">&#8593;</button>
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="sw" aria-label="Arrow Top Right">&#8599;</button>
+
+                        <!-- Middle row -->
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="n" aria-label="Arrow Left">&#8592;</button>
+                        <div class="empty-cell"></div> <!-- Middle Empty Cell -->
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="s" aria-label="Arrow Right">&#8594;</button>
+
+                        <!-- Bottom row -->
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="ne" aria-label="Arrow Bottom Left">&#8601;</button>
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="e" aria-label="Arrow Down">&#8595;</button>
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="se" aria-label="Arrow Bottom Right">&#8600;</button>
+                    </div>
+                </form>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage))
+            {
                 <div class="arrow-grid">
-                    <!-- Top row -->
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="nw" aria-label="Arrow Top Left">&#8598;</button>
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="w" aria-label="Arrow Up">&#8593;</button>
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="sw" aria-label="Arrow Top Right">&#8599;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Top Left">&#8598;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Up">&#8593;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Top Right">&#8599;</button>
 
-                    <!-- Middle row -->
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="n" aria-label="Arrow Left">&#8592;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Left">&#8592;</button>
                     <div class="empty-cell"></div> <!-- Middle Empty Cell -->
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="s" aria-label="Arrow Right">&#8594;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Right">&#8594;</button>
 
-                    <!-- Bottom row -->
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="ne" aria-label="Arrow Bottom Left">&#8601;</button>
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="e" aria-label="Arrow Down">&#8595;</button>
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" value="se" aria-label="Arrow Bottom Right">&#8600;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Bottom Left">&#8601;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Down">&#8595;</button>
+                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Bottom Right">&#8600;</button>
                 </div>
-            </form>
+            }
         </div>
     </div>
 </div>

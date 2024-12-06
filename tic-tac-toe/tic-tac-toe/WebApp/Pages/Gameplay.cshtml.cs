@@ -17,6 +17,9 @@ public class Gameplay : PageModel
         _gameRepository = gameRepository;
     }
     
+    [BindProperty(SupportsGet = true)] 
+    public string? GameOverMessage { get; set; }
+    
     [BindProperty]
     public string ArrowDirection { get; set; } = string.Empty;
     
@@ -50,6 +53,7 @@ public class Gameplay : PageModel
 
     [BindProperty(SupportsGet = true)] 
     public string State { get; set; } = default!;
+    
 
     // OnGet method to handle page load and set up the game engine
     public IActionResult OnGet()
@@ -128,40 +132,52 @@ public class Gameplay : PageModel
             GameEngine.MoveAPiece((fromX, fromY), (toX, toY));
         }
         
-        //check if X or O have won the game.
-        // var winner = GameEngine.CheckForWin();
+        // check if X or O have won the game.
+         var winner = GameEngine.CheckForWin();
             
-        // // Not used when using in-memory saving:
-        // if (Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database)
-        // {
-        //     if (gameState != null && gameStateName != null && winner != EGamePiece.Empty)
-        //     {
-        //         GameRepository.DeleteGame(gameStateName);
-        //     }
-        // }
-            
-        // if (winner == null)
-        // {
-        //     // Tie
-        //     
-        // }
-        // if (winner == EGamePiece.X)
-        // {   
-        //     // X won
-        //     
-        // }
-        // if (winner == EGamePiece.O)
-        // {   
-        //     // O won
-        //     
-        // }
+         // Not used when using in-memory saving:
+         // if (Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database)
+         // {
+         //     if (gameState != null && gameStateName != null && winner != EGamePiece.Empty)
+         //     {
+         //         GameRepository.DeleteGame(gameStateName);
+         //     }
+         // }
+         //    
+         
+         if (winner == null)
+         {
+             GameOverMessage = "It's a draw!";
+         }
+         if (winner == EGamePiece.X)
+         {
+             GameOverMessage = "X has won the game!";
+
+         }
+         if (winner == EGamePiece.O)
+         {   
+             GameOverMessage = "O has won the game!";             
+         }
+         
 
         UserName = UserName.Trim();
         var stateJson = GameEngine.GetGameStateJson();
 
         if (!string.IsNullOrWhiteSpace(UserName))
         {
-            return RedirectToPage("./Gameplay", new { userName = UserName, configName = ConfigurationName , State = stateJson, IsNewGame = false });
+            if (winner != EGamePiece.Empty)
+            {
+                return RedirectToPage("./Gameplay", new
+                {
+                    userName = UserName, configName = ConfigurationName , State = stateJson, IsNewGame = false ,
+                    GameOverMessage = GameOverMessage
+                });
+            }
+            
+            return RedirectToPage("./Gameplay", new
+            {
+                userName = UserName, configName = ConfigurationName , State = stateJson, IsNewGame = false
+            });
         }
 
         Error = "Please enter a username.";

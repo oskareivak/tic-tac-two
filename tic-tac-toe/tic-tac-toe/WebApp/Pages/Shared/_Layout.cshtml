@@ -43,6 +43,15 @@
                         </li>
                     }
                 </ul>
+                
+                @if (!string.IsNullOrWhiteSpace(ViewData["UserName"] as string))
+                {
+                    <ul class="navbar-nav">
+                        <li class="nav-item" id="pageUserName">
+                            <a class="nav-link text-dark">@(ViewData["UserName"] as string)</a>
+                        </li>
+                    </ul>
+                }
             </div>
         </div>
     </nav>

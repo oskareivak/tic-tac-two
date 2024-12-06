@@ -23,26 +23,26 @@ body {
 }
 
 :root {
-    --base-font-size: 4em; /* Default font size, will be overridden */
+    --base-font-size: 4em; 
     --small-font-size: 2em;
     --smallest-font-size: 1em;
 
-    --border-size: 6px; /* Default border size, will be overridden */
+    --border-size: 6px; 
     --small-border-size: 4px;
     --smallest-border-size: 2px;
 
-    --board-size: 700px; /* Default size, can be changed dynamically */
-    --grid-size: 3; /* Default grid size, can be changed dynamically */
+    --board-size: 700px;
+    --grid-size: 3; 
 }
 
 .game-board {
     width: var(--board-size);
     height: var(--board-size);
     margin: 1em;
-    background: linear-gradient(135deg, rgba(173, 216, 230, 0.7), rgba(70, 130, 180, 0.8)); /* Light blue gradient */
+    background: linear-gradient(135deg, rgba(173, 216, 230, 0.7), rgba(70, 130, 180, 0.8)); 
     color: #fff;
-    border: 6px solid #4682b4; /* Steel blue border */
-    border-radius: 15px; /* Rounded corners */
+    border: 6px solid #4682b4;
+    border-radius: 15px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     display: grid;
     grid-template-columns: repeat(var(--grid-size), 1fr);
@@ -55,21 +55,15 @@ body {
 
 .board {
     border: var(--border-size) solid gray;
-    /*border: 6px solid gray;*/
-    /*border-radius: 3px;*/
-
 }
 
 .grid {
     border: var(--border-size) solid #E80C0C;
-    /*border: 6px solid LightCoral;*/
-    /*border-radius: 3px;*/
 }
 
 .board, .grid {
-    background: rgba(173, 216, 230, 0.4); /* Light background for empty cells */
-    /*border: 2px solid #4682b4; !* Subtle blue border for both board and grid *!*/
-    border-radius: 8px; /* Rounded corners */
+    background: rgba(173, 216, 230, 0.4); 
+    border-radius: 8px; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -78,88 +72,79 @@ body {
     font-family: Helvetica, sans-serif;
     font-weight: bold;
     font-size: var(--base-font-size);
-    transition: all 0.3s ease-in-out; /* Smooth transition */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow effect */
+    transition: all 0.3s ease-in-out; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
     width: 100%; /* vota ara kui tahad muuta tyhjad kastid kriipsudeks */
     height: 100%; /* vota ara kui tahad muuta tyhjad kastid kriipsudeks */
 }
 
-/* Hover effect for board and grid */
+
 .board:hover, .grid:hover {
-    background: rgba(70, 130, 180, 0.6); /* Darker hover effect */
-    transform: scale(1.05); /* Slight scale-up effect */
-    box-shadow: 0 4px 8px rgba(70, 130, 180, 0.2); /* Glow effect */
+    background: rgba(70, 130, 180, 0.6); 
+    transform: scale(1.05); 
+    box-shadow: 0 4px 8px rgba(70, 130, 180, 0.2); 
 }
 
-/* Active state (when dragging) */
+
 .grid:active, .board:active {
-    transform: scale(1.1); /* Slightly scale up the target cell */
-    background: rgba(70, 130, 180, 0.5); /* Highlighted background */
+    transform: scale(1.1); 
+    background: rgba(70, 130, 180, 0.5); 
 }
 
 #moveMaker {
     text-align: left;
-    font-size: var(--small-font-size);
+    min-height: 100%; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    font-size: 52px; 
+    box-sizing: border-box; 
 }
 
-/* Arrow Grid Layout: Proper 3x3 Grid */
 .arrow-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
-    grid-template-rows: repeat(3, 1fr);    /* 3 equal rows */
-    gap: 0.5rem; /* Space between buttons */
-    justify-content: center; /* Center grid horizontally */
-    align-items: center; /* Center grid vertically */
-    width: fit-content; /* Adjust width to fit content */
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(3, 1fr);    
+    gap: 0.5rem; 
+    justify-content: center; 
+    align-items: center; 
+    width: fit-content; 
     margin: auto;
 }
 
-/* Styling for each arrow button */
 .arrow-btn {
     width: 3rem;
     height: 3rem;
-    font-size: 1.5rem; /* Adjust size of arrows */
-    border-radius: 50%; /* Fully rounded */
+    font-size: 1.5rem; 
+    border-radius: 50%; 
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(123deg, #DC143C, #FD0C0C); /* Gradient background for buttons */
-    color: #fff; /* White icon color */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Shadow for depth */
-    border: none; /* Remove default border */
-    transition: all 0.3s ease-in-out; /* Smooth hover effect */
+    background: linear-gradient(123deg, #DC143C, #FD0C0C); 
+    color: #fff; 
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); 
+    border: none; 
+    transition: all 0.3s ease-in-out; 
 }
 
 .arrow-btn:hover {
-    transform: scale(1.1); /* Slightly increase button size */
-    box-shadow: 0 4px 8px rgba(240, 0, 0, 0.7); /* Glow effect */
+    transform: scale(1.1); 
+    box-shadow: 0 4px 8px rgba(240, 0, 0, 0.7); 
 }
 
 .arrow-btn:focus {
     outline: none;
-    box-shadow: 0 0 0 0.25rem rgba(240, 0, 0, 0.7); /* Focus ring with pink glow */
+    box-shadow: 0 0 0 0.25rem rgba(240, 0, 0, 0.7); 
 }
 
-/*!* Empty cell styling *!*/
-/*.empty-cell {*/
-/*    width: 3rem;*/
-/*    height: 3rem;*/
-/*    background: rgba(173, 216, 230, 0.3); !* Slightly transparent background *!*/
-/*    border: 2px solid #4682b4; !* Matching border color *!*/
-/*    pointer-events: none; !* Disable interactions *!*/
-/*    transition: all 0.3s ease-in-out; !* Smooth transition *!*/
-/*}*/
-
-/* Smooth transition effect when dragging over an empty cell */
 .grid.drag-over, .board.drag-over {
-    background: rgba(70, 130, 180, 0.4); /* Light highlight when dragging */
-    transform: scale(1.05); /* Scale up the hovered cell */
+    background: rgba(70, 130, 180, 0.4); 
+    transform: scale(1.05); 
 }
 
 @media (max-width: 945px) {
     :root {
         --board-size: 500px;
-        /*--dynamic-font-size: calc(var(--base-font-size) * 0.7);*/
         --border: 3px;
     }
 
@@ -177,10 +162,21 @@ body {
 
 }
 
+@media (max-width: 1200px) {
+    #moveMaker {
+        font-size: 35px;
+    }
+}
+
+@media (max-width: 768px) {
+    #moveMaker {
+        font-size: 25px;
+    }
+}
+
 @media (max-width: 510px) {
     :root {
         --board-size: 300px;
-        /*--dynamic-font-size: calc(var(--base-font-size) * 0.4);*/
         --border: 1px;
     }
 
