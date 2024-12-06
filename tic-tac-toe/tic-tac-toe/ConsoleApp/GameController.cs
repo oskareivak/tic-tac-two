@@ -240,13 +240,16 @@ public static class GameController
             if (name == "")
             {
                 Console.WriteLine("\nEnter a name for your new configuration:");
-                
+
+                Settings.NewConfigRules.TryGetValue("gameNameLengthMin", out var rule1);
+                Settings.NewConfigRules.TryGetValue("gameNameLengthMax", out var rule2);
+
                 var nameInput = Console.ReadLine();
                 var existingConfigNames = ConfigRepository.GetConfigurationNames();
                 
-                if (string.IsNullOrEmpty(nameInput) || nameInput.Length > 30)
+                if (string.IsNullOrEmpty(nameInput) || nameInput.Length < rule1 || nameInput.Length > rule2)
                 {
-                    Console.WriteLine("Game name must be between 1-30 characters.");
+                    Console.WriteLine($"Game name must be between {rule1}-{rule2} characters.");
                     continue;
                 }
                 if (existingConfigNames.Contains(nameInput))
@@ -260,7 +263,10 @@ public static class GameController
 
             if (boardSize == 0)
             {
-                string rule = "Board side length must be between 3-20";
+                Settings.NewConfigRules.TryGetValue("boardSideLengthMin", out var rule1);
+                Settings.NewConfigRules.TryGetValue("boardSideLengthMax", out var rule2);
+                
+                var rule = $"Board side length must be between {rule1}-{rule2}";
                 Console.WriteLine("\nEnter board side length:");
                 Console.WriteLine("(" + rule + ")");
                 var boardSizeInput = Console.ReadLine();
@@ -285,8 +291,9 @@ public static class GameController
             }
 
             if (gridSize == 0)
-            {
-                string rule = $"Grid side length must be between 3-{boardSize}"; 
+            {   
+                Settings.NewConfigRules.TryGetValue("boardSideLengthMin", out var rule1);
+                var rule = $"Grid side length must be between {rule1}-{boardSize}"; 
                 Console.WriteLine("\nEnter grid side length:");
                 Console.WriteLine("(" + rule + ")");
                 
@@ -302,7 +309,7 @@ public static class GameController
                     continue;
                 }
                 
-                if (gridSizeInputInt < 3 || gridSizeInputInt > boardSize)
+                if (gridSizeInputInt < rule1 || gridSizeInputInt > boardSize)
                 {
                     Console.WriteLine(rule);
                     continue;
@@ -312,8 +319,9 @@ public static class GameController
             }
 
             if (winCondition == 0)
-            {
-                string rule = $"Winning condition must be between 3-{gridSize}";
+            {   
+                Settings.NewConfigRules.TryGetValue("winConditionLengthMin", out var rule1);
+                var rule = $"Winning condition must be between {rule1}-{gridSize}";
                 Console.WriteLine("\nEnter the number of pieces needed in a row to win:");
                 Console.WriteLine("(" + rule + ")");
                 
@@ -329,7 +337,7 @@ public static class GameController
                     continue;
                 }
                 
-                if (winConditionInputInt < 3 || winConditionInputInt > gridSize)
+                if (winConditionInputInt < rule1 || winConditionInputInt > gridSize)
                 {
                     Console.WriteLine(rule);
                     continue;
@@ -340,7 +348,7 @@ public static class GameController
 
             if (whoStarts == EGamePiece.Empty)
             {
-                string rule = "Enter either x or o";
+                var rule = "Enter either x or o";
                 Console.WriteLine("\nEnter the default piece who starts the game:");
                 Console.WriteLine("(" + rule + ")");
                 
@@ -363,7 +371,11 @@ public static class GameController
 
             if (movePieceAfterNMoves == 10000)
             {
-                string rule = "Enter a reasonable number.";
+                Settings.NewConfigRules.TryGetValue("movePiecesAfterMin", out var rule1);
+                Settings.NewConfigRules.TryGetValue("movePiecesAfterMax", out var rule2);
+
+                
+                var rule = "Enter a reasonable number.";
                 Console.WriteLine("\nEnter the number of moves that have to be made before you can place pieces outside" +
                                     " of the grid, move the grid and move pieces. (0 means that they are all disabled)");
                 Console.WriteLine("(" + rule + ")");
@@ -380,7 +392,7 @@ public static class GameController
                     continue;
                 }
                 
-                if (movePiecesAfterInputInt > 170)
+                if (movePiecesAfterInputInt > rule2 || movePiecesAfterInputInt < rule1)
                 {
                     Console.WriteLine(rule);
                     continue;
