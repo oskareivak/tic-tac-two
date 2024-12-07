@@ -1,4 +1,5 @@
 using DAL;
+using Domain;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -17,6 +18,8 @@ public class Gameplay : PageModel
         _gameRepository = gameRepository;
     }
     
+    // TODO: add sound effects!
+    
     [BindProperty(SupportsGet = true)] 
     public string? GameOverMessage { get; set; }
     
@@ -28,11 +31,12 @@ public class Gameplay : PageModel
     public EGamePiece NextMoveBy { get; set; }
 
     [BindProperty(SupportsGet = true)] 
+    [FromQuery(Name = "configId")]
     public int ConfigurationId { get; set; }
 
-    [BindProperty(SupportsGet = true)]
-    [FromQuery(Name = "configName")]
-    public string ConfigurationName { get; set; } = default!;    
+    // [BindProperty(SupportsGet = true)]
+    // [FromQuery(Name = "configName")]
+    // public string ConfigurationName { get; set; } = default!;    
     
     [BindProperty(SupportsGet = true)]
     public bool IsNewGame { get; set; } = default!;
@@ -51,8 +55,11 @@ public class Gameplay : PageModel
     [BindProperty]
     public string To { get; set; } = default!;    // To property
 
-    [BindProperty(SupportsGet = true)] 
-    public string State { get; set; } = default!;
+    // [BindProperty(SupportsGet = true)] 
+    // public string State { get; set; } = default!;
+
+    [BindProperty(SupportsGet = true)] public int GameId { get; set; } = default!;
+    
     
 
     // OnGet method to handle page load and set up the game engine
@@ -67,20 +74,50 @@ public class Gameplay : PageModel
         
         // Initialize game engine or load saved state
         if (IsNewGame)
-        {
-            var config = _configRepository.GetConfigurationByName(ConfigurationName);
+        {   
+            
+            var config = _configRepository.GetConfigurationById(ConfigurationId);
             GameEngine = new TicTacTwoBrain(config);
+            GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
+            Console.WriteLine($"GAMEID IS HERE::::: {GameId}");
+            return RedirectToPage("./Gameplay", new 
+            { 
+                userName = UserName, 
+                gameId = GameId, 
+                configId = ConfigurationId, 
+            });
         }
         else
         {
-            if (!string.IsNullOrEmpty(State))
-            {
-                GameState gameState = TicTacTwoBrain.FromJson(State);
-                GameEngine = new TicTacTwoBrain(gameState);
-            }
+            var savedGame = _gameRepository.GetGameById(GameId);
+            var state = savedGame.State;
+            GameEngine = new TicTacTwoBrain(TicTacTwoBrain.FromJson(state));
+            
+            
+            // if (!string.IsNullOrEmpty(State))
+            // {
+            //     GameState gameState = TicTacTwoBrain.FromJson(State);
+            //     GameEngine = new TicTacTwoBrain(gameState);
+            // }
         }
+        
+        Console.WriteLine($"GAMEID NUMBER 2 IS HERE::::: {GameId}");
+
 
         NextMoveBy = GameEngine.NextMoveBy;
+        
+        // include gameId in the redirect
+        // if (GameId == 0)
+        // {
+        //     // First-time loading or GameId is not available, so redirect with the required parameters
+        //     return RedirectToPage("./Gameplay", new 
+        //     { 
+        //         userName = UserName, 
+        //         gameId = GameId, 
+        //         configId = ConfigurationId, 
+        //         State = GameEngine.GetGameStateJson() 
+        //     });
+        // }
         
         return Page();
     }
@@ -91,16 +128,10 @@ public class Gameplay : PageModel
         // Ensure GameEngine is initialized
         if (GameEngine == null)
         {
-            if (!string.IsNullOrEmpty(State))
-            {
-                GameState gameState = TicTacTwoBrain.FromJson(State);
-                GameEngine = new TicTacTwoBrain(gameState);
-            }
-            else
-            {
-                var config = _configRepository.GetConfigurationByName(ConfigurationName);
-                GameEngine = new TicTacTwoBrain(config);
-            }
+            var savedGame = _gameRepository.GetGameById(GameId); 
+            var state = savedGame.State; 
+            GameEngine = new TicTacTwoBrain(TicTacTwoBrain.FromJson(state));
+            
         }
 
         // Make different moves.
@@ -109,7 +140,6 @@ public class Gameplay : PageModel
         {
             GameEngine.MoveGrid(ArrowDirection);
             skip = true;
-            Console.WriteLine($"arrowdirection {ArrowDirection}");
         }
         
         if (string.IsNullOrEmpty(From) && !skip)
@@ -162,21 +192,29 @@ public class Gameplay : PageModel
 
         UserName = UserName.Trim();
         var stateJson = GameEngine.GetGameStateJson();
+        
 
         if (!string.IsNullOrWhiteSpace(UserName))
-        {
+        {   
+            Console.WriteLine($"GAMEID IS CURRENTLY: {GameId}");
+            
+            _gameRepository.DeleteGameById(GameId);
+                
+            GameId = _gameRepository.SaveGameReturnId(stateJson, GameEngine.GetGameConfigName());
+            
             if (winner != EGamePiece.Empty)
             {
+                // _gameRepository.DeleteGameById(GameId); TODO: implement delete game when game is won
                 return RedirectToPage("./Gameplay", new
                 {
-                    userName = UserName, configName = ConfigurationName , State = stateJson, IsNewGame = false ,
-                    GameOverMessage = GameOverMessage
+                    userName = UserName, configId = ConfigurationId, IsNewGame = false ,
+                    GameOverMessage = GameOverMessage, gameId = GameId // pole gameid probs vaja
                 });
             }
             
             return RedirectToPage("./Gameplay", new
             {
-                userName = UserName, configName = ConfigurationName , State = stateJson, IsNewGame = false
+                userName = UserName, configId = ConfigurationId, IsNewGame = false, gameId = GameId
             });
         }
 

@@ -60,7 +60,17 @@ public class GameRepositoryJson : IGameRepository
         }
     }
 
-    public SavedGame GetSavedGame(int gameId)
+    public SavedGame GetGameById(int gameId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteGameById(int gameId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public int SaveGameReturnId(string jsonStateString, string gameConfigName)
     {
         throw new NotImplementedException();
     }

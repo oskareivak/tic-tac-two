@@ -25,7 +25,7 @@ public class Home : PageModel
 
     [BindProperty] public int ConfigurationId { get; set; }
     
-    [BindProperty] public string ConfigurationName { get; set; } = default!;
+    // [BindProperty] public string ConfigurationName { get; set; } = default!;
     
     [BindProperty] public bool IsNewGame { get; set; }
     
@@ -38,8 +38,8 @@ public class Home : PageModel
         
         ViewData["UserName"] = UserName;
 
-        var selectListData = _configRepository.GetConfigurationNames()
-            .Select(name => new {id = name, value = name})
+        var selectListData = _configRepository.GetConfigurationIdNamePairs()
+            .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
         
         ConfigSelectList = new SelectList(selectListData, "id", "value");
@@ -53,7 +53,7 @@ public class Home : PageModel
 
         if (!string.IsNullOrWhiteSpace(UserName))
         {
-            return RedirectToPage("./Gameplay", new { userName = UserName, configName = ConfigurationName , IsNewGame = true });
+            return RedirectToPage("./Gameplay", new { userName = UserName, configId = ConfigurationId , IsNewGame = true });
         }
 
         Error = "Please enter a username.";

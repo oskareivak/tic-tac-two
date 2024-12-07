@@ -15,4 +15,6 @@ public interface IConfigRepository
     public void DeleteConfiguration(string name);
     
     public GameConfiguration GetConfigurationById(int id);
+    
+    public Dictionary<int, string> GetConfigurationIdNamePairs();
 }

@@ -82,8 +82,47 @@ public class GameRepositoryDb : IGameRepository
         _context.SaveChanges();
     }
 
-    public SavedGame GetSavedGame(int gameId)
+    public SavedGame GetGameById(int gameId)
     {
         return _context.SavedGames.First(g => g.Id == gameId);
+    }
+
+    public void DeleteGameById(int gameId)
+    {
+        var game = _context.SavedGames
+            .FirstOrDefault(g => g.Id == gameId);
+
+        if (game == null) throw new Exception("Game not found");
+
+        _context.SavedGames.Remove(game);
+        _context.SaveChanges();
+    }
+    
+    public int SaveGameReturnId(string jsonStateString, string gameConfigName)
+    {   
+        // if (_context.SavedGames.Count() >= 100)
+        // {
+        //     return null;
+        // } 
+    
+        var config = _context.Configurations
+            .FirstOrDefault(c => c.Name == gameConfigName);
+
+        if (config == null)
+        {
+            throw new Exception("Configuration not found");
+        }
+
+        var newGame = new SavedGame
+        {
+            CreatedAtDateTime = DateTime.Now.ToString("f"),
+            State = jsonStateString,
+            ConfigurationId = config.Id
+        };
+
+        _context.SavedGames.Add(newGame);
+        _context.SaveChanges();
+        
+        return newGame.Id;
     }
 }

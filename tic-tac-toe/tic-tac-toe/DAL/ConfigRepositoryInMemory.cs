@@ -69,4 +69,9 @@ public class ConfigRepositoryInMemory : IConfigRepository
     {
         throw new NotImplementedException();
     }
+
+    public Dictionary<int, string> GetConfigurationIdNamePairs()
+    {
+        throw new NotImplementedException();
+    }
 }

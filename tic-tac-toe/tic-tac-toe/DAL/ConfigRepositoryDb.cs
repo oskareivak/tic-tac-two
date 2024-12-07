@@ -101,7 +101,7 @@ public class ConfigRepositoryDb : IConfigRepository
         
         var config = _context.Configurations
             .FirstOrDefault(c => c.Id == id);
-
+        
         if (config == null) throw new Exception("Configuration not found");
 
         return new GameConfiguration
@@ -115,4 +115,13 @@ public class ConfigRepositoryDb : IConfigRepository
             NumberOfPiecesPerPlayer = config.NumberOfPiecesPerPlayer
         };
     }
+
+    public Dictionary<int, string> GetConfigurationIdNamePairs()
+    {
+        return _context.Configurations
+            .OrderBy(c => c.Name)
+            .ToDictionary(c => c.Id, c => c.Name);
+    }
+    
+    
 }

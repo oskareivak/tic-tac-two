@@ -9,5 +9,8 @@ public interface IGameRepository
     public List<string> GetGameNames();
     public GameState GetGameByName(string name);
     public void DeleteGame(string name);
-    public SavedGame GetSavedGame(int gameId);
+    public SavedGame GetGameById(int gameId);
+    public void DeleteGameById(int gameId);
+    
+    public int SaveGameReturnId(string jsonStateString, string gameConfigName);
 }

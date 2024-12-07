@@ -94,7 +94,6 @@ public static class GameController
                     {
                         GameRepository.DeleteGame(gameStateName);
                     }
-
                     if (GameRepository.SaveGame(gameEngine.GetGameStateJson(), gameEngine.GetGameConfigName()))
                     {
                         Console.WriteLine("Game saved!");
