@@ -1,5 +1,6 @@
 using ConsoleApp;
 using DAL;
+using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,7 +9,6 @@ namespace WebApp.Pages;
 
 public class Options : PageModel
 {
-// private readonly IConfigRepository _configRepository;
     private readonly IGameRepository _gameRepository;
     private readonly IConfigRepository _configRepository;
 
@@ -17,14 +17,14 @@ public class Options : PageModel
         _gameRepository = gameRepository;
         _configRepository = configRepository;
     }
-
-    // Bindproperty voib ara votta, aga sel juhul peab panema OnGet sisse parameetri string userName ja
-    // OnGet meetodis panna UserName = userName;
+    
     [BindProperty(SupportsGet = true)] public string UserName { get; set; } = default!;
     
     [BindProperty(SupportsGet = true)] public string? Success { get; set; }
     
     [BindProperty(SupportsGet = true)] public string? Error { get; set; }
+
+    [BindProperty(SupportsGet = true)] public List<string> Errors { get; set; } = default!;
     
     public SelectList GameSelectList { get; set; } = default!;
     
@@ -33,6 +33,15 @@ public class Options : PageModel
     [BindProperty] public int ConfigurationId { get; set; }
     
     [BindProperty] public int GameId { get; set; }
+    
+    // New configuration properties
+    [BindProperty(SupportsGet = true)] public string NewConfigName { get; set; } = default!;
+    [BindProperty(SupportsGet = true)] public int BoardSize { get; set; }
+    [BindProperty(SupportsGet = true)] public int GridSize { get; set; }
+    [BindProperty(SupportsGet = true)] public int WinCondition { get; set; }
+    [BindProperty(SupportsGet = true)] public string WhoStarts { get; set; } = "X";
+    [BindProperty(SupportsGet = true)] public int MovePiecesAfterNMoves { get; set; }
+    [BindProperty(SupportsGet = true)] public int NumberOfPiecesPerPlayer { get; set; }
     
     public IActionResult OnGet()
     {
@@ -66,6 +75,8 @@ public class Options : PageModel
     
     public IActionResult OnPost()
     {
+        Errors.Clear();
+        
         UserName = UserName.Trim();
     
         if (!string.IsNullOrWhiteSpace(UserName))
@@ -97,12 +108,68 @@ public class Options : PageModel
                                       $"some configurations before saving new ones.");
                     return RedirectToPage("./Options", new { userName = UserName, error = Error});
                 }
+                
+                Settings.NewConfigRules.TryGetValue("gameNameLengthMin", out var gameNameLengthMin);
+                Settings.NewConfigRules.TryGetValue("gameNameLengthMax", out var gameNameLengthMax);
+                
+                if (string.IsNullOrEmpty(NewConfigName) || NewConfigName.Length < gameNameLengthMin || 
+                    NewConfigName.Length > gameNameLengthMax)
+                {
+                    Errors.Add($"Configuration name must be between {gameNameLengthMin}-{gameNameLengthMax} " +
+                               $"characters long.");
+                }
+                
+                Settings.NewConfigRules.TryGetValue("boardSideLengthMin", out var boardSideLengthMin);
+                Settings.NewConfigRules.TryGetValue("boardSideLengthMax", out var boardSideLengthMax);
 
+                if (BoardSize < boardSideLengthMin || BoardSize > boardSideLengthMax)
+                {
+                    Errors.Add($"Board side length must be between {boardSideLengthMin}-{boardSideLengthMax}.");
+                }
+                
+                if (GridSize < boardSideLengthMin || GridSize > BoardSize)
+                {
+                    Errors.Add($"Grid size must be between {boardSideLengthMin}-{BoardSize}. " +
+                               $"(Based on your board size)");
+                }
+                
+                Settings.NewConfigRules.TryGetValue("winConditionLengthMin", out var winConditionLengthMin);
+                
+                if (WinCondition < winConditionLengthMin || WinCondition > GridSize)
+                {
+                    Errors.Add($"Winning condition must be between {winConditionLengthMin}-{GridSize}. " +
+                               $"(Based on your grid size)");
+                }
+                
+                Settings.NewConfigRules.TryGetValue("movePiecesAfterMin", out var movePiecesAfterMin);
+                Settings.NewConfigRules.TryGetValue("movePiecesAfterMax", out var movePiecesAfterMax);
+                
+                if (MovePiecesAfterNMoves < movePiecesAfterMin || MovePiecesAfterNMoves > movePiecesAfterMax)
+                {
+                    Errors.Add($"Move pieces after N moves must be between {movePiecesAfterMin}-{movePiecesAfterMax}."); 
+                }
+                
+                if (NumberOfPiecesPerPlayer < WinCondition || NumberOfPiecesPerPlayer > BoardSize * BoardSize / 2 + 1)
+                {
+                    Errors.Add($"Number of pieces per player must be between " +
+                               $"{WinCondition}-{BoardSize * BoardSize / 2 + 1}. (Based on your configuration)");
+                }
+                
+                if (Errors.Count > 0)
+                {
+                    return RedirectToPage("./Options", new { userName = UserName, errors = Errors, 
+                        newConfigName = NewConfigName, boardSize = BoardSize, gridSize = GridSize, 
+                        winCondition = WinCondition, whoStarts = WhoStarts, movePiecesAfterNMoves = MovePiecesAfterNMoves, 
+                        numberOfPiecesPerPlayer = NumberOfPiecesPerPlayer});
+                }
+                
+                _configRepository.AddConfiguration(NewConfigName, BoardSize, GridSize, WinCondition, 
+                    WhoStarts == "X" ? EGamePiece.X : EGamePiece.O, MovePiecesAfterNMoves, NumberOfPiecesPerPlayer);
+                
                 Success = "Configuration created!";
             }
             else if (Request.Form.ContainsKey("deleteGame"))
             {
-                // Handle delete game
                 if (_gameRepository.GetGameNames().Count == 0)
                 {
                     Error = "You don't have any games to delete yet!";

@@ -1,4 +1,5 @@
 @page
+@using System.Net.Security
 @model WebApp.Pages.Options
 
 <div class="text-center">
@@ -7,6 +8,15 @@
 
 <br>
 
+@if (Model.Errors.Count > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        @foreach(var error in Model.Errors)
+        {
+            <p>@error</p>
+        }
+    </div>
+}
 @if (!string.IsNullOrWhiteSpace(Model.Error))
 {
     <div class="alert alert-danger" role="alert">
@@ -44,9 +54,35 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="GameId" class="control-label">Choose game</label>
-                <select asp-for="GameId" class="form-select"
-                        asp-items="Model.GameSelectList"></select>
+                <label asp-for="NewConfigName" class="control-label">Configuration Name</label>
+                <input asp-for="NewConfigName" class="form-control" value="@Model.NewConfigName" />
+            </div>
+            <div class="form-group">
+                <label asp-for="BoardSize" class="control-label">Board Size</label>
+                <input asp-for="BoardSize" class="form-control" value="@Model.BoardSize" />
+            </div>
+            <div class="form-group">
+                <label asp-for="GridSize" class="control-label">Grid Size</label>
+                <input asp-for="GridSize" class="form-control" value="@Model.GridSize" />
+            </div>
+            <div class="form-group">
+                <label asp-for="WinCondition" class="control-label">Win Condition</label>
+                <input asp-for="WinCondition" class="form-control" value="@Model.WinCondition" />
+            </div>
+            <div class="form-group">
+                <label asp-for="WhoStarts" class="control-label">Who Starts</label>
+                <select asp-for="WhoStarts" class="form-select">
+                    <option value="X" selected="@(Model.WhoStarts == "X")">X</option>
+                    <option value="O" selected="@(Model.WhoStarts == "O")">O</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="MovePiecesAfterNMoves" class="control-label">Move Pieces After N Moves</label>
+                <input asp-for="MovePiecesAfterNMoves" class="form-control" value="@Model.MovePiecesAfterNMoves" />
+            </div>
+            <div class="form-group">
+                <label asp-for="NumberOfPiecesPerPlayer" class="control-label">Number of Pieces Per Player</label>
+                <input asp-for="NumberOfPiecesPerPlayer" class="form-control" value="@Model.NumberOfPiecesPerPlayer" />
             </div>
             <div class="form-group">
                 <input type="submit" name="createConfiguration" value="Create" class="btn btn-primary"/>
