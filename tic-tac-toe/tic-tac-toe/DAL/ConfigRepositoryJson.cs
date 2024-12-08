@@ -63,6 +63,11 @@ public class ConfigRepositoryJson : IConfigRepository
         throw new NotImplementedException();
     }
 
+    public void DeleteConfigurationById(int id)
+    {
+        throw new NotImplementedException();
+    }
+
     public Dictionary<int, string> GetConfigurationIdNamePairs()
     {
         throw new NotImplementedException();

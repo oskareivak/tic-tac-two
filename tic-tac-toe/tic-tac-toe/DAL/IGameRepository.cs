@@ -13,4 +13,6 @@ public interface IGameRepository
     public void DeleteGameById(int gameId);
     
     public int SaveGameReturnId(string jsonStateString, string gameConfigName);
+
+    public Dictionary<int, string> GetGameIdNamePairs();
 }

@@ -93,6 +93,17 @@ public class ConfigRepositoryDb : IConfigRepository
         _context.Configurations.Remove(config);
         _context.SaveChanges();
     }
+    
+    public void DeleteConfigurationById(int id)
+    {
+        var config = _context.Configurations
+            .FirstOrDefault(c => c.Id == id);
+
+        if (config == null) throw new Exception("Configuration not found");
+
+        _context.Configurations.Remove(config);
+        _context.SaveChanges();
+    }
 
     public GameConfiguration GetConfigurationById(int id)
     {

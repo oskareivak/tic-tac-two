@@ -4,6 +4,8 @@ public static class Settings
 {   
     // Choose the saving mode for game. Options: Memory, Json, Database
     public const ESavingMode Mode = ESavingMode.Database;
+
+    public const int MaxSavedConfigs = 103;
     
     public static readonly Dictionary<string, int> NewConfigRules = new()
     {

@@ -23,6 +23,11 @@ public class NoOpGameRepository : IGameRepository
         throw new NotImplementedException();
     }
 
+    public Dictionary<int, string> GetGameIdNamePairs()
+    {
+        throw new NotImplementedException();
+    }
+
     public GameState? GetGameByName(string gameName) => null;
     
     public SavedGame GetSavedGame(int gameId)

@@ -1,5 +1,6 @@
 using Domain;
 using GameBrain;
+using Microsoft.EntityFrameworkCore;
 
 namespace DAL;
 
@@ -124,5 +125,21 @@ public class GameRepositoryDb : IGameRepository
         _context.SaveChanges();
         
         return newGame.Id;
+    }
+    
+    // public Dictionary<int, string> GetConfigurationIdNamePairs()
+    // {
+    //     return _context.Configurations
+    //         .OrderBy(c => c.Name)
+    //         .ToDictionary(c => c.Id, c => c.Name);
+    // }
+    
+    public Dictionary<int, string> GetGameIdNamePairs()
+    {
+        return _context.SavedGames
+            .Include(c => c.Configuration) // Ensure Configuration is eagerly loaded
+            .Where(c => c.Configuration != null)
+            .OrderBy(c => c.Configuration!.Name)
+            .ToDictionary(c => c.Id, c => c.Configuration!.Name + " | " + c.CreatedAtDateTime);
     }
 }

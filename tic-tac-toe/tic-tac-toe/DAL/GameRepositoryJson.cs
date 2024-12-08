@@ -74,4 +74,9 @@ public class GameRepositoryJson : IGameRepository
     {
         throw new NotImplementedException();
     }
+
+    public Dictionary<int, string> GetGameIdNamePairs()
+    {
+        throw new NotImplementedException();
+    }
 }

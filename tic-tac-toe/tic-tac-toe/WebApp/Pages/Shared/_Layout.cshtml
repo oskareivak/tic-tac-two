@@ -19,27 +19,27 @@
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                    </li>
                     
                     @if (!string.IsNullOrWhiteSpace(ViewData["UserName"] as string))
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Configurations/Index">Load game</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Home" asp-route-userName="@(ViewData["UserName"] as string)">New game</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Options">Options</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/LoadGame" asp-route-userName="@(ViewData["UserName"] as string)">Load game</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Options" asp-route-userName="@(ViewData["UserName"] as string)">Options</a>
                         </li>
                     }
 
                     @if (ViewData["UserName"] as string == "admin")
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Configurations/Index">Configurations</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Configurations/Index" asp-route-userName="@(ViewData["UserName"] as string)">Configurations</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/SavedGames/Index">Games</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/SavedGames/Index" asp-route-userName="@(ViewData["UserName"] as string)">Games</a>
                         </li>
                     }
                 </ul>

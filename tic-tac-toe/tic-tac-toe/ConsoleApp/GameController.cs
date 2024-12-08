@@ -220,7 +220,7 @@ public static class GameController
     {
         // var savedConfigs = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension);
         var savedConfigsCount = ConfigRepository.GetConfigurationNames().Count;
-        if (savedConfigsCount >= 103)
+        if (savedConfigsCount >= Settings.MaxSavedConfigs)
         {
             Console.WriteLine("You have reached the maximum number of saved configurations (100). Please delete some configurations before saving new ones.");
             return "";

@@ -103,6 +103,11 @@ public class Gameplay : PageModel
         
         Console.WriteLine($"GAMEID NUMBER 2 IS HERE::::: {GameId}");
 
+        if (!string.IsNullOrEmpty(GameOverMessage))
+        {
+            _gameRepository.DeleteGameById(GameId);
+        }
+
 
         NextMoveBy = GameEngine.NextMoveBy;
         
