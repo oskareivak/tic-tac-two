@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Domain;
 using GameBrain;
 
@@ -7,18 +8,32 @@ public class GameRepositoryJson : IGameRepository
 {
     public bool SaveGame(string jsonStateString, string gameConfigName)
     {
-        var savedGames = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension);
-        if (savedGames.Length >= 100)
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToList();
+        
+        if (data.Count >= 100)
         {
             return false;
         }
         
-        var fileName = FileHelper.BasePath + 
-                       gameConfigName + " | " + 
-                       DateTime.Now.ToString("f") + 
-                       FileHelper.GameExtension;
+        var existingIds = data
+            .Select(game => game!.Split('|').Last())
+            .Select(idStr => int.TryParse(idStr, out var id) ? id : (int?)null)
+            .Where(id => id.HasValue)
+            .Select(id => id.Value)
+            .ToList();
         
+        var newId = 1;
+        while (existingIds.Contains(newId))
+        {
+            newId++;
+        }
+        
+        var fileName = FileHelper.BasePath + $"{gameConfigName} | {DateTime.Now:f} | {newId}{FileHelper.GameExtension}";
         File.WriteAllText(fileName, jsonStateString);
+        
         return true;
     }
 
@@ -34,7 +49,8 @@ public class GameRepositoryJson : IGameRepository
         foreach (var fullFileName in Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension))
         {
             var fileNameParts = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(fullFileName));
-            result.Add(fileNameParts);
+            var final = fileNameParts.Split("|")[0] + "|" + fileNameParts.Split("|")[1];
+            result.Add(final);
         }
 
         return result;
@@ -42,6 +58,8 @@ public class GameRepositoryJson : IGameRepository
     
     public GameState GetGameByName(string name)
     {
+        
+        // TODO: fix this
         var gameJsonStr = File.ReadAllText(FileHelper.BasePath + name + FileHelper.GameExtension);
         var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(gameJsonStr);
         return gameState!;

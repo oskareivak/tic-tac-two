@@ -150,23 +150,45 @@ public class ConfigRepositoryJson : IConfigRepository
         {
             Directory.CreateDirectory(FileHelper.BasePath);
         }
-        
+        // var configFileName = $"{name} | {newId}{FileHelper.ConfigExtension}";
+        // // var configJsonStr = JsonSerializer.Serialize(newConfig);
+        // File.WriteAllText(Path.Combine(FileHelper.BasePath, configFileName), configJsonStr);
+
         var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
             .Select(Path.GetFileNameWithoutExtension)
             .ToList();
-
+            
+        var existingIds = data
+            .Select(config => config!.Split('|').Last())
+            .Select(idStr => int.TryParse(idStr, out var id) ? id : (int?)null)
+            .Where(id => id.HasValue)
+            .Select(id => id.Value)
+            .ToList();
+        
         var hardCodedRepo = new ConfigRepositoryInMemory();
-        var optionNames = hardCodedRepo.GetConfigurationNames();
+        var configNames = hardCodedRepo.GetConfigurationNames();
 
-        foreach (var optionName in optionNames)
+        foreach (var configName in configNames)
         {
-            if (!data.Contains(optionName))
+            if (!data.Contains(configName))
             {
-                var gameOption = hardCodedRepo.GetConfigurationByName(optionName);
-                var optionJsonStr = JsonSerializer.Serialize(gameOption);
-                File.WriteAllText(FileHelper.BasePath + optionName + FileHelper.ConfigExtension, optionJsonStr);
+                var newId = 1;
+                while (existingIds.Contains(newId))
+                {
+                    newId++;
+                }
+
+                var gameConfig = hardCodedRepo.GetConfigurationByName(configName);
+                var configJsonStr = JsonSerializer.Serialize(gameConfig);
+                File.WriteAllText(FileHelper.BasePath + configName + " | " + newId + FileHelper.ConfigExtension, configJsonStr);
+
+                existingIds.Add(newId);
+                data.Add(configName + " | " + newId);
+                
             }
         }
+        
+        
         
     }
 }

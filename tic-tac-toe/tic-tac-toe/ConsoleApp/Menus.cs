@@ -10,7 +10,7 @@ public static class Menus
     
     public static readonly Menu DeepMenu = new Menu(
         EMenuLevel.Deep,
-        "TIC-TAC-TOE DEEP", [
+        "TIC-TAC-TWO DEEP", [
             new MenuItem()
             {
                 Shortcut = "T",
@@ -21,7 +21,7 @@ public static class Menus
     
     public static readonly Menu OptionsMenu = new Menu(
         EMenuLevel.Secondary,
-        "TIC-TAC-TOE Options", new List<MenuItem>
+        "TIC-TAC-TWO Options", new List<MenuItem>
         {
             new MenuItem()
             {
@@ -46,7 +46,7 @@ public static class Menus
     
     public static Menu MainMenu = new Menu(
         EMenuLevel.Main,
-        "TIC-TAC-TOE", new List<MenuItem>
+        "TIC-TAC-TWO", new List<MenuItem>
         {
             new MenuItem()
             {

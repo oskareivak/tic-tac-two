@@ -9,12 +9,12 @@ public class ConfigRepositoryInMemory : IConfigRepository
     {
         new GameConfiguration()
         {
-            Name = "Tic-Tac-Toe | 1"
+            Name = "Tic-Tac-Toe"
         },
         
         new GameConfiguration()
         {
-            Name = "Tic-Tac-Two | 2",
+            Name = "Tic-Tac-Two",
             BoardSize = 5,
             GridSize = 3,
             WinCondition = 3,
@@ -24,7 +24,7 @@ public class ConfigRepositoryInMemory : IConfigRepository
         
         new GameConfiguration()
         {
-            Name = "Big board | 3",
+            Name = "Big board",
             BoardSize = 10,
             GridSize = 4,
             WinCondition = 4,
