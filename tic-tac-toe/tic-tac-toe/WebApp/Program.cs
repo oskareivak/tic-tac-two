@@ -31,7 +31,6 @@ if (ConsoleApp.Settings.Mode == ESavingMode.Json)
 else if (ConsoleApp.Settings.Mode == ESavingMode.Database) {
     builder.Services.AddScoped<IConfigRepository, ConfigRepositoryDb>();
     builder.Services.AddScoped<IGameRepository, GameRepositoryDb>();
-
 }
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter(); 

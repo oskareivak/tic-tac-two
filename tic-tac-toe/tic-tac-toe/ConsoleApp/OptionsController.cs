@@ -146,7 +146,7 @@ public class OptionsController
             var returnValue = i.ToString();
             configMenuItems.Add(new MenuItem()
             {
-                Title = configRepository.GetConfigurationNames()[i],
+                Title = configRepository.GetConfigurationNames()[i].Split("|").First().Trim(),
                 Shortcut = (i+1).ToString(),
                 MenuItemAction = () => returnValue
             });

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Xml;
 using Domain;
 using GameBrain;
 
@@ -41,8 +42,29 @@ public class ConfigRepositoryJson : IConfigRepository
             NumberOfPiecesPerPlayer = numberOfPiecesPerPlayer
         };
 
+        
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToList();
+        
+        var existingIds = data
+            .Select(config => config!.Split('|').Last())
+            .Select(idStr => int.TryParse(idStr, out var id) ? id : (int?)null)
+            .Where(id => id.HasValue)
+            .Select(id => id.Value)
+            .ToList();
+        
+        var newId = 1;
+        while (existingIds.Contains(newId))
+        {
+            newId++;
+        }
+        
+        var configFileName = $"{name} | {newId}{FileHelper.ConfigExtension}";
         var configJsonStr = JsonSerializer.Serialize(newConfig);
-        File.WriteAllText(FileHelper.BasePath + name + FileHelper.ConfigExtension, configJsonStr);
+        File.WriteAllText(Path.Combine(FileHelper.BasePath, configFileName), configJsonStr);
+
     }
     
     public void DeleteConfiguration(string name)
@@ -54,23 +76,72 @@ public class ConfigRepositoryJson : IConfigRepository
         }
         else
         {
-            Console.WriteLine("Cannot find the file to delete.");
+            throw new Exception($"Cannot find the file to delete with name: {name}");
         }
     }
 
     public GameConfiguration GetConfigurationById(int id)
     {
-        throw new NotImplementedException();
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToList();
+
+        foreach (var configNameWithId in data)
+        {
+            if (configNameWithId!.Split('|').Last() == id.ToString())
+            {
+                var configJsonStr = File.ReadAllText(FileHelper.BasePath + configNameWithId + FileHelper.ConfigExtension);
+                var config = System.Text.Json.JsonSerializer.Deserialize<GameConfiguration>(configJsonStr);
+                return config;
+            }
+        }
+
+        throw new Exception($"Configuration not found with id: {id}.");
     }
 
     public void DeleteConfigurationById(int id)
     {
-        throw new NotImplementedException();
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToList();
+
+        foreach (var configNameWithId in data)
+        {
+            if (configNameWithId!.Split('|').Last() == id.ToString())
+            {
+                var fileToDelete = FileHelper.BasePath + configNameWithId + FileHelper.ConfigExtension;
+                if (File.Exists(fileToDelete))
+                {
+                    File.Delete(fileToDelete);
+                }
+                else
+                {
+                    throw new Exception($"Cannot find the file to delete with id: {id}.");
+                }
+            }
+        }
     }
 
     public Dictionary<int, string> GetConfigurationIdNamePairs()
     {
-        throw new NotImplementedException();
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToList();
+
+        Dictionary<int, string> idNamePairs = new();
+        
+        foreach (var configNameWithId in data)
+        {
+            var id = int.Parse(configNameWithId!.Split("|").Last().Trim());
+            var name = configNameWithId.Split("|").First().Trim();
+            
+            idNamePairs.Add(id, name);
+        }
+
+        return idNamePairs;
     }
 
     private void CheckAndCreateInitialConfigs()
@@ -80,17 +151,20 @@ public class ConfigRepositoryJson : IConfigRepository
             Directory.CreateDirectory(FileHelper.BasePath);
         }
         
-        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension).ToList();
-        
-        if (data.Count == 0)
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToList();
+
+        var hardCodedRepo = new ConfigRepositoryInMemory();
+        var optionNames = hardCodedRepo.GetConfigurationNames();
+
+        foreach (var optionName in optionNames)
         {
-            var hardCodedRepo = new ConfigRepositoryInMemory();
-            var optionNames = hardCodedRepo.GetConfigurationNames();
-            foreach (var optionName in optionNames)
+            if (!data.Contains(optionName))
             {
                 var gameOption = hardCodedRepo.GetConfigurationByName(optionName);
-                var optionJsonStr = System.Text.Json.JsonSerializer.Serialize(gameOption);
-                File.WriteAllText(FileHelper.BasePath + gameOption.Name + FileHelper.ConfigExtension, optionJsonStr);
+                var optionJsonStr = JsonSerializer.Serialize(gameOption);
+                File.WriteAllText(FileHelper.BasePath + optionName + FileHelper.ConfigExtension, optionJsonStr);
             }
         }
         
