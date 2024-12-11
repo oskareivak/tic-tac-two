@@ -80,21 +80,93 @@ public class GameRepositoryJson : IGameRepository
 
     public SavedGame GetGameById(int gameId)
     {
+        // var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
+        //     .Select(Path.GetFileNameWithoutExtension)
+        //     .Select(Path.GetFileNameWithoutExtension)
+        //     .ToList();
+        //
+        // foreach (var gameNameWithId in data)
+        // {
+        //     if (gameNameWithId!.Split("|").Last() == gameId.ToString())
+        //     {
+        //         var gameJsonStr = File.ReadAllText(FileHelper.BasePath + gameNameWithId + FileHelper.GameExtension);
+        //         var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(gameJsonStr);
+        //         return gameState;
+        //     }
+        // }
+        
         throw new NotImplementedException();
     }
 
     public void DeleteGameById(int gameId)
     {
-        throw new NotImplementedException();
+        var games = GetGameIdNamePairs();
+        
+        if (!games.ContainsKey(gameId))
+        {
+            throw new Exception($"Game not found with id: {gameId}.");
+        }
+        
+        var gameName = games[gameId];
+        
+        var fileToDelete = FileHelper.BasePath + gameName + "| " + gameId + FileHelper.GameExtension;
+        
+        Console.WriteLine($"File to delete: {fileToDelete}");
+        
+        if (File.Exists(fileToDelete))
+        {
+            File.Delete(fileToDelete);
+        }
+        else
+        {
+            throw new Exception($"Game not found with id: {gameId}.");
+        }
     }
 
     public int SaveGameReturnId(string jsonStateString, string gameConfigName)
     {
-        throw new NotImplementedException();
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToList();
+        
+        var existingIds = data
+            .Select(game => game!.Split('|').Last())
+            .Select(idStr => int.TryParse(idStr, out var id) ? id : (int?)null)
+            .Where(id => id.HasValue)
+            .Select(id => id.Value)
+            .ToList();
+        
+        var newId = 1;
+        while (existingIds.Contains(newId))
+        {
+            newId++;
+        }
+        
+        var fileName = FileHelper.BasePath + $"{gameConfigName} | {DateTime.Now:f} | {newId}{FileHelper.GameExtension}";
+        File.WriteAllText(fileName, jsonStateString);
+        
+        return newId;
     }
 
     public Dictionary<int, string> GetGameIdNamePairs()
     {
-        throw new NotImplementedException();
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToList();
+
+        Dictionary<int, string> idNamePairs = new();
+        
+        foreach (var gameNameWithId in data)
+        {
+            Console.WriteLine(gameNameWithId);
+            var id = int.Parse(gameNameWithId!.Split("|").Last().Trim());
+            var name = gameNameWithId.Split("|")[0] + "|" + gameNameWithId.Split("|")[1];
+            
+            idNamePairs.Add(id, name);
+        }
+
+        return idNamePairs;
     }
 }
