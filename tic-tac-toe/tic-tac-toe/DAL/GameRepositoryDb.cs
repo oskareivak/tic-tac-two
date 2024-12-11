@@ -110,7 +110,7 @@ public class GameRepositoryDb : IGameRepository
         // if (_context.SavedGames.Count() >= 100)
         // {
         //     return null;
-        // } 
+        // }  TODO: Implement this check in web and check console implementation
     
         var config = _context.Configurations
             .FirstOrDefault(c => c.Name == gameConfigName);
@@ -132,13 +132,6 @@ public class GameRepositoryDb : IGameRepository
         
         return newGame.Id;
     }
-    
-    // public Dictionary<int, string> GetConfigurationIdNamePairs()
-    // {
-    //     return _context.Configurations
-    //         .OrderBy(c => c.Name)
-    //         .ToDictionary(c => c.Id, c => c.Name);
-    // }
     
     public Dictionary<int, string> GetGameIdNamePairs()
     {

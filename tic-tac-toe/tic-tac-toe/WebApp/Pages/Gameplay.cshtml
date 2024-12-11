@@ -3,15 +3,15 @@
 @model WebApp.Pages.Gameplay
 
 @{
-    var baseFontSize = (600 / Model.GameEngine.DimY / 2) + "px"; // Base font size
-    var smallFontSize = (600 / Model.GameEngine.DimY / 3) + "px"; // Small font size
-    var smallestFontSize = (600 / Model.GameEngine.DimY / 5) + "px"; // Smallest font size
+    var baseFontSize = (600 / Model.GameEngine.DimY / 2) + "px"; 
+    var smallFontSize = (600 / Model.GameEngine.DimY / 3) + "px"; 
+    var smallestFontSize = (600 / Model.GameEngine.DimY / 5) + "px"; 
 
-    var baseBorderSize = Model.GameEngine.DimY > 15 ? "3px" : "6px"; // Border size
-    var smallBorderSize = (Model.GameEngine.DimY > 15 ? 3 : 6) / 1.5 + "px"; // Border size
-    var smallestBorderSize = (Model.GameEngine.DimY > 15 ? 3 : 6) / 2 + "px"; // Border size
+    var baseBorderSize = Model.GameEngine.DimY > 15 ? "3px" : "6px"; 
+    var smallBorderSize = (Model.GameEngine.DimY > 15 ? 3 : 6) / 1.5 + "px"; 
+    var smallestBorderSize = (Model.GameEngine.DimY > 15 ? 3 : 6) / 2 + "px"; 
 
-    var gridSize = Model.GameEngine.DimY; // Grid size
+    var gridSize = Model.GameEngine.DimY; 
 }
 
 <style>

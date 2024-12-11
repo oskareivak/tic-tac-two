@@ -35,7 +35,7 @@ public class OptionsController
     
     public static string LoadGame()
     {   
-        // User shouldn't actually reach this statement, but just in case (temporary precaution).
+        // TODO: remove User shouldn't actually reach this statement, but just in case (temporary precaution).
         if (Settings.Mode != ESavingMode.Json && Settings.Mode != ESavingMode.Database)
         {
             Console.WriteLine("Loading games is not supported in in-memory mode.");
@@ -86,7 +86,7 @@ public class OptionsController
 
     public static string DeleteSavedGame()
     {   
-        // User shouldn't actually reach this statement, but just in case (temporary precaution).
+        // TODO: remove User shouldn't actually reach this statement, but just in case (temporary precaution).
         if (Settings.Mode != ESavingMode.Json && Settings.Mode != ESavingMode.Database)
         {
             Console.WriteLine("Deleting saved games is not supported in in-memory mode.");
@@ -212,7 +212,7 @@ public class OptionsController
         }
         
         
-        // User shouldn't actually reach this statement, but just in case (temporary precaution).
+        // TODO: remove User shouldn't actually reach this statement, but just in case (temporary precaution).
         if (Settings.Mode != ESavingMode.Json && Settings.Mode != ESavingMode.Database)
         {
             Console.WriteLine("Deleting configurations is not supported in in-memory mode.");
@@ -279,7 +279,6 @@ public class OptionsController
         
         try
         {
-            // Console.WriteLine(chosenConfigName);
             if (Settings.Mode == ESavingMode.Database)
             {
                 configRepositoryDb.DeleteConfiguration(chosenConfigName);

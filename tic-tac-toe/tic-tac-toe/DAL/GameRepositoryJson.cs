@@ -49,7 +49,6 @@ public class GameRepositoryJson : IGameRepository
         foreach (var fullFileName in Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension))
         {
             var fileNameParts = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(fullFileName));
-            // var final = fileNameParts.Split("|")[0] + "|" + fileNameParts.Split("|")[1];
             result.Add(fileNameParts);
         }
 

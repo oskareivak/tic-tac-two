@@ -150,9 +150,6 @@ public class ConfigRepositoryJson : IConfigRepository
         {
             Directory.CreateDirectory(FileHelper.BasePath);
         }
-        // var configFileName = $"{name} | {newId}{FileHelper.ConfigExtension}";
-        // // var configJsonStr = JsonSerializer.Serialize(newConfig);
-        // File.WriteAllText(Path.Combine(FileHelper.BasePath, configFileName), configJsonStr);
 
         var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
             .Select(Path.GetFileNameWithoutExtension)

@@ -107,8 +107,6 @@ public class ConfigRepositoryDb : IConfigRepository
 
     public GameConfiguration GetConfigurationById(int id)
     {
-        // return _context.Configurations.First(c => c.Id == id);
-        // return _context.SavedGames.First(g => g.Id == gameId);
         
         var config = _context.Configurations
             .FirstOrDefault(c => c.Id == id);

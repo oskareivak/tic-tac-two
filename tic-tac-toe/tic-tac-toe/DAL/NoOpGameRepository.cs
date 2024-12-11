@@ -28,7 +28,10 @@ public class NoOpGameRepository : IGameRepository
         throw new NotImplementedException();
     }
 
-    public GameState? GetGameByName(string gameName) => null;
+    public GameState GetGameByName(string gameName)
+    {
+        throw new NotImplementedException();
+    }
     
     public SavedGame GetSavedGame(int gameId)
     {

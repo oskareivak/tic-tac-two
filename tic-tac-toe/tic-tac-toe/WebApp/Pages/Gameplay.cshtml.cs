@@ -26,7 +26,7 @@ public class Gameplay : PageModel
     [BindProperty]
     public string ArrowDirection { get; set; } = string.Empty;
     
-    // Bind properties for model binding
+    
     [BindProperty(SupportsGet = true)] 
     public EGamePiece NextMoveBy { get; set; }
 
@@ -50,19 +50,15 @@ public class Gameplay : PageModel
     public string? Error { get; set; }
     
     [BindProperty]
-    public string From { get; set; } = default!;  // From property
+    public string From { get; set; } = default!;  
 
     [BindProperty]
-    public string To { get; set; } = default!;    // To property
+    public string To { get; set; } = default!;    
 
-    // [BindProperty(SupportsGet = true)] 
-    // public string State { get; set; } = default!;
-
-    [BindProperty(SupportsGet = true)] public int GameId { get; set; } = default!;
+    [BindProperty(SupportsGet = true)] 
+    public int GameId { get; set; } = default!;
     
     
-
-    // OnGet method to handle page load and set up the game engine
     public IActionResult OnGet()
     {   
         if (string.IsNullOrEmpty(UserName))
@@ -72,14 +68,12 @@ public class Gameplay : PageModel
         
         ViewData["UserName"] = UserName;
         
-        // Initialize game engine or load saved state
         if (IsNewGame)
         {   
             
             var config = _configRepository.GetConfigurationById(ConfigurationId);
             GameEngine = new TicTacTwoBrain(config);
             GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
-            Console.WriteLine($"GAMEID IS HERE::::: {GameId}");
             return RedirectToPage("./Gameplay", new 
             { 
                 userName = UserName, 
@@ -90,55 +84,29 @@ public class Gameplay : PageModel
         else
         {
             var savedGameState = _gameRepository.GetGameById(GameId);
-            // var state = savedGame.State;
             GameEngine = new TicTacTwoBrain(savedGameState);
-            
-            
-            // if (!string.IsNullOrEmpty(State))
-            // {
-            //     GameState gameState = TicTacTwoBrain.FromJson(State);
-            //     GameEngine = new TicTacTwoBrain(gameState);
-            // }
         }
-        
-        Console.WriteLine($"GAMEID NUMBER 2 IS HERE::::: {GameId}");
 
         if (!string.IsNullOrEmpty(GameOverMessage))
         {
             _gameRepository.DeleteGameById(GameId);
         }
-
-
-        NextMoveBy = GameEngine.NextMoveBy;
         
-        // include gameId in the redirect
-        // if (GameId == 0)
-        // {
-        //     // First-time loading or GameId is not available, so redirect with the required parameters
-        //     return RedirectToPage("./Gameplay", new 
-        //     { 
-        //         userName = UserName, 
-        //         gameId = GameId, 
-        //         configId = ConfigurationId, 
-        //         State = GameEngine.GetGameStateJson() 
-        //     });
-        // }
+        NextMoveBy = GameEngine.NextMoveBy;
         
         return Page();
     }
 
-    // OnPost method to handle the drag-and-drop actions
     public IActionResult OnPost()
     {
-        // Ensure GameEngine is initialized
+        
         if (GameEngine == null)
         {
             var savedGameState = _gameRepository.GetGameById(GameId);
             // var state = savedGame.State;
             GameEngine = new TicTacTwoBrain(savedGameState);
         }
-
-        // Make different moves.
+        
         var skip = false;
         if (!string.IsNullOrEmpty(ArrowDirection))
         {
@@ -166,18 +134,7 @@ public class Gameplay : PageModel
             GameEngine.MoveAPiece((fromX, fromY), (toX, toY));
         }
         
-        // check if X or O have won the game.
          var winner = GameEngine.CheckForWin();
-            
-         // Not used when using in-memory saving:
-         // if (Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database)
-         // {
-         //     if (gameState != null && gameStateName != null && winner != EGamePiece.Empty)
-         //     {
-         //         GameRepository.DeleteGame(gameStateName);
-         //     }
-         // }
-         //    
          
          if (winner == null)
          {
@@ -192,15 +149,12 @@ public class Gameplay : PageModel
          {   
              GameOverMessage = "O has won the game!";             
          }
-         
 
         UserName = UserName.Trim();
         var stateJson = GameEngine.GetGameStateJson();
         
-
         if (!string.IsNullOrWhiteSpace(UserName))
         {   
-            Console.WriteLine($"GAMEID IS CURRENTLY: {GameId}");
             
             _gameRepository.DeleteGameById(GameId);
                 
@@ -208,11 +162,10 @@ public class Gameplay : PageModel
             
             if (winner != EGamePiece.Empty)
             {
-                // _gameRepository.DeleteGameById(GameId); TODO: implement delete game when game is won
                 return RedirectToPage("./Gameplay", new
                 {
                     userName = UserName, configId = ConfigurationId, IsNewGame = false ,
-                    GameOverMessage = GameOverMessage, gameId = GameId // pole gameid probs vaja
+                    GameOverMessage = GameOverMessage, gameId = GameId // TODO: pole gameid probs vaja
                 });
             }
             

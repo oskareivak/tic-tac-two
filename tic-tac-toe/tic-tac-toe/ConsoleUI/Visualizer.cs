@@ -6,8 +6,6 @@ public static class Visualizer
 {
     public static void DrawBoard(TicTacTwoBrain gameInstance)
     {
-        // List<(int x, int y)> currentGridCoordinates = gameInstance.CurrentGridCoordinates;
-        
         List<(int x, int y)> currentGridCoordinates = gameInstance.CurrentGridCoordinates
             .Select(coord => (coord[0], coord[1]))
             .ToList();
@@ -151,17 +149,6 @@ public static class Visualizer
     }
     
     public static string DrawGamePiece(EGamePiece piece)
-    {
-        switch (piece)
-        {
-            case EGamePiece.O: return "O";
-            case EGamePiece.X: return "X";
-        }
-
-        return " ";
-    }
-    
-    public static string GamePieceToStringTemporary(EGamePiece piece)
     {
         switch (piece)
         {
