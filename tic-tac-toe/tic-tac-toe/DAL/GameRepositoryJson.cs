@@ -41,7 +41,7 @@ public class GameRepositoryJson : IGameRepository
     {   
         if (!Directory.Exists(FileHelper.BasePath))
         {
-            Console.WriteLine("You don't have any saved configurations yet.");
+            Console.WriteLine("You don't have any saved games yet.");
             return null!;
         }
         
@@ -49,8 +49,8 @@ public class GameRepositoryJson : IGameRepository
         foreach (var fullFileName in Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension))
         {
             var fileNameParts = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(fullFileName));
-            var final = fileNameParts.Split("|")[0] + "|" + fileNameParts.Split("|")[1];
-            result.Add(final);
+            // var final = fileNameParts.Split("|")[0] + "|" + fileNameParts.Split("|")[1];
+            result.Add(fileNameParts);
         }
 
         return result;
@@ -67,6 +67,7 @@ public class GameRepositoryJson : IGameRepository
     
     public void DeleteGame(string name)
     {
+        
         var fileToDelete = FileHelper.BasePath + name + FileHelper.GameExtension;
         if (File.Exists(fileToDelete))
         {
@@ -78,24 +79,24 @@ public class GameRepositoryJson : IGameRepository
         }
     }
 
-    public SavedGame GetGameById(int gameId)
+    public GameState GetGameById(int gameId)
     {
-        // var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
-        //     .Select(Path.GetFileNameWithoutExtension)
-        //     .Select(Path.GetFileNameWithoutExtension)
-        //     .ToList();
-        //
-        // foreach (var gameNameWithId in data)
-        // {
-        //     if (gameNameWithId!.Split("|").Last() == gameId.ToString())
-        //     {
-        //         var gameJsonStr = File.ReadAllText(FileHelper.BasePath + gameNameWithId + FileHelper.GameExtension);
-        //         var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(gameJsonStr);
-        //         return gameState;
-        //     }
-        // }
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .Select(Path.GetFileNameWithoutExtension)
+            .ToList();
         
-        throw new NotImplementedException();
+        foreach (var gameNameWithId in data)
+        {
+            if (gameNameWithId!.Split("|").Last().Trim() == gameId.ToString())
+            {
+                var gameJsonStr = File.ReadAllText(FileHelper.BasePath + gameNameWithId + FileHelper.GameExtension);
+                var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(gameJsonStr);
+                return gameState!;
+            }
+        }
+        
+        throw new Exception($"Game not found with id: {gameId}.");
     }
 
     public void DeleteGameById(int gameId)

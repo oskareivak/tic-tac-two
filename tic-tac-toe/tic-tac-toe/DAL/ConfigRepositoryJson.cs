@@ -89,7 +89,7 @@ public class ConfigRepositoryJson : IConfigRepository
 
         foreach (var configNameWithId in data)
         {
-            if (configNameWithId!.Split('|').Last() == id.ToString())
+            if (configNameWithId!.Split('|').Last().Trim() == id.ToString())
             {
                 var configJsonStr = File.ReadAllText(FileHelper.BasePath + configNameWithId + FileHelper.ConfigExtension);
                 var config = System.Text.Json.JsonSerializer.Deserialize<GameConfiguration>(configJsonStr);
@@ -109,7 +109,7 @@ public class ConfigRepositoryJson : IConfigRepository
 
         foreach (var configNameWithId in data)
         {
-            if (configNameWithId!.Split('|').Last() == id.ToString())
+            if (configNameWithId!.Split('|').Last().Trim() == id.ToString())
             {
                 var fileToDelete = FileHelper.BasePath + configNameWithId + FileHelper.ConfigExtension;
                 if (File.Exists(fileToDelete))

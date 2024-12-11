@@ -89,9 +89,9 @@ public class Gameplay : PageModel
         }
         else
         {
-            var savedGame = _gameRepository.GetGameById(GameId);
-            var state = savedGame.State;
-            GameEngine = new TicTacTwoBrain(TicTacTwoBrain.FromJson(state));
+            var savedGameState = _gameRepository.GetGameById(GameId);
+            // var state = savedGame.State;
+            GameEngine = new TicTacTwoBrain(savedGameState);
             
             
             // if (!string.IsNullOrEmpty(State))
@@ -133,10 +133,9 @@ public class Gameplay : PageModel
         // Ensure GameEngine is initialized
         if (GameEngine == null)
         {
-            var savedGame = _gameRepository.GetGameById(GameId); 
-            var state = savedGame.State; 
-            GameEngine = new TicTacTwoBrain(TicTacTwoBrain.FromJson(state));
-            
+            var savedGameState = _gameRepository.GetGameById(GameId);
+            // var state = savedGame.State;
+            GameEngine = new TicTacTwoBrain(savedGameState);
         }
 
         // Make different moves.

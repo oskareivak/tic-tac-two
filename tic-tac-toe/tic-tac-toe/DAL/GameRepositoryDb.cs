@@ -83,9 +83,15 @@ public class GameRepositoryDb : IGameRepository
         _context.SaveChanges();
     }
 
-    public SavedGame GetGameById(int gameId)
+    public GameState GetGameById(int gameId)
     {
-        return _context.SavedGames.First(g => g.Id == gameId);
+        var savedGame = _context.SavedGames.First(g => g.Id == gameId);
+        
+        if (savedGame == null) throw new Exception("Game not found");
+
+        if (string.IsNullOrEmpty(savedGame.State)) throw new Exception("Game state is null or empty");
+
+        return System.Text.Json.JsonSerializer.Deserialize<GameState>(savedGame.State) ?? throw new Exception("Deserialization failed");
     }
 
     public void DeleteGameById(int gameId)

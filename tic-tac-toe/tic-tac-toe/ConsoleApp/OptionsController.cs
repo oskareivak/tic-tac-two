@@ -1,3 +1,4 @@
+using ConsoleApp;
 using DAL;
 using MenuSystem;
 using Microsoft.EntityFrameworkCore;
@@ -55,7 +56,8 @@ public class OptionsController
             var returnValue = gameNames[i];
             gameMenuItems.Add(new MenuItem()
             {
-                Title = gameNames[i],
+                Title = gameNames[i].Split("|")[0] + "|" + gameNames[i].Split("|")[1],
+                // Title = gameNames[i],
                 Shortcut = (i+1).ToString(),
                 MenuItemAction = () => returnValue
             });
@@ -105,7 +107,7 @@ public class OptionsController
             var returnValue = gameNames[i];
             gameMenuItems.Add(new MenuItem()
             {
-                Title = gameNames[i],
+                Title = gameNames[i].Split("|")[0] + "|" + gameNames[i].Split("|")[1],
                 Shortcut = (i + 1).ToString(),
                 MenuItemAction = () => returnValue
             });
@@ -221,7 +223,7 @@ public class OptionsController
             var returnValue = configNames[i];
             configMenuItems.Add(new MenuItem()
             {
-                Title = configNames[i],
+                Title = configNames[i].Split("|").First().Trim(),
                 Shortcut = (i+1).ToString(),
                 MenuItemAction = () => returnValue
             });
@@ -255,11 +257,13 @@ public class OptionsController
         
         try
         {
+            Console.WriteLine(chosenConfigName);
             ConfigRepository.DeleteConfiguration(chosenConfigName);
             Console.WriteLine("Configuration deleted successfully.");
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateConcurrencyException ex)
         {
+            Console.WriteLine($"Concurrency issue: {ex.Message}");
             Console.WriteLine("The configuration could not be deleted because it was modified or deleted by another process.");
         }
 
