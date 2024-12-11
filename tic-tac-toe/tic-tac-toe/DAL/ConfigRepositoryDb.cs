@@ -87,9 +87,9 @@ public class ConfigRepositoryDb : IConfigRepository
     {
         var config = _context.Configurations
             .FirstOrDefault(c => c.Name == name);
-
+        
         if (config == null) throw new Exception("Configuration not found");
-
+        
         _context.Configurations.Remove(config);
         _context.SaveChanges();
     }

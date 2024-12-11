@@ -199,7 +199,19 @@ public class OptionsController
     }
     
     public static string DeleteConfiguration()
-    {   
+    {
+        ConfigRepositoryDb configRepositoryDb;
+        
+        if (Settings.Mode == ESavingMode.Database)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionsBuilder.UseSqlite($"Data Source={FileHelper.BasePath}app.db");
+            var context = new AppDbContext(optionsBuilder.Options);
+
+            configRepositoryDb = new ConfigRepositoryDb(context);
+        }
+        
+        
         // User shouldn't actually reach this statement, but just in case (temporary precaution).
         if (Settings.Mode != ESavingMode.Json && Settings.Mode != ESavingMode.Database)
         {
@@ -209,7 +221,17 @@ public class OptionsController
         
         var configMenuItems = new List<MenuItem>();
         var configRepositoryInMemory = new ConfigRepositoryInMemory();
-        var configNames = ConfigRepository.GetConfigurationNames();
+        List<string> configNames;
+
+        if (Settings.Mode == ESavingMode.Database)
+        {
+            configNames = configRepositoryDb.GetConfigurationNames();
+        }
+        else
+        {
+            configNames = ConfigRepository.GetConfigurationNames();
+        }
+        
         var defaultConfigurations = configRepositoryInMemory.GetConfigurationNames();
         
         if (configNames.Count <= defaultConfigurations.Count) 
@@ -257,13 +279,19 @@ public class OptionsController
         
         try
         {
-            Console.WriteLine(chosenConfigName);
-            ConfigRepository.DeleteConfiguration(chosenConfigName);
+            // Console.WriteLine(chosenConfigName);
+            if (Settings.Mode == ESavingMode.Database)
+            {
+                configRepositoryDb.DeleteConfiguration(chosenConfigName);
+            }
+            else
+            {
+                ConfigRepository.DeleteConfiguration(chosenConfigName);
+            }
             Console.WriteLine("Configuration deleted successfully.");
         }
-        catch (DbUpdateConcurrencyException ex)
+        catch (DbUpdateConcurrencyException)
         {
-            Console.WriteLine($"Concurrency issue: {ex.Message}");
             Console.WriteLine("The configuration could not be deleted because it was modified or deleted by another process.");
         }
 
