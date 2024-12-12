@@ -129,12 +129,11 @@ public class TicTacTwoBrain
         return coordinates;
     }
 
-    public void PlaceAPiece(int x, int y)
+    public string PlaceAPiece(int x, int y)
     {
         if (_gameState.GameBoard[x][y] != EGamePiece.Empty)
         {       
-            Console.WriteLine("\nYou can't place your piece on top of another piece!");
-            return;
+            return "\nYou can't place your piece on top of another piece!";
         }
         
         if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves) &&
@@ -146,16 +145,13 @@ public class TicTacTwoBrain
             {
                 plural = "s";
             }
-            Console.WriteLine($"\nYou have to make {movesNeeded} " +
-                              $"more move{plural} to place a piece outside the grid!");
-            return;            
+            return $"\n{movesNeeded} more move{plural} have to be made to place a piece outside of the grid!";
         }
         
         if (_numberOfPiecesOnBoard.TryGetValue(_gameState.NextMoveBy, out int pieceCount) &&
             pieceCount >= _gameState.GameConfiguration.NumberOfPiecesPerPlayer)
         {   
-            Console.WriteLine("\nYou dont have any more pieces!");
-            return;            
+            return "\nYou dont have any more pieces!";
         }
             
         _gameState.GameBoard[x][y] = _gameState.NextMoveBy;
@@ -168,6 +164,7 @@ public class TicTacTwoBrain
           
         _gameState.NumberOfMovesMade += 1;
             
+        return "";
     }
 
     public void MoveAPiece((int x, int y) from, (int x, int y) to)

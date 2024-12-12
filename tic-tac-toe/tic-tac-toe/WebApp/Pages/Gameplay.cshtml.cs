@@ -119,8 +119,12 @@ public class Gameplay : PageModel
             var splitTo = To.Split(',');
             var toX = int.Parse(splitTo[0]);
             var toY = int.Parse(splitTo[1]);
-            
-            GameEngine.PlaceAPiece(toX, toY);
+
+            var message = GameEngine.PlaceAPiece(toX, toY);
+            if (message != "")
+            {
+                Error = message;
+            }
         }
         else if (!string.IsNullOrEmpty(From) && !string.IsNullOrEmpty(To) && !skip)
         {
@@ -171,7 +175,7 @@ public class Gameplay : PageModel
             
             return RedirectToPage("./Gameplay", new
             {
-                userName = UserName, configId = ConfigurationId, IsNewGame = false, gameId = GameId
+                userName = UserName, configId = ConfigurationId, IsNewGame = false, gameId = GameId, error = Error
             });
         }
 

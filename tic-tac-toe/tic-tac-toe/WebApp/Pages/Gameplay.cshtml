@@ -33,6 +33,12 @@
             @Model.GameOverMessage
         </div>
     }
+    @if (!string.IsNullOrWhiteSpace(Model.Error))
+    {
+        <div class="alert alert-danger" role="alert">
+            @Model.Error
+        </div>
+    }
     <div class="row">
         
         <div class="col-md-2 d-flex align-items-center" id="moveMaker">
@@ -54,9 +60,9 @@
                     <input type="hidden" asp-for="To" id="to">
                 }
                 <div class="game-board">
-                    @for (int x = 0; x < Model.GameEngine.DimY; x++)
+                    @for (int y = 0; y < Model.GameEngine.DimY; y++)
                     {
-                        for (int y = 0; y < Model.GameEngine.DimY; y++)
+                        for (int x = 0; x < Model.GameEngine.DimY; x++)
                         {
                             var boxId = $"{x},{y}";
                             var isPiecePresent = Model.GameEngine.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y);

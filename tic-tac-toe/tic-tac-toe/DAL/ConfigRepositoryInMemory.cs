@@ -29,6 +29,7 @@ public class ConfigRepositoryInMemory : IConfigRepository
             GridSize = 4,
             WinCondition = 4,
             MovePieceAfterNMoves = 3,
+            NumberOfPiecesPerPlayer = 16,
         },
     };
 
