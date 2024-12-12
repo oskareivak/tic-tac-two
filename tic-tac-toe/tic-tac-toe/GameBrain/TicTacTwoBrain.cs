@@ -134,7 +134,7 @@ public class TicTacTwoBrain
     {
         if (_gameState.GameBoard[x][y] != EGamePiece.Empty)
         {
-            return "\nYou cannot place your piece on top of another piece!";
+            return "You cannot place your piece on top of another piece!";
         }
 
         if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves) &&
@@ -147,13 +147,13 @@ public class TicTacTwoBrain
                 plural = "s";
             }
 
-            return $"\n{movesNeeded} more move{plural} have to be made to place a piece outside of the grid!";
+            return $"{movesNeeded} more move{plural} have to be made to place a piece outside of the grid!";
         }
 
         if (_numberOfPiecesOnBoard.TryGetValue(_gameState.NextMoveBy, out int pieceCount) &&
             pieceCount >= _gameState.GameConfiguration.NumberOfPiecesPerPlayer)
         {
-            return "\nYou dont have any more pieces!";
+            return "You dont have any more pieces!";
         }
 
         _gameState.GameBoard[x][y] = _gameState.NextMoveBy;
@@ -173,8 +173,8 @@ public class TicTacTwoBrain
     {
         if (_gameState.GameConfiguration.MovePieceAfterNMoves == 0)
         {
-            // Console.WriteLine("\nYou cannot move pieces in this game configuration!");
-            return "\nYou cannot move pieces in this game configuration!";
+            
+            return "You cannot move pieces in this game configuration!";
         }
 
         if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves))
@@ -185,29 +185,26 @@ public class TicTacTwoBrain
             {
                 plural = "s";
             }
-
-            // Console.WriteLine($"\nYou have to make {movesNeeded} " +
-            //                   $"more move{plural} to move a piece!");
-            // return $"\nYou have to make {movesNeeded} more move{plural} to move a piece!";
-            return $"\n{movesNeeded} more move{plural} have to be made to move a piece!";
+            
+            return $"{movesNeeded} more move{plural} have to be made to move a piece!";
         }
 
         if (_gameState.GameBoard[from.x][from.y] == EGamePiece.Empty)
         {
             // Console.WriteLine("\nWhy would you want to move an empty square?");
-            return "\nWhy would you want to move an empty square?";
+            return "Why would you want to move an empty square?";
         }
 
         if (_gameState.GameBoard[from.x][from.y] != _gameState.NextMoveBy)
         {
             // Console.WriteLine("\nYou cannot move your opponents piece!");
-            return "\nYou cannot move your opponents piece!";
+            return "You cannot move your opponents piece!"; // TODO: dsada
         }
 
         if (_gameState.GameBoard[to.x][to.y] != EGamePiece.Empty)
         {
             // Console.WriteLine("\nYou cannot place your piece on top of another piece!");
-            return "\nYou cannot place your piece on top of another piece!";
+            return "You cannot place your piece on top of another piece!";
         }
 
         _gameState.GameBoard[from.x][from.y] = EGamePiece.Empty;
@@ -218,17 +215,14 @@ public class TicTacTwoBrain
     }
 
 
-    public void MoveGrid(string direction)
+    public string MoveGrid(string direction)
     {
         if (_gameState.GameConfiguration.MovePieceAfterNMoves == 0)
         {
-            Console.WriteLine("\nYou cannot move the grid in this game configuration!");
-            return;
+            
+            return "You cannot move the grid in this game configuration!";
         }
-
-        // List<(int x, int y)> newCoords = new List<(int x, int y)>();
-        // int xShift;
-        // int yShift;
+        
         var newCoords = new List<int[]>();
 
         if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves))
@@ -239,17 +233,13 @@ public class TicTacTwoBrain
             {
                 plural = "s";
             }
-
-            Console.WriteLine($"\nYou have to make {movesNeeded} " +
-                              $"more move{plural} to move the grid!");
+            
+            return $"{movesNeeded} more move{plural} have to be made to move the grid!";
         }
-        else if (DirectionMap.TryGetValue(direction, out (int x, int y) move))
+        if (DirectionMap.TryGetValue(direction, out (int x, int y) move))
         {
-            // xShift = move.x;
-            // yShift = move.y;
             foreach (var coordinates in _gameState.CurrentGridCoordinates)
             {
-                // var newCoord = (coordinates.x + xShift, coordinates.y + yShift);
                 var newCoord = new int[] { coordinates[0] + move.x, coordinates[1] + move.y };
                 newCoords.Add(newCoord);
             }
@@ -258,18 +248,18 @@ public class TicTacTwoBrain
             {
                 if (!_gameState.BoardCoordinates.Any(coord => coord[0] == coordinate[0] && coord[1] == coordinate[1]))
                 {
-                    Console.WriteLine("\nTry to keep the grid inside of the game board, ok?");
-                    return;
+
+                    return "Try to keep the grid inside of the game board.";
                 }
             }
 
             _gameState.CurrentGridCoordinates = newCoords.ToArray();
             _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+
+            return "";
         }
-        else
-        {
-            Console.WriteLine($"\nInvalid direction: {direction}");
-        }
+        
+        return $"Invalid direction: {direction}";
     }
 
     public EGamePiece? CheckForWin()

@@ -127,7 +127,11 @@ public static class GameController
             }
             if (gameEngine.DirectionMap.ContainsKey(input.ToLower()))
             {
-                gameEngine.MoveGrid(input.ToLower());
+                var message = gameEngine.MoveGrid(input.ToLower());
+                if (message != "")
+                {
+                    Console.WriteLine("\n" + message);
+                }
                 skip = true;
             }
             else if (!input.Contains(','))
@@ -155,7 +159,7 @@ public static class GameController
                             var message = gameEngine.MoveAPiece((fromX, fromY), (toX, toY));
                             if (message != "")
                             {
-                                Console.WriteLine(message);
+                                Console.WriteLine("\n" + message);
                             }
                             
                             skip = true;
@@ -181,7 +185,7 @@ public static class GameController
                     var message = gameEngine.PlaceAPiece(inputX, inputY);
                     if (message != "")
                     {
-                        Console.WriteLine(message);
+                        Console.WriteLine("\n" + message);
                     }
                 }
                 catch (Exception)

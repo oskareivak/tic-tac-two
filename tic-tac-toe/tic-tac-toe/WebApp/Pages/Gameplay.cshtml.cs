@@ -2,6 +2,7 @@ using DAL;
 using Domain;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters.Xml;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace WebApp.Pages;
@@ -99,6 +100,7 @@ public class Gameplay : PageModel
 
     public IActionResult OnPost()
     {
+        Error = "";
         
         if (GameEngine == null)
         {
@@ -110,7 +112,12 @@ public class Gameplay : PageModel
         var skip = false;
         if (!string.IsNullOrEmpty(ArrowDirection))
         {
-            GameEngine.MoveGrid(ArrowDirection);
+            var message = GameEngine.MoveGrid(ArrowDirection);
+            if (message != "")
+            {
+                Error = message;
+            }
+            
             skip = true;
         }
         
@@ -142,21 +149,22 @@ public class Gameplay : PageModel
             }
         }
         
-         var winner = GameEngine.CheckForWin();
+        
+        var winner = GameEngine.CheckForWin();
          
-         if (winner == null)
-         {
-             GameOverMessage = "It's a draw!";
-         }
-         if (winner == EGamePiece.X)
-         {
-             GameOverMessage = "X has won the game!";
+        if (winner == null)
+        {
+            GameOverMessage = "It's a draw!";
+        }
+        if (winner == EGamePiece.X)
+        {
+            GameOverMessage = "X has won the game!";
 
-         }
-         if (winner == EGamePiece.O)
-         {   
-             GameOverMessage = "O has won the game!";             
-         }
+        }
+        if (winner == EGamePiece.O)
+        {   
+            GameOverMessage = "O has won the game!";             
+        }
 
         UserName = UserName.Trim();
         var stateJson = GameEngine.GetGameStateJson();
@@ -173,7 +181,7 @@ public class Gameplay : PageModel
                 return RedirectToPage("./Gameplay", new
                 {
                     userName = UserName, configId = ConfigurationId, IsNewGame = false ,
-                    GameOverMessage = GameOverMessage, gameId = GameId // TODO: pole gameid probs vaja
+                    GameOverMessage = GameOverMessage, gameId = GameId 
                 });
             }
             
