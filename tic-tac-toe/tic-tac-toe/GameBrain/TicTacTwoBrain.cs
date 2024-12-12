@@ -3,7 +3,7 @@
 public class TicTacTwoBrain
 {
     private readonly GameState _gameState;
-    
+
     // Constructor for new game
     // public TicTacTwoBrain(GameConfiguration gameConfiguration, string gameMode)
     public TicTacTwoBrain(GameConfiguration gameConfiguration)
@@ -23,7 +23,7 @@ public class TicTacTwoBrain
         {
             gameBoard[x] = new EGamePiece[gameConfiguration.BoardSize];
         }
-        
+
         // _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
         //     initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode);
         _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
@@ -36,8 +36,8 @@ public class TicTacTwoBrain
         _gameState = gameState;
         _numberOfPiecesOnBoard = gameState.NumberOfPiecesOnBoard;
     }
-    
-    
+
+
     public string GetGameStateJson()
     {
         return _gameState.ToString();
@@ -47,27 +47,27 @@ public class TicTacTwoBrain
     {
         return _gameState.GameConfiguration.Name;
     }
-    
+
     // public string GetGameMode()
     // {
     //     return _gameState.GameMode;
     // }
-      
+
     public EGamePiece NextMoveBy => _gameState.NextMoveBy;
     public int[][] CurrentGridCoordinates => _gameState.CurrentGridCoordinates;
-    
+
     public readonly Dictionary<string, (int x, int y)> DirectionMap = new()
     {
         { "n", (0, -1) }, // North
-        { "s", (0, 1) },  // South
-        { "e", (1, 0) },  // East
+        { "s", (0, 1) }, // South
+        { "e", (1, 0) }, // East
         { "w", (-1, 0) }, // West
         { "ne", (1, -1) }, // North-East
         { "nw", (-1, -1) }, // North-West
         { "se", (1, 1) }, // South-East
-        { "sw", (-1, 1) }  // South-West
+        { "sw", (-1, 1) } // South-West
     };
-      
+
     private readonly Dictionary<EGamePiece, int> _numberOfPiecesOnBoard;
 
     public EGamePiece[][] GameBoard
@@ -78,24 +78,24 @@ public class TicTacTwoBrain
 
     public int DimX => _gameState.GameBoard.Length;
     public int DimY => _gameState.GameBoard[0].Length;
-      
-      
+
+
     private EGamePiece[][] GetBoard()
     {
         var copyOfBoard = new EGamePiece[_gameState.GameBoard.GetLength(0)][];
-            //, _gameState.GameBoard.GetLength(1)];
+        //, _gameState.GameBoard.GetLength(1)];
         for (var x = 0; x < _gameState.GameBoard.Length; x++)
-        {   
+        {
             copyOfBoard[x] = new EGamePiece[_gameState.GameBoard[x].Length];
             for (var y = 0; y < _gameState.GameBoard.Length; y++)
             {
                 copyOfBoard[x][y] = _gameState.GameBoard[x][y];
             }
         }
- 
+
         return copyOfBoard;
     }
-    
+
     private int[][] _getInitialGridCoordinates(GameConfiguration gameConfiguration)
     {
         var gridCoordinates = new int[gameConfiguration.GridSize * gameConfiguration.GridSize][];
@@ -109,12 +109,12 @@ public class TicTacTwoBrain
                 gridCoordinates[index++] = new int[] { topLeftCoord + x, topLeftCoord + y };
             }
         }
+
         return gridCoordinates;
     }
 
     private int[][] _getBoardCoordinates(int boardSize)
     {
-        
         var coordinates = new int[boardSize * boardSize][];
         int index = 0;
         // List<(int x, int y)> coordinates = new();
@@ -126,54 +126,57 @@ public class TicTacTwoBrain
                 // coordinates.Add((x, y));
             }
         }
+
         return coordinates;
     }
 
     public string PlaceAPiece(int x, int y)
     {
         if (_gameState.GameBoard[x][y] != EGamePiece.Empty)
-        {       
-            return "\nYou can't place your piece on top of another piece!";
+        {
+            return "\nYou cannot place your piece on top of another piece!";
         }
-        
+
         if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves) &&
             !_gameState.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y))
-        {   
+        {
             var movesNeeded = _gameState.GameConfiguration.MovePieceAfterNMoves * 2 - _gameState.NumberOfMovesMade;
             var plural = "";
             if (movesNeeded > 1)
             {
                 plural = "s";
             }
+
             return $"\n{movesNeeded} more move{plural} have to be made to place a piece outside of the grid!";
         }
-        
+
         if (_numberOfPiecesOnBoard.TryGetValue(_gameState.NextMoveBy, out int pieceCount) &&
             pieceCount >= _gameState.GameConfiguration.NumberOfPiecesPerPlayer)
-        {   
+        {
             return "\nYou dont have any more pieces!";
         }
-            
+
         _gameState.GameBoard[x][y] = _gameState.NextMoveBy;
-            
+
         _numberOfPiecesOnBoard[_gameState.NextMoveBy] += 1;
         _numberOfPiecesOnBoard[EGamePiece.Empty] -= 1;
-            
+
         // flip the next move maker/piece
         _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
-          
+
         _gameState.NumberOfMovesMade += 1;
-            
+
         return "";
     }
 
-    public void MoveAPiece((int x, int y) from, (int x, int y) to)
+    public string MoveAPiece((int x, int y) from, (int x, int y) to)
     {
         if (_gameState.GameConfiguration.MovePieceAfterNMoves == 0)
         {
-            Console.WriteLine("\nYou cannot move pieces in this game configuration!");
-            return;
+            // Console.WriteLine("\nYou cannot move pieces in this game configuration!");
+            return "\nYou cannot move pieces in this game configuration!";
         }
+
         if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves))
         {
             var movesNeeded = _gameState.GameConfiguration.MovePieceAfterNMoves * 2 - _gameState.NumberOfMovesMade;
@@ -182,29 +185,38 @@ public class TicTacTwoBrain
             {
                 plural = "s";
             }
-            Console.WriteLine($"\nYou have to make {movesNeeded} " +
-                              $"more move{plural} to move a piece!");
-            return;
+
+            // Console.WriteLine($"\nYou have to make {movesNeeded} " +
+            //                   $"more move{plural} to move a piece!");
+            // return $"\nYou have to make {movesNeeded} more move{plural} to move a piece!";
+            return $"\n{movesNeeded} more move{plural} have to be made to move a piece!";
         }
+
         if (_gameState.GameBoard[from.x][from.y] == EGamePiece.Empty)
         {
-            Console.WriteLine("\nWhy would you want to move an empty square?");
+            // Console.WriteLine("\nWhy would you want to move an empty square?");
+            return "\nWhy would you want to move an empty square?";
         }
-        else if (_gameState.GameBoard[from.x][from.y] != _gameState.NextMoveBy)
+
+        if (_gameState.GameBoard[from.x][from.y] != _gameState.NextMoveBy)
         {
-            Console.WriteLine("\nYou cannot move your opponents piece!");
+            // Console.WriteLine("\nYou cannot move your opponents piece!");
+            return "\nYou cannot move your opponents piece!";
         }
-        else if (_gameState.GameBoard[to.x][to.y] != EGamePiece.Empty)
-        {       
-            Console.WriteLine("\nYou can't place your piece on top of another piece!");
-        }
-        else
+
+        if (_gameState.GameBoard[to.x][to.y] != EGamePiece.Empty)
         {
-            _gameState.GameBoard[from.x][from.y] = EGamePiece.Empty;
-            _gameState.GameBoard[to.x][to.y] = _gameState.NextMoveBy;
-            _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+            // Console.WriteLine("\nYou cannot place your piece on top of another piece!");
+            return "\nYou cannot place your piece on top of another piece!";
         }
+
+        _gameState.GameBoard[from.x][from.y] = EGamePiece.Empty;
+        _gameState.GameBoard[to.x][to.y] = _gameState.NextMoveBy;
+        _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
+
+        return "";
     }
+
 
     public void MoveGrid(string direction)
     {
@@ -213,7 +225,7 @@ public class TicTacTwoBrain
             Console.WriteLine("\nYou cannot move the grid in this game configuration!");
             return;
         }
-        
+
         // List<(int x, int y)> newCoords = new List<(int x, int y)>();
         // int xShift;
         // int yShift;
@@ -227,6 +239,7 @@ public class TicTacTwoBrain
             {
                 plural = "s";
             }
+
             Console.WriteLine($"\nYou have to make {movesNeeded} " +
                               $"more move{plural} to move the grid!");
         }
@@ -249,6 +262,7 @@ public class TicTacTwoBrain
                     return;
                 }
             }
+
             _gameState.CurrentGridCoordinates = newCoords.ToArray();
             _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
         }
@@ -257,12 +271,12 @@ public class TicTacTwoBrain
             Console.WriteLine($"\nInvalid direction: {direction}");
         }
     }
-      
+
     public EGamePiece? CheckForWin()
     {
         int rows = _gameState.GameBoard.Length; // Y dimension
         int cols = _gameState.GameBoard[0].Length; // X dimension
-        int winCondition = _gameState.GameConfiguration.WinCondition; 
+        int winCondition = _gameState.GameConfiguration.WinCondition;
 
         bool xWins = false;
         bool oWins = false;
@@ -274,12 +288,12 @@ public class TicTacTwoBrain
                 if (_gameState.GameBoard[i][j] != EGamePiece.Empty)
                 {
                     EGamePiece piece = _gameState.GameBoard[i][j];
-    
+
                     // Check horizontal
                     if (CheckDirection(i, j, 0, 1, piece, winCondition))
                     {
                         if (piece == EGamePiece.X) xWins = true;
-                        if (piece == EGamePiece.O) oWins = true; 
+                        if (piece == EGamePiece.O) oWins = true;
                     }
 
                     // Check vertical
@@ -292,7 +306,7 @@ public class TicTacTwoBrain
                     // Check diagonal (\ direction)
                     if (CheckDirection(i, j, 1, 1, piece, winCondition))
                     {
-                         if (piece == EGamePiece.X) xWins = true;
+                        if (piece == EGamePiece.X) xWins = true;
                         if (piece == EGamePiece.O) oWins = true;
                     }
 
@@ -305,15 +319,16 @@ public class TicTacTwoBrain
                 }
             }
         }
-    
+
         if (xWins && oWins) return null; // tie
         if (xWins) return EGamePiece.X;
         if (oWins) return EGamePiece.O;
 
         return EGamePiece.Empty; // no winner
     }
-    
-    private bool CheckDirection(int startRow, int startCol, int rowIncrement, int colIncrement, EGamePiece piece, int winCondition)
+
+    private bool CheckDirection(int startRow, int startCol, int rowIncrement, int colIncrement, EGamePiece piece,
+        int winCondition)
     {
         int count = 0;
 
@@ -323,18 +338,20 @@ public class TicTacTwoBrain
             int newCol = startCol + k * colIncrement;
 
             // check bounds
-            if (newRow >= 0 && newRow < _gameState.GameBoard.Length && newCol >= 0 && newCol < _gameState.GameBoard[0].Length)
-            {   
+            if (newRow >= 0 && newRow < _gameState.GameBoard.Length && newCol >= 0 &&
+                newCol < _gameState.GameBoard[0].Length)
+            {
                 //check if it is the right piece AND that it is inside the grid
-                if (_gameState.GameBoard[newRow][newCol] == piece && _gameState.CurrentGridCoordinates.Any(coord => coord[0] == newRow && coord[1] == newCol)) 
+                if (_gameState.GameBoard[newRow][newCol] == piece &&
+                    _gameState.CurrentGridCoordinates.Any(coord => coord[0] == newRow && coord[1] == newCol))
                 {
                     count++;
                 }
                 else
                 {
-                    break; 
+                    break;
                 }
-            
+
                 if (count == winCondition)
                 {
                     return true;
@@ -342,21 +359,21 @@ public class TicTacTwoBrain
             }
             else
             {
-                break; 
+                break;
             }
         }
 
         return false;
     }
-      
-    public void ResetGame() 
-    { 
+
+    public void ResetGame()
+    {
         var gameBoard = new EGamePiece[_gameState.GameConfiguration.BoardSize][];
-        for (var x = 0; x < gameBoard.Length; x++) 
+        for (var x = 0; x < gameBoard.Length; x++)
         {
             gameBoard[x] = new EGamePiece[_gameState.GameConfiguration.BoardSize];
         }
-          
+
         _gameState.GameBoard = gameBoard;
         _gameState.NextMoveBy = _gameState.GameConfiguration.WhoStarts;
         _gameState.NumberOfMovesMade = 0;
@@ -377,7 +394,7 @@ public class TicTacTwoBrain
     {
         if (_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves &&
             !(_numberOfPiecesOnBoard.TryGetValue(_gameState.NextMoveBy, out int pieceCount) &&
-             pieceCount >= _gameState.GameConfiguration.NumberOfPiecesPerPlayer))
+              pieceCount >= _gameState.GameConfiguration.NumberOfPiecesPerPlayer))
         {
             return true;
         }
@@ -395,10 +412,9 @@ public class TicTacTwoBrain
 
         return false;
     }
-    
+
     public static GameState FromJson(string json)
     {
         return System.Text.Json.JsonSerializer.Deserialize<GameState>(json)!;
     }
-    
 }

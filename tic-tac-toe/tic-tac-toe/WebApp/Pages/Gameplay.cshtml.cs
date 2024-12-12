@@ -135,7 +135,11 @@ public class Gameplay : PageModel
             var toX = int.Parse(splitTo[0]);
             var toY = int.Parse(splitTo[1]);
             
-            GameEngine.MoveAPiece((fromX, fromY), (toX, toY));
+            var message = GameEngine.MoveAPiece((fromX, fromY), (toX, toY));
+            if (message != "")
+            {
+                Error = message;
+            }
         }
         
          var winner = GameEngine.CheckForWin();

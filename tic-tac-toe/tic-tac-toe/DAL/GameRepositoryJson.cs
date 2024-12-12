@@ -111,8 +111,6 @@ public class GameRepositoryJson : IGameRepository
         
         var fileToDelete = FileHelper.BasePath + gameName + "| " + gameId + FileHelper.GameExtension;
         
-        Console.WriteLine($"File to delete: {fileToDelete}");
-        
         if (File.Exists(fileToDelete))
         {
             File.Delete(fileToDelete);
@@ -160,7 +158,6 @@ public class GameRepositoryJson : IGameRepository
         
         foreach (var gameNameWithId in data)
         {
-            Console.WriteLine(gameNameWithId);
             var id = int.Parse(gameNameWithId!.Split("|").Last().Trim());
             var name = gameNameWithId.Split("|")[0] + "|" + gameNameWithId.Split("|")[1];
             

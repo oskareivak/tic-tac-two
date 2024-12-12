@@ -151,7 +151,13 @@ public static class GameController
                             var fromY = int.Parse(splitFrom[1]);
                             var toX = int.Parse(splitTo[0]);
                             var toY = int.Parse(splitTo[1]);
-                            gameEngine.MoveAPiece((fromX, fromY), (toX, toY));
+                            
+                            var message = gameEngine.MoveAPiece((fromX, fromY), (toX, toY));
+                            if (message != "")
+                            {
+                                Console.WriteLine(message);
+                            }
+                            
                             skip = true;
                         }
                         catch (Exception)
@@ -171,6 +177,7 @@ public static class GameController
                     var inputSplit = input.Split(",");
                     var inputX = int.Parse(inputSplit[0]);
                     var inputY = int.Parse(inputSplit[1]);
+                    
                     var message = gameEngine.PlaceAPiece(inputX, inputY);
                     if (message != "")
                     {
