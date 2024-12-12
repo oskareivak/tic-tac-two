@@ -2,6 +2,16 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Configuration;
 using ConsoleApp;
+using Settings = ConsoleApp.Settings;
+
+var dbPath = Path.Combine(FileHelper.BasePath, "app.db"); 
+if (Settings.Mode == ESavingMode.Database && !File.Exists(dbPath))
+{ 
+    var contextFactory = new AppDbContextFactory();
+    var context = contextFactory.CreateDbContext([]);
+    // Use the correct path for the database
+    context.Database.Migrate();
+}
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,3 +1,5 @@
+using GameBrain;
+
 namespace ConsoleApp;
 
 public static class Settings
@@ -16,5 +18,12 @@ public static class Settings
         { "winConditionLengthMin" , 3 },
         { "movePiecesAfterMin" , 0 },
         { "movePiecesAfterMax" , 170 }
+    };
+
+    public static Dictionary<EGameMode, string> GameModeStrings = new Dictionary<EGameMode, string>
+    {
+        { EGameMode.PvP, "Player vs Player" },
+        { EGameMode.PvAi, "Player vs AI" },
+        { EGameMode.AivAi, "AI vs AI" }
     };
 }

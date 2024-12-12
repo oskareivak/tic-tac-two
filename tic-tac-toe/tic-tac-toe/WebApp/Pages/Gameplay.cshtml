@@ -1,4 +1,5 @@
 @page
+@using ConsoleApp
 @using GameBrain
 @model WebApp.Pages.Gameplay
 
@@ -39,9 +40,16 @@
             @Model.Error
         </div>
     }
+    
     <div class="row">
-        
-        <div class="col-md-2 d-flex align-items-center" id="moveMaker">
+
+        <div class="col-md-2 d-flex flex-column align-items-center" id="moveMaker">
+            
+            <div class="mb-2">
+                <span class="badge bg-secondary">@Settings.GameModeStrings[Enum.Parse<EGameMode>(Model.SelectedGameMode)]</span>
+                    @* Model.SelectedGameMode</span> *@
+            </div>
+            
             @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage))
             {
                 <span class="badge bg-secondary"></span>
@@ -51,7 +59,6 @@
                 <span class="badge bg-secondary">It's @Model.NextMoveBy's turn</span>
             }
         </div>
-
         <div class="col-md-8 d-flex justify-content-center">
             <form id="dragForm" method="post">
                 @if (string.IsNullOrWhiteSpace(Model.GameOverMessage))

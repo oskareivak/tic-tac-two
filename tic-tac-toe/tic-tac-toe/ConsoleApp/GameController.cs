@@ -32,7 +32,7 @@ public static class GameController
         }
     }
 
-    public static string MainLoop(GameState? gameState = null, string? gameStateName = null, string? chosenGameMode = null)
+    public static string MainLoop(GameState? gameState = null, string? gameStateName = null)
     {
         TicTacTwoBrain gameEngine;
         if (gameState != null)
@@ -51,27 +51,48 @@ public static class GameController
             var chosenConfig = ConfigRepository.GetConfigurationByName(
                 ConfigRepository.GetConfigurationNames()[configNo]
             );
+            
+            var chosenGameModeShortcut = OptionsController.ChooseGamemode();
+            if (chosenGameModeShortcut == "R")
+            {
+                return "R";
+            }
+            if (chosenGameModeShortcut == "E")
+            {
+                return "E";
+            }
+            
+            var chosenGameMode = Enum.Parse<EGameMode>(chosenGameModeShortcut);
+            
 
             // var gameMode = OptionsController.ChooseGamemode();
+            // Console.WriteLine($"Gamemode here" + gameMode);
             
-            // gameEngine = new TicTacTwoBrain(chosenConfig, chosenGameMode);
-            gameEngine = new TicTacTwoBrain(chosenConfig);
+            gameEngine = new TicTacTwoBrain(chosenConfig, chosenGameMode);
+            // gameEngine = new TicTacTwoBrain(chosenConfig, Enum.Parse<EGameMode>(gameMode));
 
         }
         
-        // var gameStateGameMode = gameEngine.GetGameMode();
-        // if (gameStateGameMode == "PvP")
-        // {
-        //     Console.WriteLine("You're playing against another player.");
-        // }
-        // else if (gameStateGameMode == "PvAI")
-        // {
-        //     Console.WriteLine("You're playing against AI.");
-        // }
-        // else if (gameStateGameMode == "AIvAI")
-        // {
-        //     Console.WriteLine("AI is playing against AI.");
-        // }
+        // Console.WriteLine("got to first test");
+        // var chooseMode = OptionsController.ChooseGamemode();
+        // Console.WriteLine("got to second test");
+        //
+        // var gameMode = Enum.Parse<EGameMode>(chooseMode);
+        // Console.WriteLine("got to third test");
+        
+        var gameStateGameMode = gameEngine.GetGameMode();
+        if (gameStateGameMode == EGameMode.PvP)
+        {
+            Console.WriteLine("You're playing against another player.");
+        }
+        else if (gameStateGameMode == EGameMode.PvAi)
+        {
+            Console.WriteLine("You're playing against AI.");
+        }
+        else if (gameStateGameMode == EGameMode.AivAi)
+        {
+            Console.WriteLine("AI is playing against AI.");
+        }
 
         do
         {   

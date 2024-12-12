@@ -5,8 +5,9 @@ public class TicTacTwoBrain
     private readonly GameState _gameState;
 
     // Constructor for new game
+    // public TicTacTwoBrain(GameConfiguration gameConfiguration)
     // public TicTacTwoBrain(GameConfiguration gameConfiguration, string gameMode)
-    public TicTacTwoBrain(GameConfiguration gameConfiguration)
+    public TicTacTwoBrain(GameConfiguration gameConfiguration, EGameMode gameMode)
     {
         _numberOfPiecesOnBoard = new Dictionary<EGamePiece, int>
         {
@@ -24,10 +25,10 @@ public class TicTacTwoBrain
             gameBoard[x] = new EGamePiece[gameConfiguration.BoardSize];
         }
 
-        // _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
-        //     initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode);
         _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
-            initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard);
+            initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode);
+        // _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
+        //     initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard);
     }
 
     // Constructor for loading existing game
@@ -48,10 +49,10 @@ public class TicTacTwoBrain
         return _gameState.GameConfiguration.Name;
     }
 
-    // public string GetGameMode()
-    // {
-    //     return _gameState.GameMode;
-    // }
+    public EGameMode GetGameMode()
+    {
+        return _gameState.GameMode;
+    }
 
     public EGamePiece NextMoveBy => _gameState.NextMoveBy;
     public int[][] CurrentGridCoordinates => _gameState.CurrentGridCoordinates;
@@ -191,19 +192,16 @@ public class TicTacTwoBrain
 
         if (_gameState.GameBoard[from.x][from.y] == EGamePiece.Empty)
         {
-            // Console.WriteLine("\nWhy would you want to move an empty square?");
             return "Why would you want to move an empty square?";
         }
 
         if (_gameState.GameBoard[from.x][from.y] != _gameState.NextMoveBy)
         {
-            // Console.WriteLine("\nYou cannot move your opponents piece!");
-            return "You cannot move your opponents piece!"; // TODO: dsada
+            return "You cannot move your opponents piece!";
         }
 
         if (_gameState.GameBoard[to.x][to.y] != EGamePiece.Empty)
         {
-            // Console.WriteLine("\nYou cannot place your piece on top of another piece!");
             return "You cannot place your piece on top of another piece!";
         }
 

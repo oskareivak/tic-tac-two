@@ -1,5 +1,7 @@
+using ConsoleApp;
 using DAL;
 using Domain;
+using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,6 +24,10 @@ public class Home : PageModel
     [BindProperty(SupportsGet = true)] public string? Error { get; set; }
     
     public SelectList ConfigSelectList { get; set; } = default!;
+    
+    public SelectList GameModeSelectList { get; set; } = default!;
+    
+    [BindProperty] public string SelectedGameMode { get; set; } = default!;
 
     [BindProperty] public int ConfigurationId { get; set; }
     
@@ -43,6 +49,18 @@ public class Home : PageModel
             .ToList();
         
         ConfigSelectList = new SelectList(selectListData, "id", "value");
+
+        var gameModeSelectListData = Settings.GameModeStrings
+            .Select(pair => new { id = pair.Key, value = pair.Value })
+            .ToList();
+        
+        // var gameModes = Enum.GetValues(typeof(EGameMode))
+        //     .Cast<EGameMode>()
+        //     .Select(g => new { Value = g.ToString(), Text = g.ToString() })
+        //     .ToList();
+
+        // GameModeSelectList = new SelectList(gameModes, "Value", "Text");
+        GameModeSelectList = new SelectList(gameModeSelectListData, "id", "value");
         
         return Page();
     }
@@ -51,11 +69,26 @@ public class Home : PageModel
     {
         UserName = UserName.Trim();
 
+        // if (!string.IsNullOrWhiteSpace(UserName))
+        // {
+        //     return RedirectToPage("./Gameplay", new { userName = UserName, configId = ConfigurationId , IsNewGame = true });
+        // }
+        
         if (!string.IsNullOrWhiteSpace(UserName))
         {
-            return RedirectToPage("./Gameplay", new { userName = UserName, configId = ConfigurationId , IsNewGame = true });
+            // Handle selected game mode here
+            if (Enum.TryParse<EGameMode>(SelectedGameMode, out var gameMode))
+            {
+                // Use gameMode in logic
+                return RedirectToPage("./Gameplay", new { 
+                    userName = UserName, 
+                    configId = ConfigurationId, 
+                    isNewGame = true, 
+                    gameMode = SelectedGameMode 
+                });
+            }
+            Error = "Invalid game mode selected.";
         }
-
         Error = "Please enter a username.";
 
         return RedirectToPage("./Home", new { error = Error });

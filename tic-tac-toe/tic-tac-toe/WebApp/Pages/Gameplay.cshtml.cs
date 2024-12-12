@@ -59,6 +59,10 @@ public class Gameplay : PageModel
     [BindProperty(SupportsGet = true)] 
     public int GameId { get; set; } = default!;
     
+    [BindProperty(SupportsGet = true)] 
+    [FromQuery(Name = "gameMode")]
+    public string SelectedGameMode { get; set; } = default!;
+    
     
     public IActionResult OnGet()
     {   
@@ -73,7 +77,8 @@ public class Gameplay : PageModel
         {   
             
             var config = _configRepository.GetConfigurationById(ConfigurationId);
-            GameEngine = new TicTacTwoBrain(config);
+            var gameMode = Enum.Parse<EGameMode>(SelectedGameMode);
+            GameEngine = new TicTacTwoBrain(config, gameMode);
             GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
             return RedirectToPage("./Gameplay", new 
             { 
@@ -86,6 +91,7 @@ public class Gameplay : PageModel
         {
             var savedGameState = _gameRepository.GetGameById(GameId);
             GameEngine = new TicTacTwoBrain(savedGameState);
+            SelectedGameMode = GameEngine.GetGameMode().ToString();
         }
 
         if (!string.IsNullOrEmpty(GameOverMessage))

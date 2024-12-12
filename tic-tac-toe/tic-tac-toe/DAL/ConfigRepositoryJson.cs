@@ -126,6 +126,8 @@ public class ConfigRepositoryJson : IConfigRepository
 
     public Dictionary<int, string> GetConfigurationIdNamePairs()
     {
+        CheckAndCreateInitialConfigs();
+        
         var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
             .Select(Path.GetFileNameWithoutExtension)
             .Select(Path.GetFileNameWithoutExtension)

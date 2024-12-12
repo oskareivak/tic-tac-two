@@ -1,5 +1,6 @@
 using ConsoleApp;
 using DAL;
+using GameBrain;
 using MenuSystem;
 using Microsoft.EntityFrameworkCore;
 
@@ -166,14 +167,14 @@ public class OptionsController
     public static string ChooseGamemode()
     {
         var gameModeMenuItems = new List<MenuItem>();
-        var gameModes = new List<string> { "PvP", "PvAI", "AIvAI" };
+        var gameModes = new List<EGameMode> { EGameMode.PvP, EGameMode.PvAi, EGameMode.AivAi };
         
         for (int i = 0; i < gameModes.Count; i++)
         {
-            var returnValue = gameModes[i];
+            var returnValue = gameModes[i].ToString();
             gameModeMenuItems.Add(new MenuItem()
             {
-                Title = gameModes[i],
+                Title = Settings.GameModeStrings[gameModes[i]],
                 Shortcut = (i+1).ToString(),
                 MenuItemAction = () => returnValue
             });
@@ -184,18 +185,18 @@ public class OptionsController
             gameModeMenuItems,
             isCustomMenu: true
         );
-        var chosenGameMode = gameModeMenu.Run();
-        if (chosenGameMode == "R")
-        {
-            return "R";
-        }
-        if (chosenGameMode == "E")
-        {
-            return "E";
-        }
+        // var chosenGameMode = gameModeMenu.Run();
+        // if (chosenGameMode == "R")
+        // {
+        //     return "R";
+        // }
+        // if (chosenGameMode == "E")
+        // {
+        //     return "E";
+        // }
 
-        GameController.MainLoop(null, null, chosenGameMode);
-        return "";
+        // GameController.MainLoop(null, null, Enum.Parse<EGameMode>(chosenGameMode));
+        return gameModeMenu.Run();
     }
     
     public static string DeleteConfiguration()
