@@ -99,9 +99,9 @@
                 </div>
             </form>
         </div>
-        @* TODO: tee nii et kui ei saa grid moveda jne jne siis pole neid arroweid *@
+        @* TODO: vb kaota arrowid ara kui neid veel kasutada ei saa. samas probs ei*@
         <div class="col-md-2 d-flex justify-content-center align-items-center">
-            @if (string.IsNullOrWhiteSpace(Model.GameOverMessage))
+            @if (string.IsNullOrWhiteSpace(Model.GameOverMessage) && Model.GameEngine.GetMovePieceAfterNMoves() != 0)
             {
                 <form method="post" id="arrowForm">
                     <div class="arrow-grid">
@@ -122,7 +122,7 @@
                     </div>
                 </form>
             }
-            @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage))
+            @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage) && Model.GameEngine.GetMovePieceAfterNMoves() != 0)
             {
                 <div class="arrow-grid">
                     <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Top Left">&#8598;</button>

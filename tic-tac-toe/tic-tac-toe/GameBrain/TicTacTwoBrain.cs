@@ -410,4 +410,9 @@ public class TicTacTwoBrain
     {
         return _gameState; // TODO: should this be exposed?
     }
+    
+    public int GetMovePieceAfterNMoves()
+    {
+        return _gameState.GameConfiguration.MovePieceAfterNMoves;
+    }
 }

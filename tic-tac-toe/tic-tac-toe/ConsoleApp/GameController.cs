@@ -302,7 +302,7 @@ public static class GameController
                 break;
             }
 
-            if (winner == EGamePiece.Empty) // TODO: add this to web as well?
+            if (winner == EGamePiece.Empty) // TODO: add this to web as well? Actually probably add to CheckForWin method.
             {
                 var counter = 0;
                 var board = gameEngine.GetGameState().GameBoard;
