@@ -22,6 +22,16 @@
                 <select asp-for="SelectedGameMode" class="form-select"
                         asp-items="Model.GameModeSelectList"></select>
             </div>
+            @if (Model.ChooseAiPiece)
+            {
+                <div class="form-group">
+                    <label asp-for="SelectedHumanPiece" class="control-label">Choose who you want to play as</label>
+                    <select asp-for="SelectedHumanPiece" class="form-select">
+                        <option value="X" selected="@(Model.SelectedHumanPiece == "X")">X</option>
+                        <option value="O" selected="@(Model.SelectedHumanPiece == "O")">O</option>
+                    </select>
+                </div>
+            }
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary"/>
             </div>

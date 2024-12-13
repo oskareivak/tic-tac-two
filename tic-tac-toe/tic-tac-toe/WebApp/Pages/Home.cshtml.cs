@@ -5,6 +5,7 @@ using GameBrain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace WebApp.Pages;
 
@@ -26,16 +27,20 @@ public class Home : PageModel
     public SelectList ConfigSelectList { get; set; } = default!;
     
     public SelectList GameModeSelectList { get; set; } = default!;
-    
-    [BindProperty] public string SelectedGameMode { get; set; } = default!;
 
-    [BindProperty] public int ConfigurationId { get; set; }
+    [BindProperty(SupportsGet = true)]
+    public string SelectedGameMode { get; set; } = default!;
+
+    [BindProperty(SupportsGet = true)]
+    public int ConfigurationId { get; set; }
     
-    // [BindProperty] public string ConfigurationName { get; set; } = default!;
+    [BindProperty(SupportsGet = true)] public bool IsNewGame { get; set; }
     
-    [BindProperty] public bool IsNewGame { get; set; }
+    [BindProperty] public string SelectedHumanPiece { get; set; } = default!;
     
-    public IActionResult OnGet()
+    [BindProperty(SupportsGet = true)] public bool ChooseAiPiece { get; set; } = default!;
+    
+    public IActionResult OnGet(int configId, string gameMode)
     {
         if (string.IsNullOrEmpty(UserName))
         {
@@ -43,48 +48,66 @@ public class Home : PageModel
         }
         
         ViewData["UserName"] = UserName;
+       
+        
+        ConfigurationId = configId;
+        SelectedGameMode = gameMode;
+        
+        Console.WriteLine($"config id here: {ConfigurationId}| game mode here: {SelectedGameMode}");
+
 
         var selectListData = _configRepository.GetConfigurationIdNamePairs()
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
-        
-        ConfigSelectList = new SelectList(selectListData, "id", "value");
+    
+        ConfigSelectList = new SelectList(selectListData, "id", "value", ConfigurationId);
 
         var gameModeSelectListData = Settings.GameModeStrings
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
-        
-        // var gameModes = Enum.GetValues(typeof(EGameMode))
-        //     .Cast<EGameMode>()
-        //     .Select(g => new { Value = g.ToString(), Text = g.ToString() })
-        //     .ToList();
-
-        // GameModeSelectList = new SelectList(gameModes, "Value", "Text");
-        GameModeSelectList = new SelectList(gameModeSelectListData, "id", "value");
-        
+    
+        GameModeSelectList = new SelectList(gameModeSelectListData, "id", "value", SelectedGameMode);
+    
         return Page();
     }
     
     public IActionResult OnPost()
     {
         UserName = UserName.Trim();
-
-        // if (!string.IsNullOrWhiteSpace(UserName))
-        // {
-        //     return RedirectToPage("./Gameplay", new { userName = UserName, configId = ConfigurationId , IsNewGame = true });
-        // }
         
         if (!string.IsNullOrWhiteSpace(UserName))
         {
-            // Handle selected game mode here
+            var gameMode1 = Enum.Parse<EGameMode>(SelectedGameMode);
+            if (gameMode1 == EGameMode.PvAi && string.IsNullOrWhiteSpace(SelectedHumanPiece))
+            {
+                Console.WriteLine($"config id in post: {ConfigurationId}");
+                Console.WriteLine($"gamemode in post: {SelectedGameMode}");
+                return RedirectToPage("./Home", new { 
+                    userName = UserName, 
+                    configId = ConfigurationId, 
+                    isNewGame = true, 
+                    gameMode = SelectedGameMode,
+                    chooseAiPiece = true
+                });
+            }
+            
             if (Enum.TryParse<EGameMode>(SelectedGameMode, out var gameMode))
             {
-                // Use gameMode in logic
+                if (gameMode1 == EGameMode.AivAi || gameMode1 == EGameMode.PvP)
+                {
+                    return RedirectToPage("./Gameplay", new { 
+                        userName = UserName, 
+                        configId = ConfigurationId, 
+                        isNewGame = true, 
+                        gameMode = SelectedGameMode
+                    });
+                }
                 return RedirectToPage("./Gameplay", new { 
                     userName = UserName, 
                     configId = ConfigurationId, 
                     isNewGame = true, 
-                    gameMode = SelectedGameMode 
+                    gameMode = SelectedGameMode, 
+                    selectedHumanPiece = SelectedHumanPiece
                 });
             }
             Error = "Invalid game mode selected.";

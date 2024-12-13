@@ -7,7 +7,7 @@ public class TicTacTwoBrain
     // Constructor for new game
     // public TicTacTwoBrain(GameConfiguration gameConfiguration)
     // public TicTacTwoBrain(GameConfiguration gameConfiguration, string gameMode)
-    public TicTacTwoBrain(GameConfiguration gameConfiguration, EGameMode gameMode)
+    public TicTacTwoBrain(GameConfiguration gameConfiguration, EGameMode gameMode, EGamePiece aiPiece)
     {
         _numberOfPiecesOnBoard = new Dictionary<EGamePiece, int>
         {
@@ -26,7 +26,7 @@ public class TicTacTwoBrain
         }
 
         _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
-            initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode);
+            initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode, aiPiece);
         // _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
         //     initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard);
     }
@@ -404,5 +404,10 @@ public class TicTacTwoBrain
     public static GameState FromJson(string json)
     {
         return System.Text.Json.JsonSerializer.Deserialize<GameState>(json)!;
+    }
+    
+    public GameState GetGameState()
+    {
+        return _gameState; // TODO: should this be exposed?
     }
 }

@@ -47,7 +47,7 @@
             
             <div class="mb-2">
                 <span class="badge bg-secondary">@Settings.GameModeStrings[Enum.Parse<EGameMode>(Model.SelectedGameMode)]</span>
-                    @* Model.SelectedGameMode</span> *@
+                @* Model.SelectedGameMode</span> *@
             </div>
             
             @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage))
@@ -139,5 +139,20 @@
                 </div>
             }
         </div>
+        <form method="post">
+            <button type="submit" id="invisibleSubmit" style="display:none;"></button>
+        </form>
     </div>
 </div>
+
+@if (Model.GameEngine.GetGameState().GameMode == EGameMode.PvAi && 
+     Model.GameEngine.NextMoveBy == Model.GameEngine.GetGameState().AiPiece ||
+     Model.GameEngine.GetGameState().GameMode == EGameMode.AivAi)
+{
+    if (string.IsNullOrWhiteSpace(Model.GameOverMessage))
+    {
+        <script>
+        document.getElementById('invisibleSubmit').click();
+        </script>
+    }
+}

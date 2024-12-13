@@ -5,7 +5,7 @@ namespace ConsoleApp;
 public static class Settings
 {   
     // Choose the saving mode for game. Options: Memory, Json, Database
-    public const ESavingMode Mode = ESavingMode.Database;
+    public const ESavingMode Mode = ESavingMode.Json;
 
     public const int MaxSavedConfigs = 103;
     
@@ -26,4 +26,7 @@ public static class Settings
         { EGameMode.PvAi, "Player vs AI" },
         { EGameMode.AivAi, "AI vs AI" }
     };
+
+    public const int AiDelayMin = 600;
+    public const int AiDelayMax = 1000;
 }

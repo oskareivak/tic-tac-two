@@ -99,10 +99,14 @@ public class GameRepositoryDb : IGameRepository
         var game = _context.SavedGames
             .FirstOrDefault(g => g.Id == gameId);
 
-        if (game == null) throw new Exception("Game not found");
+        if (game != null)
+        {
+            _context.SavedGames.Remove(game);
+            _context.SaveChanges();
+        }
 
-        _context.SavedGames.Remove(game);
-        _context.SaveChanges();
+        Console.WriteLine($"Game with id [{gameId}] not found at DeleteGameById");
+        // throw new Exception("Game not found");
     }
     
     public int SaveGameReturnId(string jsonStateString, string gameConfigName)

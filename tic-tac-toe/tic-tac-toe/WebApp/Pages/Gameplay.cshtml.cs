@@ -1,3 +1,4 @@
+using ConsoleApp;
 using DAL;
 using Domain;
 using GameBrain;
@@ -34,10 +35,6 @@ public class Gameplay : PageModel
     [BindProperty(SupportsGet = true)] 
     [FromQuery(Name = "configId")]
     public int ConfigurationId { get; set; }
-
-    // [BindProperty(SupportsGet = true)]
-    // [FromQuery(Name = "configName")]
-    // public string ConfigurationName { get; set; } = default!;    
     
     [BindProperty(SupportsGet = true)]
     public bool IsNewGame { get; set; } = default!;
@@ -57,11 +54,13 @@ public class Gameplay : PageModel
     public string To { get; set; } = default!;    
 
     [BindProperty(SupportsGet = true)] 
-    public int GameId { get; set; } = default!;
+    public int GameId { get; set; } 
     
     [BindProperty(SupportsGet = true)] 
     [FromQuery(Name = "gameMode")]
     public string SelectedGameMode { get; set; } = default!;
+    
+    [BindProperty(SupportsGet = true)] public string SelectedHumanPiece { get; set; } = default!;
     
     
     public IActionResult OnGet()
@@ -74,11 +73,23 @@ public class Gameplay : PageModel
         ViewData["UserName"] = UserName;
         
         if (IsNewGame)
-        {   
+        {
+            var aiPiece = EGamePiece.Empty;
+            if (!string.IsNullOrEmpty(SelectedHumanPiece))
+            {
+                if (SelectedHumanPiece == "X")
+                {
+                    aiPiece = EGamePiece.O;
+                }
+                else
+                {
+                    aiPiece = EGamePiece.X;
+                }
+            }
             
             var config = _configRepository.GetConfigurationById(ConfigurationId);
             var gameMode = Enum.Parse<EGameMode>(SelectedGameMode);
-            GameEngine = new TicTacTwoBrain(config, gameMode);
+            GameEngine = new TicTacTwoBrain(config, gameMode, aiPiece);
             GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
             return RedirectToPage("./Gameplay", new 
             { 
@@ -111,50 +122,91 @@ public class Gameplay : PageModel
         if (GameEngine == null)
         {
             var savedGameState = _gameRepository.GetGameById(GameId);
-            // var state = savedGame.State;
             GameEngine = new TicTacTwoBrain(savedGameState);
         }
         
         var skip = false;
-        if (!string.IsNullOrEmpty(ArrowDirection))
-        {
-            var message = GameEngine.MoveGrid(ArrowDirection);
-            if (message != "")
-            {
-                Error = message;
-            }
-            
-            skip = true;
-        }
         
-        if (string.IsNullOrEmpty(From) && !skip)
+        var aiTurn = false;
+        var gameStateGameMode = GameEngine.GetGameState().GameMode; 
+        
+        if (gameStateGameMode == EGameMode.PvAi && GameEngine.NextMoveBy == GameEngine.GetGameState().AiPiece 
+            || gameStateGameMode == EGameMode.AivAi)
         {
-            var splitTo = To.Split(',');
-            var toX = int.Parse(splitTo[0]);
-            var toY = int.Parse(splitTo[1]);
+            aiTurn = true;
+        }
 
-            var message = GameEngine.PlaceAPiece(toX, toY);
-            if (message != "")
-            {
-                Error = message;
-            }
-        }
-        else if (!string.IsNullOrEmpty(From) && !string.IsNullOrEmpty(To) && !skip)
+        if (!aiTurn)
         {
-            var splitFrom = From.Split(',');
-            var splitTo = To.Split(',');
-            var fromX = int.Parse(splitFrom[0]);
-            var fromY = int.Parse(splitFrom[1]);
-            var toX = int.Parse(splitTo[0]);
-            var toY = int.Parse(splitTo[1]);
-            
-            var message = GameEngine.MoveAPiece((fromX, fromY), (toX, toY));
-            if (message != "")
+            if (!string.IsNullOrEmpty(ArrowDirection))
             {
-                Error = message;
+                var message = GameEngine.MoveGrid(ArrowDirection);
+                if (message != "")
+                {
+                    Error = message;
+                }
+            
+                skip = true;
+            }
+        
+            if (string.IsNullOrEmpty(From) && !skip)
+            {
+                var splitTo = To.Split(',');
+                var toX = int.Parse(splitTo[0]);
+                var toY = int.Parse(splitTo[1]);
+
+                var message = GameEngine.PlaceAPiece(toX, toY);
+                if (message != "")
+                {
+                    Error = message;
+                }
+            }
+            else if (!string.IsNullOrEmpty(From) && !string.IsNullOrEmpty(To) && !skip)
+            {
+                var splitFrom = From.Split(',');
+                var splitTo = To.Split(',');
+                var fromX = int.Parse(splitFrom[0]);
+                var fromY = int.Parse(splitFrom[1]);
+                var toX = int.Parse(splitTo[0]);
+                var toY = int.Parse(splitTo[1]);
+            
+                var message = GameEngine.MoveAPiece((fromX, fromY), (toX, toY));
+                if (message != "")
+                {
+                    Error = message;
+                }
             }
         }
         
+        if (aiTurn)
+        {
+            AiBrain AI = new AiBrain(GameEngine, GameEngine.GetGameState());
+            var move = AI.GetMove();
+            Console.WriteLine(move.ToString());
+            if (move.MoveType == EMoveType.PlaceAPiece)
+            {
+                var message = GameEngine.PlaceAPiece(move.ToX, move.ToY);
+                // gameEngine.PlaceAPiece(move.ToX, move.ToY);
+                if (message != "")
+                {
+                    Console.WriteLine("\n" + message);
+                }
+            }
+
+            if (move.MoveType == EMoveType.MoveAPiece)
+            {
+                GameEngine.MoveAPiece((move.FromX, move.FromY), (move.ToX, move.ToY));
+            }
+
+            if (move.MoveType == EMoveType.MoveGrid)
+            {
+                GameEngine.MoveGrid(move.Direction);
+            }
+            
+            var random = new Random();
+            var delay = random.Next(Settings.AiDelayMin, Settings.AiDelayMax); // Delay for AI
+            Thread.Sleep(delay);
+        }
         
         var winner = GameEngine.CheckForWin();
          
