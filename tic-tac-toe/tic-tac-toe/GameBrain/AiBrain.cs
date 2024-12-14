@@ -13,6 +13,16 @@ public class AiBrain
         _gameEngine = gameEngine;
         _gameState = gameState;
     }
+    
+    // Scores:
+    //  10 - AI wins
+    //  8 - Block opponent's win
+    //  6 - Have my piece near new placement (place a piece)
+    //  4 - Have my piece near new placement (move a piece)
+    //  2 - Have more of my pieces in grid
+    //  0 - None of the above happens
+    // -4 - Draw
+    // -10 - Opponent wins
 
     public Move GetMove()
     {
@@ -66,7 +76,7 @@ public class AiBrain
             }
             else if (winner == EGamePiece.Empty) // Nobody wins
             {
-                moveScores.Add(move, EvaluateFurther(move));
+                moveScores.Add(move, EvaluateFurther(move, tempGameState));
             }
             else if (winner == null) // Draw
             {
@@ -117,7 +127,7 @@ public class AiBrain
         gameState.NextMoveBy = gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
     }
 
-    private int EvaluateFurther(Move move)
+    private int EvaluateFurther(Move move, GameState tempGameState)
     {
         if (move.MoveType == EMoveType.PlaceAPiece)
         {
@@ -135,7 +145,7 @@ public class AiBrain
         }
         else if (move.MoveType == EMoveType.MoveGrid)
         {
-            if (HaveMoreOfMyPiecesInGrid(move))
+            if (HaveMoreOfMyPiecesInGrid(tempGameState))
             {
                 return 2;
             }
@@ -146,12 +156,13 @@ public class AiBrain
 
     private List<Move> MovesToBlockOpponentsWin()
     {
-        var opponentsMoves = GetPossibleMoves(OpponentsTurnDeepCopy(_gameState));
-        var myMoves = GetPossibleMoves(_gameState);
-        var movesToBlockOpponentsWin = new List<Move>();
-
         var tempGameState = OpponentsTurnDeepCopy(_gameState);
         var tempGameEngine = new TicTacTwoBrain(tempGameState);
+        
+        var opponentsMoves = GetPossibleMoves(tempGameState);
+        var myMoves = GetPossibleMoves(_gameState);
+        var movesToBlockOpponentsWin = new List<Move>();
+        
         
         foreach (var move in opponentsMoves)
         {
@@ -169,7 +180,6 @@ public class AiBrain
             }
 
             var winner = tempGameEngine.CheckForWin();
-            // Console.WriteLine(winner.ToString());
             
             if (winner == GetOpponentsPiece(_gameEngine.NextMoveBy))
             {
@@ -195,6 +205,7 @@ public class AiBrain
                 }
                 else if (move.MoveType == EMoveType.MoveGrid)
                 {
+                    Console.WriteLine("I KNOW YOURE GONNA WIN NEXT MOVE");
                     var newDirection = GetOppositeGridDirection(move.Direction);
                     var tryMove = new Move
                     {
@@ -262,12 +273,11 @@ public class AiBrain
         return false;
     }
 
-    private bool HaveMoreOfMyPiecesInGrid(Move move)
+    private bool HaveMoreOfMyPiecesInGrid(GameState tempGameState)
     {
         var currentNumberOfMyPiecesInGrid = 0;
         var newNumberOfMyPiecesInGrid = 0;
-
-
+        
         foreach (var coord in _gameState.CurrentGridCoordinates)
         {
             if (_gameState.GameBoard[coord[0]][coord[1]] == _gameState.NextMoveBy)
@@ -275,10 +285,6 @@ public class AiBrain
                 currentNumberOfMyPiecesInGrid++;
             }
         }
-
-        var tempGameState = DeepCopy(_gameState);
-        var tempGameEngine = new TicTacTwoBrain(tempGameState);
-        tempGameEngine.MoveGrid(move.Direction);
 
         foreach (var coord in tempGameState.CurrentGridCoordinates)
         {
