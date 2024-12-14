@@ -52,9 +52,6 @@ public class Home : PageModel
         
         ConfigurationId = configId;
         SelectedGameMode = gameMode;
-        
-        Console.WriteLine($"config id here: {ConfigurationId}| game mode here: {SelectedGameMode}");
-
 
         var selectListData = _configRepository.GetConfigurationIdNamePairs()
             .Select(pair => new { id = pair.Key, value = pair.Value })
@@ -80,8 +77,6 @@ public class Home : PageModel
             var gameMode1 = Enum.Parse<EGameMode>(SelectedGameMode);
             if (gameMode1 == EGameMode.PvAi && string.IsNullOrWhiteSpace(SelectedHumanPiece))
             {
-                Console.WriteLine($"config id in post: {ConfigurationId}");
-                Console.WriteLine($"gamemode in post: {SelectedGameMode}");
                 return RedirectToPage("./Home", new { 
                     userName = UserName, 
                     configId = ConfigurationId, 

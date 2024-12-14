@@ -39,12 +39,12 @@ public class AiBrain
         Dictionary<Move, int> moveScores = new Dictionary<Move, int>();
 
         var possibleMoves = GetPossibleMoves(_gameState);
+        
+        var tempGameState = DeepCopy(_gameState);
+        var tempGameEngine = new TicTacTwoBrain(tempGameState);
 
         foreach (var move in possibleMoves)
         {
-            var tempGameState = DeepCopy(_gameState);
-            var tempGameEngine = new TicTacTwoBrain(tempGameState);
-
             if (move.MoveType == EMoveType.PlaceAPiece)
             {
                 tempGameEngine.PlaceAPiece(move.ToX, move.ToY);
@@ -76,9 +76,45 @@ public class AiBrain
             {
                 moveScores.Add(move, -10);
             }
+
+            UndoMove(move, tempGameState);
         }
 
         return moveScores;
+    }
+
+    private void UndoMove(Move move, GameState gameState)
+    {
+        if (move.MoveType == EMoveType.PlaceAPiece)
+        {
+            gameState.GameBoard[move.ToX][move.ToY] = EGamePiece.Empty;
+            
+            gameState.NumberOfPiecesOnBoard[GetOpponentsPiece(gameState.NextMoveBy)] -= 1;
+            gameState.NumberOfPiecesOnBoard[EGamePiece.Empty] += 1;
+        }
+
+        if (move.MoveType == EMoveType.MoveAPiece)
+        {
+            gameState.GameBoard[move.FromX][move.FromY] = gameState.GameBoard[move.ToX][move.ToY];
+            gameState.GameBoard[move.ToX][move.ToY] = EGamePiece.Empty;
+        }
+        
+        var newCoords = new List<int[]>();
+        if (move.MoveType == EMoveType.MoveGrid)
+        {   
+            if (_gameEngine.DirectionMap.TryGetValue(GetOppositeGridDirection(move.Direction), out (int x, int y) sth))
+            {
+                foreach (var coordinates in _gameState.CurrentGridCoordinates)
+                {
+                    var newCoord = new int[] { coordinates[0] + sth.x, coordinates[1] + sth.y };
+                    newCoords.Add(newCoord);
+                }
+            }
+            
+            gameState.CurrentGridCoordinates = newCoords.ToArray();
+        }
+        
+        gameState.NextMoveBy = gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
     }
 
     private int EvaluateFurther(Move move)
@@ -114,11 +150,11 @@ public class AiBrain
         var myMoves = GetPossibleMoves(_gameState);
         var movesToBlockOpponentsWin = new List<Move>();
 
+        var tempGameState = OpponentsTurnDeepCopy(_gameState);
+        var tempGameEngine = new TicTacTwoBrain(tempGameState);
+        
         foreach (var move in opponentsMoves)
         {
-            var tempGameState = OpponentsTurnDeepCopy(_gameState);
-            var tempGameEngine = new TicTacTwoBrain(tempGameState);
-
             if (move.MoveType == EMoveType.PlaceAPiece)
             {
                 tempGameEngine.PlaceAPiece(move.ToX, move.ToY);
@@ -169,6 +205,8 @@ public class AiBrain
                         movesToBlockOpponentsWin.Add(tryMove);
                 }
             }
+            
+            UndoMove(move, tempGameState);
         }
 
         return movesToBlockOpponentsWin;
@@ -198,17 +236,17 @@ public class AiBrain
 
         throw new Exception("Invalid direction");
     }
+    
+    private static readonly int[][] Directions = new int[][]
+    {
+        [-1, -1], [-1, 0], [-1, 1],
+        [1, -1], [1, 0], [1, 1],
+        [0, -1], [0, 1]
+    };
 
     private bool HaveMyPieceNearNewPlacement(Move move)
     {
-        int[][] directions = new int[][]
-        {
-            new int[] { -1, -1 }, new int[] { -1, 0 }, new int[] { -1, 1 },
-            new int[] { 1, -1 }, new int[] { 1, 0 }, new int[] { 1, 1 },
-            new int[] { 0, -1 }, new int[] { 0, 1 }
-        };
-
-        foreach (var direction in directions)
+        foreach (var direction in Directions)
         {
             int newX = move.ToX + direction[0];
             int newY = move.ToY + direction[1];
@@ -329,7 +367,7 @@ public class AiBrain
         return moves;
     }
 
-    private bool TryPlacePiece(int x, int y, GameState gameState)
+    private static bool TryPlacePiece(int x, int y, GameState gameState)
     {
         if (gameState.GameBoard[x][y] != EGamePiece.Empty)
         {
@@ -345,7 +383,7 @@ public class AiBrain
         return true;
     }
 
-    private bool TryMovePiece((int x, int y) from, (int x, int y) to, GameState gameState)
+    private static bool TryMovePiece((int x, int y) from, (int x, int y) to, GameState gameState)
     {
         if (gameState.GameBoard[from.x][from.y] == EGamePiece.Empty)
         {
@@ -391,21 +429,21 @@ public class AiBrain
         return false;
     }
 
-    private GameState? DeepCopy(GameState original)
+    private static GameState? DeepCopy(GameState original)
     {
         string json = JsonSerializer.Serialize(original);
         return JsonSerializer.Deserialize<GameState>(json);
     }
-
-    private GameState? OpponentsTurnDeepCopy(GameState original)
+    
+    private static GameState OpponentsTurnDeepCopy(GameState original)
     {
         string json = JsonSerializer.Serialize(original);
         var gameState = JsonSerializer.Deserialize<GameState>(json);
         gameState!.NextMoveBy = GetOpponentsPiece(original.NextMoveBy);
         return gameState;
     }
-
-    private EGamePiece GetOpponentsPiece(EGamePiece piece)
+    
+    private static EGamePiece GetOpponentsPiece(EGamePiece piece)
     {
         if (piece == EGamePiece.X)
         {

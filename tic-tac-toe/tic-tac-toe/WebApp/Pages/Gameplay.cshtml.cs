@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using ConsoleApp;
 using DAL;
 using Domain;
@@ -181,8 +182,11 @@ public class Gameplay : PageModel
         if (aiTurn)
         {
             AiBrain AI = new AiBrain(GameEngine, GameEngine.GetGameState());
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             var move = AI.GetMove();
-            Console.WriteLine(move.ToString());
+            stopwatch.Stop();
+            Console.WriteLine("Time taken: " + stopwatch.ElapsedMilliseconds + "ms");
             if (move.MoveType == EMoveType.PlaceAPiece)
             {
                 var message = GameEngine.PlaceAPiece(move.ToX, move.ToY);
