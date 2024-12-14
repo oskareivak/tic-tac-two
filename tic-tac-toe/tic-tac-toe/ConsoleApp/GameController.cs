@@ -37,7 +37,6 @@ public static class GameController
         TicTacTwoBrain gameEngine;
         if (gameState != null)
         {
-            Console.WriteLine($"xplayersname is {gameState.XPlayerUsername}, oplayersname is {gameState.OPlayerUsername}");
             var newPlayersName = string.Empty;
             if (gameState.XPlayerUsername == "....")
             {

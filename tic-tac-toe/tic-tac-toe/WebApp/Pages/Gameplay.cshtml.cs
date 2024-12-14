@@ -65,6 +65,8 @@ public class Gameplay : PageModel
     
     public bool CanMakeMove { get; set; } = default!;
     
+    [BindProperty(SupportsGet = true)] public bool JoinedGame { get; set; }
+    
     
     public IActionResult OnGet()
     {   
@@ -133,10 +135,23 @@ public class Gameplay : PageModel
 
         if (!string.IsNullOrEmpty(GameOverMessage))
         {
-            _gameRepository.DeleteGameById(GameId);
+            _gameRepository.DeleteGameById(GameId); // TODO: lahenda, et kui mang labi ja deletetakse ara siis autorefreshi parast crashib, pole sellise id-ga mangu enam.
         }
         
         NextMoveBy = GameEngine.NextMoveBy;
+        
+        if (GameEngine.GetGameState().XPlayerUsername == "...." && JoinedGame) 
+        {
+            GameEngine.GetGameState().XPlayerUsername = UserName;
+            _gameRepository.DeleteGameById(GameId);
+            GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
+        }
+        else if (GameEngine.GetGameState().OPlayerUsername == "...." && JoinedGame)
+        {
+            GameEngine.GetGameState().OPlayerUsername = UserName;
+            _gameRepository.DeleteGameById(GameId);
+            GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
+        }
         
         if (GameEngine.GetGameMode() == EGameMode.PvP && 
             NextMoveBy == EGamePiece.X && GameEngine.GetGameState().XPlayerUsername != UserName ||
@@ -148,8 +163,8 @@ public class Gameplay : PageModel
         {
             CanMakeMove = true;
         }
-        Console.WriteLine(CanMakeMove);
-        Console.WriteLine(NextMoveBy);
+        // Console.WriteLine(CanMakeMove);
+        // Console.WriteLine(NextMoveBy);
         
         return Page();
     }
@@ -221,11 +236,11 @@ public class Gameplay : PageModel
         if (aiTurn)
         {
             AiBrain AI = new AiBrain(GameEngine, GameEngine.GetGameState());
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+            // Stopwatch stopwatch = new Stopwatch();
+            // stopwatch.Start();
             var move = AI.GetMove();
-            stopwatch.Stop();
-            Console.WriteLine("Time taken: " + stopwatch.ElapsedMilliseconds + "ms");
+            // stopwatch.Stop();
+            // Console.WriteLine("Time taken: " + stopwatch.ElapsedMilliseconds + "ms");
             if (move.MoveType == EMoveType.PlaceAPiece)
             {
                 var message = GameEngine.PlaceAPiece(move.ToX, move.ToY);
