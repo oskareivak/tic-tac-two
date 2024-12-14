@@ -48,16 +48,42 @@ public class GameRepositoryDb : IGameRepository
             .ToList();
     }
 
+    public List<string> GetGameNamesForUser(string username)
+    {
+        Console.WriteLine($"i am your username: {username}");
+        var result = new List<string>();
+        foreach (var game in _context.SavedGames)
+        {   
+            Console.WriteLine("i am a game in context.savedgames");
+            var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(game.State);
+            if (gameState!.XPlayerUsername == username || gameState.OPlayerUsername == username)
+            {   
+                result.Add($"{gameState.GameConfiguration.Name} | {game.CreatedAtDateTime} | {game.Id} | " +
+                           $"{gameState.XPlayerUsername} VS {gameState.OPlayerUsername}");
+            }
+        }
+        Console.WriteLine($"i was called and returned {result.Count} games");
+
+        return result;
+
+        // return _context.SavedGames
+        //     .OrderBy(g => g.CreatedAtDateTime)
+        //     .Select(g => $"{g.Configuration.Name} | {g.CreatedAtDateTime}")
+        //     .ToList();
+    }
+
     public GameState GetGameByName(string name)
     {
-        var parts = name.Split(" | ");
-        if (parts.Length != 2) throw new Exception("Invalid game name format");
+        var parts = name.Split("|");
+        if (parts.Length != 3) throw new Exception("Invalid game name format");
 
-        var configName = parts[0];
-        var createdAt = parts[1];
+        var configName = parts[0].Trim();
+        var createdAt = parts[1].Trim();
+        var id = parts[2].Trim();
 
         var game = _context.SavedGames
-            .FirstOrDefault(g => g.Configuration.Name == configName && g.CreatedAtDateTime == createdAt);
+            .FirstOrDefault(g => g.Configuration.Name == configName && g.CreatedAtDateTime == createdAt &&
+                                 g.Id.ToString() == id);
 
         if (game == null) throw new Exception("Game not found");
 
@@ -68,14 +94,16 @@ public class GameRepositoryDb : IGameRepository
 
     public void DeleteGame(string name)
     {
-        var parts = name.Split(" | ");
-        if (parts.Length != 2) throw new Exception("Invalid game name format");
+        var parts = name.Split("|");
+        if (parts.Length != 3) throw new Exception("Invalid game name format");
 
-        var configName = parts[0];
-        var createdAt = parts[1];
+        var configName = parts[0].Trim();
+        var createdAt = parts[1].Trim();
+        var id = parts[2].Trim();
 
         var game = _context.SavedGames
-            .FirstOrDefault(g => g.Configuration.Name == configName && g.CreatedAtDateTime == createdAt);
+            .FirstOrDefault(g => g.Configuration.Name == configName && g.CreatedAtDateTime == createdAt &&
+                                 g.Id.ToString() == id);
 
         if (game == null) throw new Exception("Game not found");
 
@@ -137,12 +165,25 @@ public class GameRepositoryDb : IGameRepository
         return newGame.Id;
     }
     
-    public Dictionary<int, string> GetGameIdNamePairs()
+    public Dictionary<int, string> GetGameIdNamePairs(string username)
     {
-        return _context.SavedGames
-            .Include(c => c.Configuration) // Ensure Configuration is eagerly loaded
-            .Where(c => c.Configuration != null)
-            .OrderBy(c => c.Configuration!.Name)
-            .ToDictionary(c => c.Id, c => c.Configuration!.Name + " | " + c.CreatedAtDateTime);
+        var result = new Dictionary<int, string>();
+        foreach (var game in _context.SavedGames)
+        {
+            var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(game.State);
+            if (gameState!.XPlayerUsername == username || gameState.OPlayerUsername == username)
+            {
+                result[game.Id] = $"{gameState.GameConfiguration.Name} | {game.CreatedAtDateTime} | " +
+                                  $"{gameState.XPlayerUsername} VS {gameState.OPlayerUsername}";
+            }
+        }
+
+        return result;
+        
+        // return _context.SavedGames
+        //     .Include(c => c.Configuration) // Ensure Configuration is eagerly loaded
+        //     .Where(c => c.Configuration != null)
+        //     .OrderBy(c => c.CreatedAtDateTime)
+        //     .ToDictionary(c => c.Id, c => c.Configuration!.Name + " | " + c.CreatedAtDateTime + " | " + c.State);
     }
 }

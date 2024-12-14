@@ -21,6 +21,10 @@ public class GameState
 
     public Dictionary<EGamePiece, int> NumberOfPiecesOnBoard { get; set; }
     
+    public string XPlayerUsername { get; set; }
+    
+    public string OPlayerUsername { get; set; }
+    
     // public GameState(EGamePiece[][] gameBoard, EGamePiece nextMoveBy, GameConfiguration gameConfiguration, int[][] currentGridCoordinates, int[][] boardCoordinates, int numberOfMovesMade, Dictionary<EGamePiece, int> numberOfPiecesOnBoard)
 
     // public GameState(EGamePiece[][] gameBoard, EGamePiece nextMoveBy, GameConfiguration gameConfiguration, int[][] currentGridCoordinates, int[][] boardCoordinates, int numberOfMovesMade, Dictionary<EGamePiece, int> numberOfPiecesOnBoard, string gameMode)
@@ -28,7 +32,8 @@ public class GameState
     [JsonConstructor]
     public GameState(EGamePiece[][] gameBoard, EGamePiece nextMoveBy, GameConfiguration gameConfiguration, 
                     int[][] currentGridCoordinates, int[][] boardCoordinates, int numberOfMovesMade, 
-                    Dictionary<EGamePiece, int> numberOfPiecesOnBoard, EGameMode gameMode, EGamePiece aiPiece)
+                    Dictionary<EGamePiece, int> numberOfPiecesOnBoard, EGameMode gameMode, EGamePiece aiPiece,
+                    string xPlayerUsername, string oPlayerUsername)
     {
         GameBoard = gameBoard;
         GameConfiguration = gameConfiguration;
@@ -39,6 +44,8 @@ public class GameState
         NumberOfPiecesOnBoard = numberOfPiecesOnBoard;
         GameMode = gameMode;
         AiPiece = aiPiece;
+        XPlayerUsername = xPlayerUsername;
+        OPlayerUsername = oPlayerUsername;
     }
 
     public override string ToString()

@@ -1,3 +1,4 @@
+using ConsoleApp;
 using DAL;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +40,7 @@ public class LoadGame : PageModel
         ViewData["UserName"] = UserName;
 
         
-        var selectListData = _gameRepository.GetGameIdNamePairs()
+        var selectListData = _gameRepository.GetGameIdNamePairs(UserName)
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
         
@@ -54,7 +55,7 @@ public class LoadGame : PageModel
 
         if (!string.IsNullOrWhiteSpace(UserName))
         {
-            if (_gameRepository.GetGameNames().Count == 0)
+            if (_gameRepository.GetGameNamesForUser(UserName).Count == 0)
             {
                 Error = "You don't have any games to load yet!";
                 return RedirectToPage("./LoadGame", new { userName = UserName, error = Error});

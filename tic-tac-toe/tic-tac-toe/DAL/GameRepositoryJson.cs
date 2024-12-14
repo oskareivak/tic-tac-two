@@ -54,11 +54,35 @@ public class GameRepositoryJson : IGameRepository
 
         return result;
     }
+
+    public List<string> GetGameNamesForUser(string username)
+    {
+        if (!Directory.Exists(FileHelper.BasePath))
+        {
+            Console.WriteLine("You don't have any saved games yet.");
+            return null!;
+        }
+        
+        var result = new List<string>();
+
+        foreach (var fullFileName in Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension))
+        {
+            var fileNameParts = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(fullFileName));
+            
+            var gameState = GetGameByName(fileNameParts);
+            if (gameState.XPlayerUsername == username || gameState.OPlayerUsername == username)
+            {
+                result.Add(fileNameParts + " | " + gameState.XPlayerUsername + " VS " + gameState.OPlayerUsername);
+            }
+        }
+
+        return result;
+    }
     
     public GameState GetGameByName(string name)
     {
         
-        // TODO: fix this
+        // FYI: Uses the game ID inside the name as well, so not just by name.
         var gameJsonStr = File.ReadAllText(FileHelper.BasePath + name + FileHelper.GameExtension);
         var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(gameJsonStr);
         return gameState!;
@@ -100,7 +124,23 @@ public class GameRepositoryJson : IGameRepository
 
     public void DeleteGameById(int gameId)
     {
-        var games = GetGameIdNamePairs();
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
+            .ToList();
+
+        var games = new Dictionary<int, string>();
+        
+        foreach (var gameFile in data)
+        {
+            var fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(gameFile));
+            var id = int.Parse(fileName.Split("|").Last().Trim());
+            
+            var gameJsonStr = File.ReadAllText(gameFile);
+            var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(gameJsonStr);
+            var name = fileName.Split("|")[0] + "|" + fileName.Split("|")[1];
+            
+            games.Add(id, name);
+        }
+        
         
         if (!games.ContainsKey(gameId))
         {
@@ -116,7 +156,7 @@ public class GameRepositoryJson : IGameRepository
             File.Delete(fileToDelete);
         }
         else
-        {
+        {   
             throw new Exception($"Game not found with id: {gameId}.");
         }
     }
@@ -147,21 +187,30 @@ public class GameRepositoryJson : IGameRepository
         return newId;
     }
 
-    public Dictionary<int, string> GetGameIdNamePairs()
+    public Dictionary<int, string> GetGameIdNamePairs(string username)
     {
+        
         var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
-            .Select(Path.GetFileNameWithoutExtension)
-            .Select(Path.GetFileNameWithoutExtension)
             .ToList();
 
-        Dictionary<int, string> idNamePairs = new();
+        var idNamePairs = new Dictionary<int, string>();
         
-        foreach (var gameNameWithId in data)
+        foreach (var gameFile in data)
         {
-            var id = int.Parse(gameNameWithId!.Split("|").Last().Trim());
-            var name = gameNameWithId.Split("|")[0] + "|" + gameNameWithId.Split("|")[1];
+            var fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(gameFile));
+            var id = int.Parse(fileName.Split("|").Last().Trim());
             
-            idNamePairs.Add(id, name);
+            var gameJsonStr = File.ReadAllText(gameFile);
+            var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(gameJsonStr);
+            
+            
+            
+            if (gameState!.XPlayerUsername == username || gameState.OPlayerUsername == username)
+            {
+                var name = fileName.Split("|")[0] + "|" + fileName.Split("|")[1] + " | " +  
+                           gameState.XPlayerUsername + " VS " + gameState.OPlayerUsername;
+                idNamePairs.Add(id, name);
+            }
         }
 
         return idNamePairs;

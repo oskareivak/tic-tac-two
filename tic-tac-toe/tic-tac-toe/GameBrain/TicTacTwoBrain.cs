@@ -7,7 +7,8 @@ public class TicTacTwoBrain
     // Constructor for new game
     // public TicTacTwoBrain(GameConfiguration gameConfiguration)
     // public TicTacTwoBrain(GameConfiguration gameConfiguration, string gameMode)
-    public TicTacTwoBrain(GameConfiguration gameConfiguration, EGameMode gameMode, EGamePiece aiPiece)
+    public TicTacTwoBrain(GameConfiguration gameConfiguration, EGameMode gameMode, EGamePiece aiPiece, 
+                          string xPlayerUsername, string oPlayerUsername)
     {
         _numberOfPiecesOnBoard = new Dictionary<EGamePiece, int>
         {
@@ -26,7 +27,8 @@ public class TicTacTwoBrain
         }
 
         _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
-            initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode, aiPiece);
+            initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode, aiPiece,
+            xPlayerUsername, oPlayerUsername);
         // _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
         //     initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard);
     }
@@ -414,5 +416,19 @@ public class TicTacTwoBrain
     public int GetMovePieceAfterNMoves()
     {
         return _gameState.GameConfiguration.MovePieceAfterNMoves;
+    }
+
+    public string WhoseTurn()
+    {
+        if (NextMoveBy == EGamePiece.X)
+        {
+            return _gameState.XPlayerUsername;
+        }
+        if (NextMoveBy == EGamePiece.O)
+        {
+            return _gameState.OPlayerUsername;
+        }
+
+        return "";
     }
 }

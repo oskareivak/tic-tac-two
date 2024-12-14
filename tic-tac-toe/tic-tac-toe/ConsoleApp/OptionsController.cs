@@ -44,23 +44,24 @@ public class OptionsController
         }
         
         var gameMenuItems = new List<MenuItem>();
-        var gameNames = GameRepository.GetGameNames();
+        // var gameNames = GameRepository.GetGameNames();
+        var gameNamesForUser = GameRepository.GetGameNamesForUser(UserSession.Username);
         
-        if (gameNames.Count == 0)
+        if (gameNamesForUser.Count == 0)
         {
             Console.WriteLine("\nYou don't have any saved games yet.");
             return "";
         }
         
-        for (int i = 0; i < gameNames.Count; i++)
+        for (int i = 0; i < gameNamesForUser.Count; i++)
         {
-            var returnValue = gameNames[i];
+            var returnValue = gameNamesForUser[i];
             gameMenuItems.Add(new MenuItem()
             {
-                Title = gameNames[i].Split("|")[0] + "|" + gameNames[i].Split("|")[1],
+                Title = gameNamesForUser[i].Split("|")[0] + "|" + gameNamesForUser[i].Split("|")[1] + "|" + gameNamesForUser[i].Split("|")[3],
                 // Title = gameNames[i],
                 Shortcut = (i+1).ToString(),
-                MenuItemAction = () => returnValue
+                MenuItemAction = () => returnValue.Split("|")[0] + "|" + returnValue.Split("|")[1] + "| " + returnValue.Split("|")[2].Trim()
             });
         }
 
@@ -95,22 +96,24 @@ public class OptionsController
         }
         
         var gameMenuItems = new List<MenuItem>();
-        var gameNames = GameRepository.GetGameNames();
-
-        if (gameNames.Count == 0)
+        
+        var gameNamesForUser = GameRepository.GetGameNamesForUser(UserSession.Username);
+        
+        if (gameNamesForUser.Count == 0)
         {
             Console.WriteLine("\nYou don't have any saved games yet.");
             return "";
         }
-
-        for (int i = 0; i < gameNames.Count; i++)
+        
+        for (int i = 0; i < gameNamesForUser.Count; i++)
         {
-            var returnValue = gameNames[i];
+            var returnValue = gameNamesForUser[i];
             gameMenuItems.Add(new MenuItem()
             {
-                Title = gameNames[i].Split("|")[0] + "|" + gameNames[i].Split("|")[1],
-                Shortcut = (i + 1).ToString(),
-                MenuItemAction = () => returnValue
+                Title = gameNamesForUser[i].Split("|")[0] + "|" + gameNamesForUser[i].Split("|")[1] + "|" + gameNamesForUser[i].Split("|")[3],
+                // Title = gameNames[i],
+                Shortcut = (i+1).ToString(),
+                MenuItemAction = () => returnValue.Split("|")[0] + "|" + returnValue.Split("|")[1] + "| " + returnValue.Split("|")[2].Trim()
             });
         }
 
@@ -185,17 +188,7 @@ public class OptionsController
             gameModeMenuItems,
             isCustomMenu: true
         );
-        // var chosenGameMode = gameModeMenu.Run();
-        // if (chosenGameMode == "R")
-        // {
-        //     return "R";
-        // }
-        // if (chosenGameMode == "E")
-        // {
-        //     return "E";
-        // }
-
-        // GameController.MainLoop(null, null, Enum.Parse<EGameMode>(chosenGameMode));
+        
         return gameModeMenu.Run();
     }
     

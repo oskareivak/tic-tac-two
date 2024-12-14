@@ -53,7 +53,7 @@ public class Options : PageModel
         ViewData["UserName"] = UserName;
 
         
-        var gameSelectListData = _gameRepository.GetGameIdNamePairs()
+        var gameSelectListData = _gameRepository.GetGameIdNamePairs(UserName)
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
         
@@ -170,7 +170,7 @@ public class Options : PageModel
             }
             else if (Request.Form.ContainsKey("deleteGame"))
             {
-                if (_gameRepository.GetGameNames().Count == 0)
+                if (_gameRepository.GetGameNamesForUser(UserName).Count == 0)
                 {
                     Error = "You don't have any games to delete yet!";
                     return RedirectToPage("./Options", new { userName = UserName, error = Error});

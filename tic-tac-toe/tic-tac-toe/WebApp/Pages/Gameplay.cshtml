@@ -56,11 +56,13 @@
             }
             else
             {
-                <span class="badge bg-secondary">It's @Model.NextMoveBy's turn</span>
+                <span class="badge bg-secondary">It's @Model.GameEngine.WhoseTurn()'s turn (@Model.NextMoveBy)</span>
             }
         </div>
         <div class="col-md-8 d-flex justify-content-center">
-            <form id="dragForm" method="post">
+            @if (Model.CanMakeMove)
+            {
+                <form id="dragForm" method="post">
                 @if (string.IsNullOrWhiteSpace(Model.GameOverMessage))
                 {
                     <input type="hidden" asp-for="From" id="from">
@@ -72,9 +74,9 @@
                         for (int x = 0; x < Model.GameEngine.DimY; x++)
                         {
                             var boxId = $"{x},{y}";
-                            var isPiecePresent = Model.GameEngine.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y);
+                            var isGrid = Model.GameEngine.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y);
 
-                            @if (isPiecePresent)
+                            @if (isGrid)
                             {
                                 <a href="#" class="grid" id="@boxId" draggable="true"
                                    ondragstart="document.getElementById('from').value='@boxId'"
@@ -98,10 +100,37 @@
                     }
                 </div>
             </form>
+            }
+            else
+            {
+                <div class="game-board">
+                    @for (int y = 0; y < Model.GameEngine.DimY; y++)
+                    {
+                        for (int x = 0; x < Model.GameEngine.DimY; x++)
+                        {
+                            var boxId = $"{x},{y}";
+                            var isGrid = Model.GameEngine.CurrentGridCoordinates.Any(coord => coord[0] == x && coord[1] == y);
+
+                            @if (isGrid)
+                            {
+                                <a href="#" class="grid" id="@boxId" draggable="false">
+                                    @Html.Raw(ConsoleUI.Visualizer.DrawGamePiece(Model.GameEngine.GameBoard[x][y]))
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="#" class="board" id="@boxId" draggable="true">
+                                    @Html.Raw(ConsoleUI.Visualizer.DrawGamePiece(Model.GameEngine.GameBoard[x][y]))
+                                </a>
+                            }
+                        }
+                    }
+                </div>
+            }
         </div>
         @* TODO: vb kaota arrowid ara kui neid veel kasutada ei saa. samas probs ei*@
         <div class="col-md-2 d-flex justify-content-center align-items-center">
-            @if (string.IsNullOrWhiteSpace(Model.GameOverMessage) && Model.GameEngine.GetMovePieceAfterNMoves() != 0)
+            @if (string.IsNullOrWhiteSpace(Model.GameOverMessage) && Model.GameEngine.GetMovePieceAfterNMoves() != 0 && Model.CanMakeMove)
             {
                 <form method="post" id="arrowForm">
                     <div class="arrow-grid">
@@ -122,7 +151,8 @@
                     </div>
                 </form>
             }
-            @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage) && Model.GameEngine.GetMovePieceAfterNMoves() != 0)
+            @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage) && Model.GameEngine.GetMovePieceAfterNMoves() != 0 
+                 || !Model.CanMakeMove)
             {
                 <div class="arrow-grid">
                     <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Top Left">&#8598;</button>

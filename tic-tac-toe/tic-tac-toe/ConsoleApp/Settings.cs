@@ -9,7 +9,7 @@ public static class Settings
 
     public const int MaxSavedConfigs = 103;
     
-    public static readonly Dictionary<string, int> NewConfigRules = new()
+    public static readonly IReadOnlyDictionary<string, int> NewConfigRules = new Dictionary<string, int>
     {
         { "gameNameLengthMin" , 1 },
         { "gameNameLengthMax" , 30 },
@@ -20,7 +20,7 @@ public static class Settings
         { "movePiecesAfterMax" , 170 }
     };
 
-    public static Dictionary<EGameMode, string> GameModeStrings = new Dictionary<EGameMode, string>
+    public static readonly IReadOnlyDictionary<EGameMode, string> GameModeStrings = new Dictionary<EGameMode, string>
     {
         { EGameMode.PvP, "Player vs Player" },
         { EGameMode.PvAi, "Player vs AI" },

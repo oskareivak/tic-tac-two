@@ -5,8 +5,17 @@ namespace DAL;
 
 public class NoOpGameRepository : IGameRepository
 {
-    public List<string> GetGameNames() => new List<string>();
     public bool SaveGame(string gameStateJson, string gameConfigName) => false;
+    public List<string> GetGameNames()
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<string> GetGameNamesForUser(string username)
+    {
+        throw new NotImplementedException();
+    }
+    
     public void DeleteGame(string gameName) { }
     public GameState GetGameById(int gameId)
     {
@@ -19,6 +28,11 @@ public class NoOpGameRepository : IGameRepository
     }
 
     public int SaveGameReturnId(string jsonStateString, string gameConfigName)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Dictionary<int, string> GetGameIdNamePairs(string username)
     {
         throw new NotImplementedException();
     }

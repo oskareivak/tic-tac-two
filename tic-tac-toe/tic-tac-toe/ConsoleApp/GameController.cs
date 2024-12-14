@@ -37,6 +37,38 @@ public static class GameController
         TicTacTwoBrain gameEngine;
         if (gameState != null)
         {
+            Console.WriteLine($"xplayersname is {gameState.XPlayerUsername}, oplayersname is {gameState.OPlayerUsername}");
+            var newPlayersName = string.Empty;
+            if (gameState.XPlayerUsername == "....")
+            {
+                do
+                {
+                    Console.WriteLine("Please enter username for X player.");
+                    var input = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(input) && input.ToLower() != "ai" && input != "....")
+                    {
+                        newPlayersName = input;
+                    }
+                } while (newPlayersName == string.Empty);
+                
+                gameState.XPlayerUsername = newPlayersName;
+            }
+
+            if (gameState.OPlayerUsername == "....")
+            {
+                do
+                {
+                    Console.WriteLine("Please enter username for O player.");
+                    var input = Console.ReadLine();
+                    if (!string.IsNullOrEmpty(input) && input.ToLower() != "ai" && input != "....")
+                    {
+                        newPlayersName = input;
+                    }
+                } while (newPlayersName == string.Empty);
+
+                gameState.OPlayerUsername = newPlayersName;
+            }
+
             gameEngine = new TicTacTwoBrain(gameState);
         }
         else
@@ -64,7 +96,10 @@ public static class GameController
             }
 
             var chosenGameMode = Enum.Parse<EGameMode>(chosenGameModeShortcut);
-            
+
+            var xPlayerUsername = string.Empty;
+            var oPlayerUsername = string.Empty;
+
             var aiPiece = EGamePiece.Empty;
             if (chosenGameMode == EGameMode.PvAi)
             {
@@ -75,21 +110,62 @@ public static class GameController
                     if (input != null && input.ToLower() == "x")
                     {
                         aiPiece = EGamePiece.O;
+                        oPlayerUsername = "AI";
+                        xPlayerUsername = UserSession.Username;
                     }
+
                     if (input != null && input.ToLower() == "o")
                     {
                         aiPiece = EGamePiece.X;
+                        xPlayerUsername = "AI";
+                        oPlayerUsername = UserSession.Username;
                     }
                 } while (aiPiece == EGamePiece.Empty);
             }
 
-            // var gameMode = OptionsController.ChooseGamemode();
-            // Console.WriteLine($"Gamemode here" + gameMode);
+            if (chosenGameMode == EGameMode.AivAi)
+            {
+                xPlayerUsername = "AI1";
+                oPlayerUsername = "AI2";
+            }
 
-            gameEngine = new TicTacTwoBrain(chosenConfig, chosenGameMode, aiPiece);
+
+            if (chosenGameMode == EGameMode.PvP)
+            {
+                do
+                {
+                    do
+                    {
+                        Console.WriteLine("Enter X player's username:");
+                        var input = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(input) && input.ToLower() != "ai" && input != "....")
+                        {
+                            xPlayerUsername = input;
+                        }
+                    } while (string.IsNullOrEmpty(xPlayerUsername));
+
+                    do
+                    {
+                        Console.WriteLine("Enter O player's username:");
+                        var input = Console.ReadLine();
+                        if (!string.IsNullOrEmpty(input) && input.ToLower() != "ai" && input != "....")
+                        {
+                            oPlayerUsername = input;
+                        }
+                    } while (string.IsNullOrEmpty(oPlayerUsername));
+
+                    if (xPlayerUsername != UserSession.Username && oPlayerUsername != UserSession.Username)
+                    {
+                        Console.WriteLine($"You are logged in as {UserSession.Username}, so " +
+                                          $"one player must be {UserSession.Username}.");
+                    }
+                } while (xPlayerUsername != UserSession.Username && oPlayerUsername != UserSession.Username);
+            }
+
+            gameEngine = new TicTacTwoBrain(chosenConfig, chosenGameMode, aiPiece, xPlayerUsername, oPlayerUsername);
             // gameEngine = new TicTacTwoBrain(chosenConfig, Enum.Parse<EGameMode>(gameMode));
         }
-        
+
         var gameStateGameMode = gameEngine.GetGameMode();
         // var aiPiece = EGamePiece.Empty;
         if (gameStateGameMode == EGameMode.PvP)
@@ -113,16 +189,14 @@ public static class GameController
             var aiTurn = false;
             var skip = false;
 
-            if (gameStateGameMode == EGameMode.PvAi && gameEngine.NextMoveBy == gameEngine.GetGameState().AiPiece 
+            if (gameStateGameMode == EGameMode.PvAi && gameEngine.NextMoveBy == gameEngine.GetGameState().AiPiece
                 || gameStateGameMode == EGameMode.AivAi)
             {
                 aiTurn = true;
             }
 
-            Console.Write($"It's {gameEngine.NextMoveBy}'s turn.\n");
-            // Console.Write("Give me coordinates <x,y>:");
+            Console.Write($"It's {gameEngine.WhoseTurn()}'s turn. ({gameEngine.NextMoveBy})\n");
             Console.Write(">");
-            //  or save. To be added later.
             var input = "";
             if (!aiTurn)
             {
@@ -284,25 +358,26 @@ public static class GameController
             if (winner == null)
             {
                 ConsoleUI.Visualizer.DrawBoard(gameEngine);
-                Console.WriteLine("It's a tie!");
+                Console.WriteLine("It's a draw!");
                 break;
             }
 
             if (winner == EGamePiece.X)
             {
                 ConsoleUI.Visualizer.DrawBoard(gameEngine);
-                Console.WriteLine("X has won the game!");
+                Console.WriteLine($"{gameEngine.GetGameState().XPlayerUsername} (X) has won the game!");
                 break;
             }
 
             if (winner == EGamePiece.O)
             {
                 ConsoleUI.Visualizer.DrawBoard(gameEngine);
-                Console.WriteLine("O has won the game!");
+                Console.WriteLine($"{gameEngine.GetGameState().OPlayerUsername} (O) has won the game!");
                 break;
             }
 
-            if (winner == EGamePiece.Empty) // TODO: add this to web as well? Actually probably add to CheckForWin method.
+            if (winner == EGamePiece
+                    .Empty) // TODO: add this to web as well? Actually probably add to CheckForWin method.
             {
                 var counter = 0;
                 var board = gameEngine.GetGameState().GameBoard;
@@ -313,6 +388,7 @@ public static class GameController
                         counter++;
                     }
                 }
+
                 if (counter == 0)
                 {
                     ConsoleUI.Visualizer.DrawBoard(gameEngine);
@@ -320,7 +396,6 @@ public static class GameController
                     break;
                 }
             }
-            
         } while (true);
 
         return "M";

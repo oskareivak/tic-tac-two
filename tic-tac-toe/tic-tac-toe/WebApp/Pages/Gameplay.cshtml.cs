@@ -63,6 +63,8 @@ public class Gameplay : PageModel
     
     [BindProperty(SupportsGet = true)] public string SelectedHumanPiece { get; set; } = default!;
     
+    public bool CanMakeMove { get; set; } = default!;
+    
     
     public IActionResult OnGet()
     {   
@@ -76,21 +78,44 @@ public class Gameplay : PageModel
         if (IsNewGame)
         {
             var aiPiece = EGamePiece.Empty;
-            if (!string.IsNullOrEmpty(SelectedHumanPiece))
+            var xPlayerName = string.Empty;
+            var oPlayerName = string.Empty;
+
+            if (SelectedGameMode == "PvAi")
+            {
+                if (!string.IsNullOrEmpty(SelectedHumanPiece))
+                {
+                    if (SelectedHumanPiece == "X")
+                    {
+                        aiPiece = EGamePiece.O;
+                        xPlayerName = UserName;
+                        oPlayerName = "AI";
+                    }
+                    else
+                    {
+                        aiPiece = EGamePiece.X;
+                        xPlayerName = "AI";
+                        oPlayerName = UserName;
+                    }
+                }
+            }
+            if (SelectedGameMode == "PvP")
             {
                 if (SelectedHumanPiece == "X")
                 {
-                    aiPiece = EGamePiece.O;
+                    xPlayerName = UserName;
+                    oPlayerName = "....";
                 }
                 else
                 {
-                    aiPiece = EGamePiece.X;
+                    oPlayerName = UserName;
+                    xPlayerName = "....";
                 }
             }
             
             var config = _configRepository.GetConfigurationById(ConfigurationId);
             var gameMode = Enum.Parse<EGameMode>(SelectedGameMode);
-            GameEngine = new TicTacTwoBrain(config, gameMode, aiPiece);
+            GameEngine = new TicTacTwoBrain(config, gameMode, aiPiece, xPlayerName, oPlayerName);
             GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
             return RedirectToPage("./Gameplay", new 
             { 
@@ -113,9 +138,23 @@ public class Gameplay : PageModel
         
         NextMoveBy = GameEngine.NextMoveBy;
         
+        if (GameEngine.GetGameMode() == EGameMode.PvP && 
+            NextMoveBy == EGamePiece.X && GameEngine.GetGameState().XPlayerUsername != UserName ||
+            NextMoveBy == EGamePiece.O && GameEngine.GetGameState().OPlayerUsername != UserName)
+        {
+            CanMakeMove = false;
+        }
+        else
+        {
+            CanMakeMove = true;
+        }
+        Console.WriteLine(CanMakeMove);
+        Console.WriteLine(NextMoveBy);
+        
         return Page();
     }
-
+    
+    
     public IActionResult OnPost()
     {
         Error = "";

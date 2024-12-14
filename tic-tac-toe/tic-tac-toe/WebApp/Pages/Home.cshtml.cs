@@ -75,7 +75,8 @@ public class Home : PageModel
         if (!string.IsNullOrWhiteSpace(UserName))
         {
             var gameMode1 = Enum.Parse<EGameMode>(SelectedGameMode);
-            if (gameMode1 == EGameMode.PvAi && string.IsNullOrWhiteSpace(SelectedHumanPiece))
+            if (gameMode1 == EGameMode.PvAi && string.IsNullOrWhiteSpace(SelectedHumanPiece) || 
+                gameMode1 == EGameMode.PvP && string.IsNullOrWhiteSpace(SelectedHumanPiece) )
             {
                 return RedirectToPage("./Home", new { 
                     userName = UserName, 
@@ -88,7 +89,7 @@ public class Home : PageModel
             
             if (Enum.TryParse<EGameMode>(SelectedGameMode, out var gameMode))
             {
-                if (gameMode1 == EGameMode.AivAi || gameMode1 == EGameMode.PvP)
+                if (gameMode1 == EGameMode.AivAi)
                 {
                     return RedirectToPage("./Gameplay", new { 
                         userName = UserName, 

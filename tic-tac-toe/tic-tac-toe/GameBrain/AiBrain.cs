@@ -205,7 +205,6 @@ public class AiBrain
                 }
                 else if (move.MoveType == EMoveType.MoveGrid)
                 {
-                    Console.WriteLine("I KNOW YOURE GONNA WIN NEXT MOVE");
                     var newDirection = GetOppositeGridDirection(move.Direction);
                     var tryMove = new Move
                     {
@@ -277,29 +276,35 @@ public class AiBrain
     {
         var currentNumberOfMyPiecesInGrid = 0;
         var newNumberOfMyPiecesInGrid = 0;
-        
+
+        // Check current grid coordinates in the original game state
         foreach (var coord in _gameState.CurrentGridCoordinates)
         {
-            if (_gameState.GameBoard[coord[0]][coord[1]] == _gameState.NextMoveBy)
+            if (IsWithinBounds(coord[0], coord[1]) && 
+                _gameState.GameBoard[coord[0]][coord[1]] == _gameState.NextMoveBy)
             {
                 currentNumberOfMyPiecesInGrid++;
             }
         }
 
+        // Check current grid coordinates in the temporary game state
         foreach (var coord in tempGameState.CurrentGridCoordinates)
         {
-            if (tempGameState.GameBoard[coord[0]][coord[1]] == tempGameState.NextMoveBy)
+            if (IsWithinBounds(coord[0], coord[1]) && 
+                tempGameState.GameBoard[coord[0]][coord[1]] == tempGameState.NextMoveBy)
             {
                 newNumberOfMyPiecesInGrid++;
             }
         }
 
-        if (newNumberOfMyPiecesInGrid > currentNumberOfMyPiecesInGrid)
-        {
-            return true;
-        }
-
-        return false;
+        // Compare the counts of pieces in the grid
+        return newNumberOfMyPiecesInGrid > currentNumberOfMyPiecesInGrid;
+    }
+    
+    private bool IsWithinBounds(int x, int y)
+    {
+        return x >= 0 && x < _gameState.GameBoard.Length && 
+               y >= 0 && y < _gameState.GameBoard[0].Length;
     }
 
     private List<Move> GetPossibleMoves(GameState gameState)
