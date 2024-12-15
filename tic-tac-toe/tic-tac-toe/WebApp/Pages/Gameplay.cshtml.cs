@@ -20,63 +20,54 @@ public class Gameplay : PageModel
         _configRepository = configRepository;
         _gameRepository = gameRepository;
     }
-    
-    // TODO: add sound effects!
-    
-    [BindProperty(SupportsGet = true)] 
-    public string? GameOverMessage { get; set; }
-    
-    [BindProperty]
-    public string ArrowDirection { get; set; } = string.Empty;
-    
-    
-    [BindProperty(SupportsGet = true)] 
-    public EGamePiece NextMoveBy { get; set; }
 
-    [BindProperty(SupportsGet = true)] 
+    // TODO: add sound effects!
+
+    [BindProperty(SupportsGet = true)] public string? GameOverMessage { get; set; }
+
+    [BindProperty] public string ArrowDirection { get; set; } = string.Empty;
+
+
+    [BindProperty(SupportsGet = true)] public EGamePiece NextMoveBy { get; set; }
+
+    [BindProperty(SupportsGet = true)]
     [FromQuery(Name = "configId")]
     public int ConfigurationId { get; set; }
-    
-    [BindProperty(SupportsGet = true)]
-    public bool IsNewGame { get; set; } = default!;
-    
+
+    [BindProperty(SupportsGet = true)] public bool IsNewGame { get; set; } = default!;
+
     public TicTacTwoBrain GameEngine { get; set; } = default!;
-    
-    [BindProperty(SupportsGet = true)] 
-    public string UserName { get; set; } = default!;
-    
-    [BindProperty(SupportsGet = true)] 
-    public string? Error { get; set; }
-    
-    [BindProperty]
-    public string From { get; set; } = default!;  
 
-    [BindProperty]
-    public string To { get; set; } = default!;    
+    [BindProperty(SupportsGet = true)] public string UserName { get; set; } = default!;
 
-    [BindProperty(SupportsGet = true)] 
-    public int GameId { get; set; } 
-    
-    [BindProperty(SupportsGet = true)] 
+    [BindProperty(SupportsGet = true)] public string? Error { get; set; }
+
+    [BindProperty] public string From { get; set; } = default!;
+
+    [BindProperty] public string To { get; set; } = default!;
+
+    [BindProperty(SupportsGet = true)] public int GameId { get; set; }
+
+    [BindProperty(SupportsGet = true)]
     [FromQuery(Name = "gameMode")]
     public string SelectedGameMode { get; set; } = default!;
-    
+
     [BindProperty(SupportsGet = true)] public string SelectedHumanPiece { get; set; } = default!;
-    
+
     public bool CanMakeMove { get; set; } = default!;
-    
+
     [BindProperty(SupportsGet = true)] public bool JoinedGame { get; set; }
-    
-    
+
+
     public IActionResult OnGet()
-    {   
+    {
         if (string.IsNullOrEmpty(UserName))
         {
             return RedirectToPage("./Index", new { error = "No username provided." });
         }
-        
+
         ViewData["UserName"] = UserName;
-        
+
         if (IsNewGame)
         {
             var aiPiece = EGamePiece.Empty;
@@ -101,6 +92,7 @@ public class Gameplay : PageModel
                     }
                 }
             }
+
             if (SelectedGameMode == "PvP")
             {
                 if (SelectedHumanPiece == "X")
@@ -114,16 +106,22 @@ public class Gameplay : PageModel
                     xPlayerName = "....";
                 }
             }
-            
+
+            if (SelectedGameMode == "AivAi")
+            {
+                xPlayerName = "AI1";
+                oPlayerName = "AI2";
+            }
+
             var config = _configRepository.GetConfigurationById(ConfigurationId);
             var gameMode = Enum.Parse<EGameMode>(SelectedGameMode);
             GameEngine = new TicTacTwoBrain(config, gameMode, aiPiece, xPlayerName, oPlayerName);
             GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
-            return RedirectToPage("./Gameplay", new 
-            { 
-                userName = UserName, 
-                gameId = GameId, 
-                configId = ConfigurationId, 
+            return RedirectToPage("./Gameplay", new
+            {
+                userName = UserName,
+                gameId = GameId,
+                configId = ConfigurationId,
             });
         }
         else
@@ -133,14 +131,41 @@ public class Gameplay : PageModel
             SelectedGameMode = GameEngine.GetGameMode().ToString();
         }
 
+        // if (!string.IsNullOrEmpty(GameOverMessage))
+        // {
+        //     _gameRepository.DeleteGameById(GameId); // TODO: lahenda, et kui mang labi ja deletetakse ara siis autorefreshi parast crashib, pole sellise id-ga mangu enam.
+        // }
+        
+        
+        
         if (!string.IsNullOrEmpty(GameOverMessage))
         {
-            _gameRepository.DeleteGameById(GameId); // TODO: lahenda, et kui mang labi ja deletetakse ara siis autorefreshi parast crashib, pole sellise id-ga mangu enam.
+            // Execute the function asynchronously
+            Task.Run(async () =>
+            {
+                await Task.Delay(5000); // Wait for 5 seconds
+                _gameRepository.DeleteGameById(GameId);
+            });
+        }
+
+        if (string.IsNullOrEmpty(GameOverMessage))
+        {
+            var winner = GameEngine.CheckForWin();
+            if (winner != string.Empty)
+            {   
+                GameOverMessage = winner;
+                return RedirectToPage("./Gameplay", new
+                {
+                    userName = UserName, configId = ConfigurationId, IsNewGame = false,
+                    GameOverMessage = GameOverMessage, gameId = GameId
+                });
+            }
         }
         
+
         NextMoveBy = GameEngine.NextMoveBy;
-        
-        if (GameEngine.GetGameState().XPlayerUsername == "...." && JoinedGame) 
+
+        if (GameEngine.GetGameState().XPlayerUsername == "...." && JoinedGame)
         {
             GameEngine.GetGameState().XPlayerUsername = UserName;
             _gameRepository.DeleteGameById(GameId);
@@ -152,8 +177,8 @@ public class Gameplay : PageModel
             _gameRepository.DeleteGameById(GameId);
             GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
         }
-        
-        if (GameEngine.GetGameMode() == EGameMode.PvP && 
+
+        if (GameEngine.GetGameMode() == EGameMode.PvP &&
             NextMoveBy == EGamePiece.X && GameEngine.GetGameState().XPlayerUsername != UserName ||
             NextMoveBy == EGamePiece.O && GameEngine.GetGameState().OPlayerUsername != UserName)
         {
@@ -165,27 +190,27 @@ public class Gameplay : PageModel
         }
         // Console.WriteLine(CanMakeMove);
         // Console.WriteLine(NextMoveBy);
-        
+
         return Page();
     }
-    
-    
+
+
     public IActionResult OnPost()
     {
         Error = "";
-        
+
         if (GameEngine == null)
         {
             var savedGameState = _gameRepository.GetGameById(GameId);
             GameEngine = new TicTacTwoBrain(savedGameState);
         }
-        
+
         var skip = false;
-        
+
         var aiTurn = false;
-        var gameStateGameMode = GameEngine.GetGameState().GameMode; 
-        
-        if (gameStateGameMode == EGameMode.PvAi && GameEngine.NextMoveBy == GameEngine.GetGameState().AiPiece 
+        var gameStateGameMode = GameEngine.GetGameState().GameMode;
+
+        if (gameStateGameMode == EGameMode.PvAi && GameEngine.NextMoveBy == GameEngine.GetGameState().AiPiece
             || gameStateGameMode == EGameMode.AivAi)
         {
             aiTurn = true;
@@ -200,10 +225,10 @@ public class Gameplay : PageModel
                 {
                     Error = message;
                 }
-            
+
                 skip = true;
             }
-        
+
             if (string.IsNullOrEmpty(From) && !skip)
             {
                 var splitTo = To.Split(',');
@@ -224,7 +249,7 @@ public class Gameplay : PageModel
                 var fromY = int.Parse(splitFrom[1]);
                 var toX = int.Parse(splitTo[0]);
                 var toY = int.Parse(splitTo[1]);
-            
+
                 var message = GameEngine.MoveAPiece((fromX, fromY), (toX, toY));
                 if (message != "")
                 {
@@ -232,7 +257,7 @@ public class Gameplay : PageModel
                 }
             }
         }
-        
+
         if (aiTurn)
         {
             AiBrain AI = new AiBrain(GameEngine, GameEngine.GetGameState());
@@ -260,47 +285,39 @@ public class Gameplay : PageModel
             {
                 GameEngine.MoveGrid(move.Direction);
             }
-            
-            var random = new Random();
-            var delay = random.Next(Settings.AiDelayMin, Settings.AiDelayMax); // Delay for AI
-            Thread.Sleep(delay);
-        }
-        
-        var winner = GameEngine.CheckForWin();
-         
-        if (winner == null)
-        {
-            GameOverMessage = "It's a draw!";
-        }
-        if (winner == EGamePiece.X)
-        {
-            GameOverMessage = "X has won the game!";
 
+            
+            
+            // var random = new Random();
+            // var delay = random.Next(Settings.AiDelayMin, Settings.AiDelayMax); // Delay for AI
+            // Thread.Sleep(delay);
         }
-        if (winner == EGamePiece.O)
-        {   
-            GameOverMessage = "O has won the game!";             
-        }
+
+        // var winnerMessage = GameEngine.CheckForWin(); // TODO: can i just remove this and keep the check in get request?
+        //
+        // if (winnerMessage != string.Empty)
+        // {
+        //     GameOverMessage = winnerMessage;
+        // }
 
         UserName = UserName.Trim();
         var stateJson = GameEngine.GetGameStateJson();
-        
+
         if (!string.IsNullOrWhiteSpace(UserName))
-        {   
-            
+        {
             _gameRepository.DeleteGameById(GameId);
-                
+
             GameId = _gameRepository.SaveGameReturnId(stateJson, GameEngine.GetGameConfigName());
-            
-            if (winner != EGamePiece.Empty)
+            // if (winner != EGamePiece.Empty)
+            if (!string.IsNullOrEmpty(GameOverMessage))
             {
                 return RedirectToPage("./Gameplay", new
                 {
-                    userName = UserName, configId = ConfigurationId, IsNewGame = false ,
-                    GameOverMessage = GameOverMessage, gameId = GameId 
+                    userName = UserName, configId = ConfigurationId, IsNewGame = false,
+                    GameOverMessage = GameOverMessage, gameId = GameId // TODO: can i just remove this and keep the winner check in get request?
                 });
             }
-            
+
             return RedirectToPage("./Gameplay", new
             {
                 userName = UserName, configId = ConfigurationId, IsNewGame = false, gameId = GameId, error = Error

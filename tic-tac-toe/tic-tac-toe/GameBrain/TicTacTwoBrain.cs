@@ -7,8 +7,8 @@ public class TicTacTwoBrain
     // Constructor for new game
     // public TicTacTwoBrain(GameConfiguration gameConfiguration)
     // public TicTacTwoBrain(GameConfiguration gameConfiguration, string gameMode)
-    public TicTacTwoBrain(GameConfiguration gameConfiguration, EGameMode gameMode, EGamePiece aiPiece, 
-                          string xPlayerUsername, string oPlayerUsername)
+    public TicTacTwoBrain(GameConfiguration gameConfiguration, EGameMode gameMode, EGamePiece aiPiece,
+        string xPlayerUsername, string oPlayerUsername)
     {
         _numberOfPiecesOnBoard = new Dictionary<EGamePiece, int>
         {
@@ -176,7 +176,6 @@ public class TicTacTwoBrain
     {
         if (_gameState.GameConfiguration.MovePieceAfterNMoves == 0)
         {
-            
             return "You cannot move pieces in this game configuration!";
         }
 
@@ -188,7 +187,7 @@ public class TicTacTwoBrain
             {
                 plural = "s";
             }
-            
+
             return $"{movesNeeded} more move{plural} have to be made to move a piece!";
         }
 
@@ -219,10 +218,9 @@ public class TicTacTwoBrain
     {
         if (_gameState.GameConfiguration.MovePieceAfterNMoves == 0)
         {
-            
             return "You cannot move the grid in this game configuration!";
         }
-        
+
         var newCoords = new List<int[]>();
 
         if (!(_gameState.NumberOfMovesMade / 2 >= _gameState.GameConfiguration.MovePieceAfterNMoves))
@@ -233,9 +231,10 @@ public class TicTacTwoBrain
             {
                 plural = "s";
             }
-            
+
             return $"{movesNeeded} more move{plural} have to be made to move the grid!";
         }
+
         if (DirectionMap.TryGetValue(direction, out (int x, int y) move))
         {
             foreach (var coordinates in _gameState.CurrentGridCoordinates)
@@ -248,7 +247,6 @@ public class TicTacTwoBrain
             {
                 if (!_gameState.BoardCoordinates.Any(coord => coord[0] == coordinate[0] && coord[1] == coordinate[1]))
                 {
-
                     return "Try to keep the grid inside of the game board.";
                 }
             }
@@ -258,11 +256,11 @@ public class TicTacTwoBrain
 
             return "";
         }
-        
+
         return $"Invalid direction: {direction}";
     }
 
-    public EGamePiece? CheckForWin()
+    public string CheckForWin()
     {
         int rows = _gameState.GameBoard.Length; // Y dimension
         int cols = _gameState.GameBoard[0].Length; // X dimension
@@ -310,11 +308,45 @@ public class TicTacTwoBrain
             }
         }
 
-        if (xWins && oWins) return null; // tie
-        if (xWins) return EGamePiece.X;
-        if (oWins) return EGamePiece.O;
 
-        return EGamePiece.Empty; // no winner
+        // if (xWins && oWins) return null; // tie
+        // if (xWins) return EGamePiece.X;
+        // if (oWins) return EGamePiece.O;
+        //
+        // return EGamePiece.Empty; // no winner
+
+        if (xWins && oWins)
+        {
+            return "It's a tie!";
+        }
+
+        if (xWins)
+        {
+            return $"{_gameState.XPlayerUsername} (X) has won the game!";
+        }
+
+        if (oWins)
+        {
+            return $"{_gameState.OPlayerUsername} (O) has won the game!";
+        }
+
+        var counter = 0;
+        var board = _gameState.GameBoard;
+        foreach (var coord in board)
+        {
+            if (coord.Contains(EGamePiece.Empty))
+            {
+                counter++;
+                break;
+            }
+        }
+
+        if (counter == 0)
+        {
+            return "It's a draw!";
+        }
+
+        return string.Empty;
     }
 
     private bool CheckDirection(int startRow, int startCol, int rowIncrement, int colIncrement, EGamePiece piece,
@@ -407,12 +439,12 @@ public class TicTacTwoBrain
     {
         return System.Text.Json.JsonSerializer.Deserialize<GameState>(json)!;
     }
-    
+
     public GameState GetGameState()
     {
         return _gameState; // TODO: should this be exposed?
     }
-    
+
     public int GetMovePieceAfterNMoves()
     {
         return _gameState.GameConfiguration.MovePieceAfterNMoves;
@@ -424,6 +456,7 @@ public class TicTacTwoBrain
         {
             return _gameState.XPlayerUsername;
         }
+
         if (NextMoveBy == EGamePiece.O)
         {
             return _gameState.OPlayerUsername;

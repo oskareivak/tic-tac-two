@@ -343,58 +343,24 @@ public static class GameController
 
 
             //check if X or O have won the game.
-            var winner = gameEngine.CheckForWin();
+            var winnerMessage = gameEngine.CheckForWin();
 
             // Not used when using in-memory saving:
             if (Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database)
             {
-                if (gameState != null && gameStateName != null && winner != EGamePiece.Empty)
+                if (gameState != null && gameStateName != null && winnerMessage != string.Empty)
                 {
                     GameRepository.DeleteGame(gameStateName);
                 }
             }
 
-            if (winner == null)
+            if (winnerMessage != string.Empty)
             {
                 ConsoleUI.Visualizer.DrawBoard(gameEngine);
-                Console.WriteLine("It's a draw!");
+                Console.WriteLine(winnerMessage);
                 break;
             }
-
-            if (winner == EGamePiece.X)
-            {
-                ConsoleUI.Visualizer.DrawBoard(gameEngine);
-                Console.WriteLine($"{gameEngine.GetGameState().XPlayerUsername} (X) has won the game!");
-                break;
-            }
-
-            if (winner == EGamePiece.O)
-            {
-                ConsoleUI.Visualizer.DrawBoard(gameEngine);
-                Console.WriteLine($"{gameEngine.GetGameState().OPlayerUsername} (O) has won the game!");
-                break;
-            }
-
-            if (winner == EGamePiece
-                    .Empty) // TODO: add this to web as well? Actually probably add to CheckForWin method.
-            {
-                var counter = 0;
-                var board = gameEngine.GetGameState().GameBoard;
-                foreach (var coord in board)
-                {
-                    if (coord.Contains(EGamePiece.Empty))
-                    {
-                        counter++;
-                    }
-                }
-
-                if (counter == 0)
-                {
-                    ConsoleUI.Visualizer.DrawBoard(gameEngine);
-                    Console.WriteLine("It's a tie!");
-                    break;
-                }
-            }
+            
         } while (true);
 
         return "M";

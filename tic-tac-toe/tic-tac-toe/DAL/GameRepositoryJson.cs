@@ -144,7 +144,8 @@ public class GameRepositoryJson : IGameRepository
         
         if (!games.ContainsKey(gameId))
         {
-            throw new Exception($"Game not found with id: {gameId}.");
+            Console.WriteLine($"Game not found with id: {gameId}.");
+            // throw new Exception($"Game not found with id: {gameId}."); TODO: cleanup
         }
         
         var gameName = games[gameId];
@@ -157,7 +158,8 @@ public class GameRepositoryJson : IGameRepository
         }
         else
         {   
-            throw new Exception($"Game not found with id: {gameId}.");
+            Console.WriteLine($"Game not found with id: {gameId}.");
+            // throw new Exception($"Game not found with id: {gameId}.");
         }
     }
 

@@ -168,38 +168,41 @@
                     </div>
                 </form>
             }
-            @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage) && Model.GameEngine.GetMovePieceAfterNMoves() != 0
-                 || !Model.CanMakeMove)
+            @if (Model.GameEngine.GetMovePieceAfterNMoves() != 0)
             {
-                <div class="arrow-grid">
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
-                            aria-label="Arrow Top Left">&#8598;
-                    </button>
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Up">
-                        &#8593;
-                    </button>
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
-                            aria-label="Arrow Top Right">&#8599;
-                    </button>
+                @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage) || Model.GameEngine.GetMovePieceAfterNMoves() == 0
+                                                                       || !Model.CanMakeMove)
+                {
+                    <div class="arrow-grid">
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
+                                aria-label="Arrow Top Left">&#8598;
+                        </button>
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Up">
+                            &#8593;
+                        </button>
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
+                                aria-label="Arrow Top Right">&#8599;
+                        </button>
 
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
-                            aria-label="Arrow Left">&#8592;
-                    </button>
-                    <div class="empty-cell"></div> <!-- Middle Empty Cell -->
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
-                            aria-label="Arrow Right">&#8594;
-                    </button>
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
+                                aria-label="Arrow Left">&#8592;
+                        </button>
+                        <div class="empty-cell"></div> <!-- Middle Empty Cell -->
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
+                                aria-label="Arrow Right">&#8594;
+                        </button>
 
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
-                            aria-label="Arrow Bottom Left">&#8601;
-                    </button>
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
-                            aria-label="Arrow Down">&#8595;
-                    </button>
-                    <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
-                            aria-label="Arrow Bottom Right">&#8600;
-                    </button>
-                </div>
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
+                                aria-label="Arrow Bottom Left">&#8601;
+                        </button>
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
+                                aria-label="Arrow Down">&#8595;
+                        </button>
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
+                                aria-label="Arrow Bottom Right">&#8600;
+                        </button>
+                    </div>
+                }
             }
         </div>
         <form method="post">
@@ -213,14 +216,25 @@
      Model.GameEngine.GetGameState().GameMode == EGameMode.AivAi)
 {
     if (string.IsNullOrWhiteSpace(Model.GameOverMessage))
-    {
+    {   
+        @* <script> *@
+        @*     document.getElementById('invisibleSubmit').click(); *@
+        @* </script> *@
+        
+        var random = new Random();
+        var delay = random.Next(Settings.AiDelayMin, Settings.AiDelayMax); // Delay for AI
         <script>
-            document.getElementById('invisibleSubmit').click();
-        </script>
+            setTimeout(function() {
+                document.getElementById('invisibleSubmit').click();
+            }, @delay); // Inject delay value from server-side
+        </script> // TODO: fix, cannot leave ai games as they are not saved then.
     }
 }
-@if (Model.GameEngine.WhoseTurn() != Model.UserName && Model.GameEngine.WhoseTurn().ToLower() != "ai")
+@if (Model.GameEngine.WhoseTurn() != Model.UserName && Model.GameEngine.WhoseTurn().ToLower() != "ai"
+     && Model.GameEngine.WhoseTurn().ToLower() != "ai1" && Model.GameEngine.WhoseTurn().ToLower() != "ai2"
+     && string.IsNullOrEmpty(Model.GameOverMessage))
 {
+    
     <script>
         setInterval(function () {
             location.reload();

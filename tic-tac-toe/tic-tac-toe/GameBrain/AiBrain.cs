@@ -69,24 +69,38 @@ public class AiBrain
             }
 
             var winner = tempGameEngine.CheckForWin();
-
-            if (winner == _gameState.NextMoveBy) // AI wins
-            {
-                moveScores.Add(move, 10);
-            }
-            else if (winner == EGamePiece.Empty) // Nobody wins
+            
+            if (winner == string.Empty || winner == "It's a draw!") // Nobody wins
             {
                 moveScores.Add(move, EvaluateFurther(move, tempGameState));
             }
-            else if (winner == null) // Draw
+            else if (winner == "It's a tie!") // Draw
             {
                 moveScores.Add(move, -4);
             }
-            else // Opponent wins
+            else if (winner != string.Empty && winner != "It's a tie!") // Someone wins
             {
-                moveScores.Add(move, -10);
+                Console.WriteLine("winner here" + winner);
+                var isWinnerXorO = EGamePiece.Empty;
+                if (winner.Split("(")[1].Split(")")[0] == "X")
+                {
+                    isWinnerXorO = EGamePiece.X;
+                }
+                else
+                {
+                    isWinnerXorO = EGamePiece.O;
+                }
+                
+                if (isWinnerXorO == _gameState.NextMoveBy) // AI wins
+                {
+                    moveScores.Add(move, 10);
+                }
+                else // Opponent wins
+                {
+                    moveScores.Add(move, -10);
+                }
             }
-
+            
             UndoMove(move, tempGameState);
         }
 
@@ -180,8 +194,22 @@ public class AiBrain
             }
 
             var winner = tempGameEngine.CheckForWin();
+
+            var isWinnerXorO = EGamePiece.Empty;
+            if (winner != string.Empty && winner != "It's a tie!" && winner != "It's a draw!")
+            {
+                if (winner.Split("(")[1].Split(")")[0] == "X")
+                {
+                    isWinnerXorO = EGamePiece.X;
+                }
+                else
+                {
+                    isWinnerXorO = EGamePiece.O;
+                }
+            }
             
-            if (winner == GetOpponentsPiece(_gameEngine.NextMoveBy))
+            
+            if (isWinnerXorO == GetOpponentsPiece(_gameEngine.NextMoveBy))
             {
                 if (move.MoveType == EMoveType.PlaceAPiece)
                 {
