@@ -186,4 +186,20 @@ public class GameRepositoryDb : IGameRepository
         //     .OrderBy(c => c.CreatedAtDateTime)
         //     .ToDictionary(c => c.Id, c => c.Configuration!.Name + " | " + c.CreatedAtDateTime + " | " + c.State);
     }
+
+    public void UpdateGame(int gameId, string gameStateJson)
+    {
+        var game = _context.SavedGames.Find(gameId);
+
+        if (game != null)
+        {
+            game.State = gameStateJson;
+            game.CreatedAtDateTime = DateTime.Now.ToString("f");
+            _context.SaveChanges();
+        }
+        else
+        {
+            Console.WriteLine($"Game not found with id: {gameId}.");
+        }
+    }
 }

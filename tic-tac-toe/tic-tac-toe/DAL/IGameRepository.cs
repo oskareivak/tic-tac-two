@@ -16,5 +16,7 @@ public interface IGameRepository
     public int SaveGameReturnId(string jsonStateString, string gameConfigName);
 
     public Dictionary<int, string> GetGameIdNamePairs(string username);
+    
+    public void UpdateGame(int gameId, string gameStateJson);
 
 }

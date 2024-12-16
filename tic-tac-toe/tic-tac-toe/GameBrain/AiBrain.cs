@@ -80,7 +80,6 @@ public class AiBrain
             }
             else if (winner != string.Empty && winner != "It's a tie!") // Someone wins
             {
-                Console.WriteLine("winner here" + winner);
                 var isWinnerXorO = EGamePiece.Empty;
                 if (winner.Split("(")[1].Split(")")[0] == "X")
                 {

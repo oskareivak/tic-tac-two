@@ -183,6 +183,7 @@ public class GameRepositoryJson : IGameRepository
             newId++;
         }
         
+        
         var fileName = FileHelper.BasePath + $"{gameConfigName} | {DateTime.Now:f} | {newId}{FileHelper.GameExtension}";
         File.WriteAllText(fileName, jsonStateString);
         
@@ -216,5 +217,42 @@ public class GameRepositoryJson : IGameRepository
         }
 
         return idNamePairs;
+    }
+
+    public void UpdateGame(int gameId, string gameStateJson)
+    {
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
+            .ToList();
+        
+        foreach (var fullFileName in data)
+        {
+            // Extract the file name without extension
+            var filenameWithoutExt = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(fullFileName));
+
+            // Check if the game ID matches
+            if (filenameWithoutExt.Split("|").Last().Trim() == gameId.ToString())
+            {
+                var gameConfigName = filenameWithoutExt.Split("|")[0].Trim();
+                var newFileName =
+                    $"{FileHelper.BasePath}{gameConfigName} | {DateTime.Now:f} | {gameId}{FileHelper.GameExtension}";
+
+                try
+                {
+                    File.WriteAllText(fullFileName, gameStateJson);
+
+                    File.Move(fullFileName, newFileName, overwrite: true);
+
+                    Console.WriteLine("Game updated successfully.");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error while updating game with ID: {gameId} | {e}");
+                }
+
+                return;
+            }
+        }
+        
+        Console.WriteLine($"Game not found with id: {gameId}.");
     }
 }

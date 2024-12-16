@@ -133,7 +133,7 @@ public class Gameplay : PageModel
 
         // if (!string.IsNullOrEmpty(GameOverMessage))
         // {
-        //     _gameRepository.DeleteGameById(GameId); // TODO: lahenda, et kui mang labi ja deletetakse ara siis autorefreshi parast crashib, pole sellise id-ga mangu enam.
+        //     _gameRepository.DeleteGameById(GameId); // 
         // }
         
         
@@ -168,14 +168,16 @@ public class Gameplay : PageModel
         if (GameEngine.GetGameState().XPlayerUsername == "...." && JoinedGame)
         {
             GameEngine.GetGameState().XPlayerUsername = UserName;
-            _gameRepository.DeleteGameById(GameId);
-            GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
+            // _gameRepository.DeleteGameById(GameId);
+            // GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
+            _gameRepository.UpdateGame(GameId, GameEngine.GetGameStateJson());
         }
         else if (GameEngine.GetGameState().OPlayerUsername == "...." && JoinedGame)
         {
             GameEngine.GetGameState().OPlayerUsername = UserName;
-            _gameRepository.DeleteGameById(GameId);
-            GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
+            // _gameRepository.DeleteGameById(GameId);
+            // GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
+            _gameRepository.UpdateGame(GameId, GameEngine.GetGameStateJson());
         }
 
         if (GameEngine.GetGameMode() == EGameMode.PvP &&
@@ -305,9 +307,14 @@ public class Gameplay : PageModel
 
         if (!string.IsNullOrWhiteSpace(UserName))
         {
-            _gameRepository.DeleteGameById(GameId);
+            // _gameRepository.DeleteGameById(GameId);
+            //
+            // Console.WriteLine($"gameid here: {GameId}");
+            //
+            // GameId = _gameRepository.SaveGameReturnId(stateJson, GameEngine.GetGameConfigName());
+            
+            _gameRepository.UpdateGame(GameId, GameEngine.GetGameStateJson());
 
-            GameId = _gameRepository.SaveGameReturnId(stateJson, GameEngine.GetGameConfigName());
             // if (winner != EGamePiece.Empty)
             if (!string.IsNullOrEmpty(GameOverMessage))
             {

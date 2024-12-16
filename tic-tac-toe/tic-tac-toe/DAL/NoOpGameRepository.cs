@@ -37,6 +37,11 @@ public class NoOpGameRepository : IGameRepository
         throw new NotImplementedException();
     }
 
+    public void UpdateGame(int gameId, string gameStateJson)
+    {
+        throw new NotImplementedException();
+    }
+
     public Dictionary<int, string> GetGameIdNamePairs()
     {
         throw new NotImplementedException();
