@@ -21,7 +21,7 @@ public class ConfigRepositoryJson : IConfigRepository
         return result;
     }
 
-    public GameConfiguration GetConfigurationByName(string name)
+    public GameConfiguration GetConfigurationByName(string name) // Isn't actually by name. ID is included in the name.
     {
         var configJsonStr = File.ReadAllText(FileHelper.BasePath + name + FileHelper.ConfigExtension);
         var config = System.Text.Json.JsonSerializer.Deserialize<GameConfiguration>(configJsonStr);
@@ -29,7 +29,7 @@ public class ConfigRepositoryJson : IConfigRepository
     }
 
     public void AddConfiguration(string name, int boardSize, int gridSize, int winCondition, EGamePiece whoStarts,
-        int movePieceAfterNMoves, int numberOfPiecesPerPlayer)
+        int movePieceAfterNMoves, int numberOfPiecesPerPlayer, string configOwner)
     {
         var newConfig = new GameConfiguration
         {
@@ -39,7 +39,8 @@ public class ConfigRepositoryJson : IConfigRepository
             WinCondition = winCondition,
             WhoStarts = whoStarts,
             MovePieceAfterNMoves = movePieceAfterNMoves,
-            NumberOfPiecesPerPlayer = numberOfPiecesPerPlayer
+            NumberOfPiecesPerPlayer = numberOfPiecesPerPlayer,
+            ConfigOwner = configOwner
         };
 
         
@@ -126,21 +127,72 @@ public class ConfigRepositoryJson : IConfigRepository
 
     public Dictionary<int, string> GetConfigurationIdNamePairs()
     {
+        // CheckAndCreateInitialConfigs(); // TODO: remove
+        //
+        // var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
+        //     .Select(Path.GetFileNameWithoutExtension)
+        //     .Select(Path.GetFileNameWithoutExtension)
+        //     .ToList();
+        //
+        // Dictionary<int, string> idNamePairs = new();
+        //
+        // foreach (var configNameWithId in data)
+        // {
+        //     var id = int.Parse(configNameWithId!.Split("|").Last().Trim());
+        //     var name = configNameWithId.Split("|").First().Trim();
+        //     
+        //     idNamePairs.Add(id, name);
+        // }
+        //
+        // return idNamePairs;
+
+        return new Dictionary<int, string>();
+    }
+
+    public List<string> GetConfigNamesForUser(string username)
+    {
+        CheckAndCreateInitialConfigs();
+        
+        var result = new List<string>();
+
+        foreach (var fullFileName in Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension))
+        {
+            var configJsonStr = File.ReadAllText(fullFileName);
+            var config = System.Text.Json.JsonSerializer.Deserialize<GameConfiguration>(configJsonStr);
+            
+            if (config.ConfigOwner == username || config.ConfigOwner == "GAME")
+            {
+                result.Add(Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(fullFileName)));
+            }
+        }
+
+        return result;
+    }
+
+    public Dictionary<int, string> GetConfigIdNamePairsForUser(string username)
+    {
         CheckAndCreateInitialConfigs();
         
         var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
-            .Select(Path.GetFileNameWithoutExtension)
-            .Select(Path.GetFileNameWithoutExtension)
             .ToList();
 
-        Dictionary<int, string> idNamePairs = new();
+        var idNamePairs = new Dictionary<int, string>();
         
-        foreach (var configNameWithId in data)
+        foreach (var fullConfigFileName in data)
         {
-            var id = int.Parse(configNameWithId!.Split("|").Last().Trim());
-            var name = configNameWithId.Split("|").First().Trim();
+            var configJsonStr = File.ReadAllText(fullConfigFileName);
+            var config = System.Text.Json.JsonSerializer.Deserialize<GameConfiguration>(configJsonStr);
             
-            idNamePairs.Add(id, name);
+            var fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(fullConfigFileName));
+            
+            var id = int.Parse(fileName.Split("|").Last().Trim());
+            
+            if (config.ConfigOwner == username || config.ConfigOwner == "GAME")
+            {
+                var name = fileName.Split("|").First().Trim();
+                
+                idNamePairs.Add(id, name);
+            }
         }
 
         return idNamePairs;

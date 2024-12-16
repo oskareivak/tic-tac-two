@@ -3,13 +3,14 @@ using GameBrain;
 
 namespace DAL;
 
-public class ConfigRepositoryInMemory : IConfigRepository
+public class ConfigRepositoryInMemory : IConfigRepository // TODO: remove?
 {
     private List<GameConfiguration> _gameConfigurations = new List<GameConfiguration>()
     {
         new GameConfiguration()
         {
-            Name = "Tic-Tac-Toe"
+            Name = "Tic-Tac-Toe",
+            ConfigOwner = "GAME"
         },
         
         new GameConfiguration()
@@ -20,6 +21,7 @@ public class ConfigRepositoryInMemory : IConfigRepository
             WinCondition = 3,
             MovePieceAfterNMoves = 2,
             NumberOfPiecesPerPlayer = 4,
+            ConfigOwner = "GAME"
         },
         
         new GameConfiguration()
@@ -30,6 +32,7 @@ public class ConfigRepositoryInMemory : IConfigRepository
             WinCondition = 4,
             MovePieceAfterNMoves = 3,
             NumberOfPiecesPerPlayer = 16,
+            ConfigOwner = "GAME"
         },
     };
 
@@ -47,7 +50,7 @@ public class ConfigRepositoryInMemory : IConfigRepository
     }
 
     public void AddConfiguration(string name, int boardSize, int gridSize, int winCondition, EGamePiece whoStarts, 
-                                int movePieceAfterNMoves, int numberOfPiecesPerPlayer)
+                                int movePieceAfterNMoves, int numberOfPiecesPerPlayer, string configOwner)
     {
         _gameConfigurations.Add(new GameConfiguration()
         {
@@ -77,6 +80,16 @@ public class ConfigRepositoryInMemory : IConfigRepository
     }
 
     public Dictionary<int, string> GetConfigurationIdNamePairs()
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<string> GetConfigNamesForUser(string username)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Dictionary<int, string> GetConfigIdNamePairsForUser(string username)
     {
         throw new NotImplementedException();
     }

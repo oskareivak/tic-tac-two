@@ -10,7 +10,7 @@ public interface IConfigRepository
     GameConfiguration GetConfigurationByName(string name);
 
     void AddConfiguration(string name, int boardSize, int gridSize, int winCondition, EGamePiece whoStarts,
-        int movePieceAfterNMoves, int numberOfPiecesPerPlayer);
+        int movePieceAfterNMoves, int numberOfPiecesPerPlayer, string configOwner);
 
     public void DeleteConfiguration(string name);
     
@@ -19,4 +19,9 @@ public interface IConfigRepository
     public void DeleteConfigurationById(int id);
     
     public Dictionary<int, string> GetConfigurationIdNamePairs();
+    
+    public List<string> GetConfigNamesForUser(string username);
+    
+    public Dictionary<int, string> GetConfigIdNamePairsForUser(string username);
+
 }

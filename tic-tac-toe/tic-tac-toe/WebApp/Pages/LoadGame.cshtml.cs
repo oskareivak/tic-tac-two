@@ -40,7 +40,7 @@ public class LoadGame : PageModel
         ViewData["UserName"] = UserName;
 
         
-        var selectListData = _gameRepository.GetGameIdNamePairs(UserName)
+        var selectListData = _gameRepository.GetGameIdNamePairsForUser(UserName)
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
         

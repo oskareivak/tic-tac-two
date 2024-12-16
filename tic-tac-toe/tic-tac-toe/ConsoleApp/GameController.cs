@@ -80,7 +80,7 @@ public static class GameController
             }
 
             var chosenConfig = ConfigRepository.GetConfigurationByName(
-                ConfigRepository.GetConfigurationNames()[configNo]
+                ConfigRepository.GetConfigNamesForUser(UserSession.Username)[configNo]
             );
 
             var chosenGameModeShortcut = OptionsController.ChooseGamemode();
@@ -169,15 +169,15 @@ public static class GameController
         // var aiPiece = EGamePiece.Empty;
         if (gameStateGameMode == EGameMode.PvP)
         {
-            Console.WriteLine("You're playing against another player.");
+            Console.WriteLine("\n" + Settings.GameModeStrings[EGameMode.PvP]);
         }
         else if (gameStateGameMode == EGameMode.PvAi)
         {
-            Console.WriteLine("\nYou're playing against AI.");
+            Console.WriteLine("\n" + Settings.GameModeStrings[EGameMode.PvAi]);
         }
         else if (gameStateGameMode == EGameMode.AivAi)
         {
-            Console.WriteLine("AI is playing against AI.");
+            Console.WriteLine("\n" + Settings.GameModeStrings[EGameMode.AivAi]);
         }
 
         do
@@ -211,10 +211,11 @@ public static class GameController
                     {
                         if (gameState != null && gameStateName != null)
                         {
-                            GameRepository.DeleteGame(gameStateName);
+                            GameRepository.DeleteGame(gameStateName); // TODO: maybe when saving game then save game id to UserSession? and use UpdateGame instead of 
+                            // delete and save. and maybe make saving automatic anyway?
                         }
 
-                        if (GameRepository.SaveGame(gameEngine.GetGameStateJson(), gameEngine.GetGameConfigName()))
+                        if (GameRepository.SaveGame(gameEngine.GetGameStateJson(), gameEngine.GetGameConfigName())) //TODO: why is this still using old saving method?
                         {
                             Console.WriteLine("Game saved!");
                             break;
@@ -369,11 +370,13 @@ public static class GameController
     public static string NewConfiguration()
     {
         // var savedConfigs = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension);
-        var savedConfigsCount = ConfigRepository.GetConfigurationNames().Count;
-        if (savedConfigsCount >= Settings.MaxSavedConfigs)
+        var savedConfigsCount = ConfigRepository.GetConfigNamesForUser(UserSession.Username).Count;
+        var maxConfigs = Settings.MaxSavedConfigs;
+        if (savedConfigsCount >= maxConfigs)
         {
-            Console.WriteLine(
-                "You have reached the maximum number of saved configurations (100). Please delete some configurations before saving new ones.");
+            Console.WriteLine($"You have reached the maximum number of saved configurations ({maxConfigs}). " +
+                              $"Please delete some configurations before saving new ones.");
+            
             return "";
         }
 
@@ -391,15 +394,17 @@ public static class GameController
             {
                 Console.WriteLine("\nEnter a name for your new configuration:");
 
-                Settings.NewConfigRules.TryGetValue("gameNameLengthMin", out var rule1);
-                Settings.NewConfigRules.TryGetValue("gameNameLengthMax", out var rule2);
+                var rule1 = Settings.NewConfigRules["gameNameLengthMin"];
+                var rule2 = Settings.NewConfigRules["gameNameLengthMax"];
+                // Settings.NewConfigRules.TryGetValue("gameNameLengthMin", out var rule12);
+                // Settings.NewConfigRules.TryGetValue("gameNameLengthMax", out var rule2);
 
                 var nameInput = Console.ReadLine();
-                var existingConfigNames = ConfigRepository.GetConfigurationNames();
+                var existingConfigNames = ConfigRepository.GetConfigurationNames(); // TODO: should this limit be based on forUser / hardcoded / overall?
 
                 if (string.IsNullOrEmpty(nameInput) || nameInput.Length < rule1 || nameInput.Length > rule2)
                 {
-                    Console.WriteLine($"Game name must be between {rule1}-{rule2} characters.");
+                    Console.WriteLine($"Configuration name must be between {rule1}-{rule2} characters.");
                     continue;
                 }
 
@@ -581,7 +586,7 @@ public static class GameController
             }
 
             ConfigRepository.AddConfiguration(name, boardSize, gridSize, winCondition, whoStarts,
-                movePieceAfterNMoves, numberOfPiecesPerPlayer);
+                movePieceAfterNMoves, numberOfPiecesPerPlayer, UserSession.Username);
             Console.WriteLine("Configuration saved!");
             // MainLoop();
             Menus.MainMenu.Run();

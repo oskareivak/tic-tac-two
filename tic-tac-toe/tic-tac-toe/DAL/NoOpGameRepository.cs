@@ -3,7 +3,7 @@ using GameBrain;
 
 namespace DAL;
 
-public class NoOpGameRepository : IGameRepository
+public class NoOpGameRepository : IGameRepository // TODO: remove?
 {
     public bool SaveGame(string gameStateJson, string gameConfigName) => false;
     public List<string> GetGameNames()
@@ -32,7 +32,7 @@ public class NoOpGameRepository : IGameRepository
         throw new NotImplementedException();
     }
 
-    public Dictionary<int, string> GetGameIdNamePairs(string username)
+    public Dictionary<int, string> GetGameIdNamePairsForUser(string username)
     {
         throw new NotImplementedException();
     }

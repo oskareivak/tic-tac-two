@@ -190,7 +190,7 @@ public class GameRepositoryJson : IGameRepository
         return newId;
     }
 
-    public Dictionary<int, string> GetGameIdNamePairs(string username)
+    public Dictionary<int, string> GetGameIdNamePairsForUser(string username)
     {
         
         var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
@@ -241,8 +241,6 @@ public class GameRepositoryJson : IGameRepository
                     File.WriteAllText(fullFileName, gameStateJson);
 
                     File.Move(fullFileName, newFileName, overwrite: true);
-
-                    Console.WriteLine("Game updated successfully.");
                 }
                 catch (Exception e)
                 {

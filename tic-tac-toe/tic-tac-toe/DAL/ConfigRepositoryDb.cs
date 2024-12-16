@@ -31,7 +31,8 @@ public class ConfigRepositoryDb : IConfigRepository
                     WinCondition = gameOption.WinCondition,
                     WhoStarts = (int)gameOption.WhoStarts,
                     MovePieceAfterNMoves = gameOption.MovePieceAfterNMoves,
-                    NumberOfPiecesPerPlayer = gameOption.NumberOfPiecesPerPlayer
+                    NumberOfPiecesPerPlayer = gameOption.NumberOfPiecesPerPlayer,
+                    ConfigOwner = gameOption.ConfigOwner
                 });
             }
             _context.SaveChanges();
@@ -61,12 +62,13 @@ public class ConfigRepositoryDb : IConfigRepository
             WinCondition = config.WinCondition,
             WhoStarts = (EGamePiece)config.WhoStarts,
             MovePieceAfterNMoves = config.MovePieceAfterNMoves,
-            NumberOfPiecesPerPlayer = config.NumberOfPiecesPerPlayer
+            NumberOfPiecesPerPlayer = config.NumberOfPiecesPerPlayer,
+            ConfigOwner = config.ConfigOwner
         };
     }
 
     public void AddConfiguration(string name, int boardSize, int gridSize, int winCondition,
-                EGamePiece whoStarts, int movePieceAfterNMoves, int numberOfPiecesPerPlayer)
+                EGamePiece whoStarts, int movePieceAfterNMoves, int numberOfPiecesPerPlayer, string configOwner)
     {
         var newConfig = new Configuration
         {
@@ -76,7 +78,8 @@ public class ConfigRepositoryDb : IConfigRepository
             WinCondition = winCondition,
             WhoStarts = (int)whoStarts,
             MovePieceAfterNMoves = movePieceAfterNMoves,
-            NumberOfPiecesPerPlayer = numberOfPiecesPerPlayer
+            NumberOfPiecesPerPlayer = numberOfPiecesPerPlayer,
+            ConfigOwner = configOwner
         };
 
         _context.Configurations.Add(newConfig);
@@ -131,6 +134,21 @@ public class ConfigRepositoryDb : IConfigRepository
             .OrderBy(c => c.Name)
             .ToDictionary(c => c.Id, c => c.Name);
     }
-    
-    
+
+    public List<string> GetConfigNamesForUser(string username) // TODO: implement
+    {
+        return _context.Configurations
+            .Where(c => c.ConfigOwner == username || c.ConfigOwner == "GAME")
+            .OrderBy(c => c.Name)
+            .Select(c => c.Name)
+            .ToList();
+    }
+
+    public Dictionary<int, string> GetConfigIdNamePairsForUser(string username) // TODO: implement
+    {
+        return _context.Configurations
+            .Where(c => c.ConfigOwner == username || c.ConfigOwner == "GAME")
+            .OrderBy(c => c.Name)
+            .ToDictionary(c => c.Id, c => c.Name);
+    }
 }

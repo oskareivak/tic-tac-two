@@ -147,12 +147,14 @@ public class OptionsController
     {
         var configMenuItems = new List<MenuItem>();
 
-        for (int i = 0; i < configRepository.GetConfigurationNames().Count; i++)
+        var configNames = configRepository.GetConfigNamesForUser(UserSession.Username);
+
+        for (int i = 0; i < configNames.Count; i++)
         {
             var returnValue = i.ToString();
             configMenuItems.Add(new MenuItem()
             {
-                Title = configRepository.GetConfigurationNames()[i].Split("|").First().Trim(),
+                Title = configNames[i].Split("|").First().Trim(),
                 Shortcut = (i+1).ToString(),
                 MenuItemAction = () => returnValue
             });
@@ -219,11 +221,11 @@ public class OptionsController
 
         if (Settings.Mode == ESavingMode.Database)
         {
-            configNames = configRepositoryDb.GetConfigurationNames();
+            configNames = configRepositoryDb.GetConfigNamesForUser(UserSession.Username);
         }
         else
         {
-            configNames = ConfigRepository.GetConfigurationNames();
+            configNames = ConfigRepository.GetConfigNamesForUser(UserSession.Username);
         }
         
         var defaultConfigurations = configRepositoryInMemory.GetConfigurationNames();

@@ -53,7 +53,7 @@ public class Home : PageModel
         ConfigurationId = configId;
         SelectedGameMode = gameMode;
 
-        var selectListData = _configRepository.GetConfigurationIdNamePairs()
+        var selectListData = _configRepository.GetConfigIdNamePairsForUser(UserName)
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
     

@@ -20,6 +20,8 @@ public record struct GameConfiguration()
 
     public int NumberOfPiecesPerPlayer { get; set; } = 5;
 
+    public string ConfigOwner { get; set; } = default!;
+
     public override string ToString()
     {
         return $"Board: {BoardSize} x {BoardSize}, grid: {GridSize} x {GridSize} to win: {WinCondition}, " +

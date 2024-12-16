@@ -42,7 +42,7 @@ public class JoinGame : PageModel
         ViewData["UserName"] = UserName;
 
         
-        var selectListData = _gameRepository.GetGameIdNamePairs("....")
+        var selectListData = _gameRepository.GetGameIdNamePairsForUser("....")
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
         

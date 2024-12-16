@@ -29,4 +29,13 @@ public static class Settings
 
     public const int AiDelayMin = 600;
     public const int AiDelayMax = 1000;
+    
+    public static readonly IReadOnlySet<string> RestrictedUsernames = new HashSet<string>
+    {
+        "AI", 
+        "AI1", 
+        "AI2", 
+        "....",
+        "GAME"
+    };
 }

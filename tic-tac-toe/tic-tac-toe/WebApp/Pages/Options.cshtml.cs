@@ -53,7 +53,7 @@ public class Options : PageModel
         ViewData["UserName"] = UserName;
 
         
-        var gameSelectListData = _gameRepository.GetGameIdNamePairs(UserName)
+        var gameSelectListData = _gameRepository.GetGameIdNamePairsForUser(UserName)
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
         
@@ -63,7 +63,7 @@ public class Options : PageModel
         var configRepositoryInMemory = new ConfigRepositoryInMemory();
         var defaultConfigurations = configRepositoryInMemory.GetConfigurationNames();
         
-        var configSelectListData = _configRepository.GetConfigurationIdNamePairs()
+        var configSelectListData = _configRepository.GetConfigIdNamePairsForUser(UserName)
             .Where(pair => !defaultConfigurations.Contains(pair.Value))
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
@@ -81,7 +81,7 @@ public class Options : PageModel
     
         if (!string.IsNullOrWhiteSpace(UserName))
         {
-            var savedConfigsCount = _configRepository.GetConfigurationNames().Count;
+            var savedConfigsCount = _configRepository.GetConfigNamesForUser(UserName).Count;
             var configRepositoryInMemory = new ConfigRepositoryInMemory();
             var defaultConfigurationsCount = configRepositoryInMemory.GetConfigurationNames().Count;
             
@@ -164,7 +164,8 @@ public class Options : PageModel
                 }
                 
                 _configRepository.AddConfiguration(NewConfigName, BoardSize, GridSize, WinCondition, 
-                    WhoStarts == "X" ? EGamePiece.X : EGamePiece.O, MovePiecesAfterNMoves, NumberOfPiecesPerPlayer);
+                                                   WhoStarts == "X" ? EGamePiece.X : EGamePiece.O, 
+                                                   MovePiecesAfterNMoves, NumberOfPiecesPerPlayer, UserName);
                 
                 Success = "Configuration created!";
             }

@@ -50,11 +50,9 @@ public class GameRepositoryDb : IGameRepository
 
     public List<string> GetGameNamesForUser(string username)
     {
-        Console.WriteLine($"i am your username: {username}");
         var result = new List<string>();
         foreach (var game in _context.SavedGames)
         {   
-            Console.WriteLine("i am a game in context.savedgames");
             var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(game.State);
             if (gameState!.XPlayerUsername == username || gameState.OPlayerUsername == username)
             {   
@@ -62,7 +60,6 @@ public class GameRepositoryDb : IGameRepository
                            $"{gameState.XPlayerUsername} VS {gameState.OPlayerUsername}");
             }
         }
-        Console.WriteLine($"i was called and returned {result.Count} games");
 
         return result;
 
@@ -165,7 +162,7 @@ public class GameRepositoryDb : IGameRepository
         return newGame.Id;
     }
     
-    public Dictionary<int, string> GetGameIdNamePairs(string username)
+    public Dictionary<int, string> GetGameIdNamePairsForUser(string username)
     {
         var result = new Dictionary<int, string>();
         foreach (var game in _context.SavedGames)

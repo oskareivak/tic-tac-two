@@ -22,6 +22,8 @@ public class Configuration
     
     public int NumberOfPiecesPerPlayer { get; set; }
     
+    public string ConfigOwner { get; set; } = default!;
+    
     public ICollection<SavedGame>? SavedGames { get; set; }
 
     public override string ToString()
