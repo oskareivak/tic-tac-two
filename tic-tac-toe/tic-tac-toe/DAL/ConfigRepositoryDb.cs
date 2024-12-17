@@ -144,4 +144,12 @@ public class ConfigRepositoryDb : IConfigRepository
             .OrderBy(c => c.Name)
             .ToDictionary(c => c.Id, c => c.Name);
     }
+
+    public Dictionary<int, string> GetOnlyUserConfigIdNamePairsForUser(string username)
+    {
+        return _context.Configurations
+            .Where(c => c.ConfigOwner == username)
+            .OrderBy(c => c.Name)
+            .ToDictionary(c => c.Id, c => c.Name);
+    }
 }

@@ -15,10 +15,10 @@ public class GameRepositoryDb : IGameRepository
 
     public bool SaveGame(string jsonStateString, string gameConfigName)
     {   
-        if (_context.SavedGames.Count() >= 100)
-        {
-            return false;
-        } 
+        // if (_context.SavedGames.Count() >= 100)
+        // {
+        //     return false;
+        // } 
         
         var config = _context.Configurations
             .FirstOrDefault(c => c.Name == gameConfigName);

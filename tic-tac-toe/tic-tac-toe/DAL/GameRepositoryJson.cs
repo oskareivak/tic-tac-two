@@ -13,10 +13,10 @@ public class GameRepositoryJson : IGameRepository
             .Select(Path.GetFileNameWithoutExtension)
             .ToList();
         
-        if (data.Count >= 100)
-        {
-            return false;
-        }
+        // if (data.Count >= 100)
+        // {
+        //     return false;
+        // }
         
         var existingIds = data
             .Select(game => game!.Split('|').Last())

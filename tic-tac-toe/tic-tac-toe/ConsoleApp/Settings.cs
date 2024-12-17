@@ -7,7 +7,9 @@ public static class Settings
     // Choose the saving mode for game. Options: Memory, Json, Database
     public const ESavingMode Mode = ESavingMode.Json;
 
-    public const int MaxSavedConfigs = 103;
+    public const int MaxSavedConfigsPerUser = 10;
+    public const int MaxSavedGamesPerUser = 30;
+    
     
     public static readonly IReadOnlyDictionary<string, int> NewConfigRules = new Dictionary<string, int>
     {
@@ -32,10 +34,10 @@ public static class Settings
     
     public static readonly IReadOnlySet<string> RestrictedUsernames = new HashSet<string>
     {
-        "AI", 
-        "AI1", 
-        "AI2", 
+        "ai", 
+        "ai1", 
+        "ai2", 
         "....",
-        "GAME"
+        "game"
     };
 }

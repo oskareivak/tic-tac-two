@@ -63,6 +63,25 @@ public class JoinGame : PageModel
                 return RedirectToPage("./JoinGame", new { userName = UserName, error = Error});
             }
             
+            var maxGames = Settings.MaxSavedGamesPerUser;
+            if (_gameRepository.GetGameNamesForUser(UserName).Count >= maxGames)
+            {
+                var game = _gameRepository.GetGameById(GameId);
+                if (game.XPlayerUsername == UserName || game.OPlayerUsername == UserName)
+                {
+                    JoinedGame = true;
+                    return RedirectToPage("./Gameplay", new { userName = UserName, configId = ConfigurationId , IsNewGame = false , gameId = GameId , joinedGame = JoinedGame });
+                }
+                
+                Error = $"You have reached the maximum number of saved games ({maxGames})." +
+                        $" Please delete some before creating new ones.";
+                
+                return RedirectToPage("./JoinGame", new { 
+                    userName = UserName, 
+                    error = Error
+                });
+            }
+            
             JoinedGame = true;
             return RedirectToPage("./Gameplay", new { userName = UserName, configId = ConfigurationId , IsNewGame = false , gameId = GameId , joinedGame = JoinedGame });
         }

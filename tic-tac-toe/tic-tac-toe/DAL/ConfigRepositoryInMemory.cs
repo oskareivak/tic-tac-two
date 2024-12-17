@@ -88,4 +88,9 @@ public class ConfigRepositoryInMemory : IConfigRepository // TODO: remove?
     {
         throw new NotImplementedException();
     }
+
+    public Dictionary<int, string> GetOnlyUserConfigIdNamePairsForUser(string username)
+    {
+        throw new NotImplementedException();
+    }
 }

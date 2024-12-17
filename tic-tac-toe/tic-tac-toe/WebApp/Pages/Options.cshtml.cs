@@ -63,8 +63,7 @@ public class Options : PageModel
         var configRepositoryInMemory = new ConfigRepositoryInMemory();
         var defaultConfigurations = configRepositoryInMemory.GetConfigurationNames();
         
-        var configSelectListData = _configRepository.GetConfigIdNamePairsForUser(UserName)
-            .Where(pair => !defaultConfigurations.Contains(pair.Value))
+        var configSelectListData = _configRepository.GetOnlyUserConfigIdNamePairsForUser(UserName)
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
         
@@ -81,7 +80,7 @@ public class Options : PageModel
     
         if (!string.IsNullOrWhiteSpace(UserName))
         {
-            var savedConfigsCount = _configRepository.GetConfigNamesForUser(UserName).Count;
+            var savedConfigsCount = _configRepository.GetOnlyUserConfigIdNamePairsForUser(UserName).Count;
             var configRepositoryInMemory = new ConfigRepositoryInMemory();
             var defaultConfigurationsCount = configRepositoryInMemory.GetConfigurationNames().Count;
             
@@ -100,11 +99,12 @@ public class Options : PageModel
             }
             else if (Request.Form.ContainsKey("createConfiguration"))
             {
+                var maxSavedConfigs = Settings.MaxSavedConfigsPerUser;
                 
-                if (savedConfigsCount >= Settings.MaxSavedConfigs)
+                if (savedConfigsCount >= maxSavedConfigs)
                 {
                     Error = ($"You have reached the maximum number of saved configurations " +
-                                      $"({savedConfigsCount-defaultConfigurationsCount}). Please delete " +
+                                      $"({maxSavedConfigs}). Please delete " +
                                       $"some configurations before saving new ones.");
                     return RedirectToPage("./Options", new { userName = UserName, error = Error});
                 }

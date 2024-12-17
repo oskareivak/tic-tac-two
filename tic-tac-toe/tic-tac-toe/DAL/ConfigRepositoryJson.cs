@@ -174,6 +174,35 @@ public class ConfigRepositoryJson : IConfigRepository
         return idNamePairs;
     }
 
+    public Dictionary<int, string> GetOnlyUserConfigIdNamePairsForUser(string username)
+    {
+        CheckAndCreateInitialConfigs();
+        
+        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
+            .ToList();
+
+        var idNamePairs = new Dictionary<int, string>();
+        
+        foreach (var fullConfigFileName in data)
+        {
+            var configJsonStr = File.ReadAllText(fullConfigFileName);
+            var config = System.Text.Json.JsonSerializer.Deserialize<GameConfiguration>(configJsonStr);
+            
+            var fileName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(fullConfigFileName));
+            
+            var id = int.Parse(fileName.Split("|").Last().Trim());
+            
+            if (config.ConfigOwner == username)
+            {
+                var name = fileName.Split("|").First().Trim();
+                
+                idNamePairs.Add(id, name);
+            }
+        }
+
+        return idNamePairs;
+    }
+    
     private void CheckAndCreateInitialConfigs()
     {
         if (!Directory.Exists(FileHelper.BasePath))

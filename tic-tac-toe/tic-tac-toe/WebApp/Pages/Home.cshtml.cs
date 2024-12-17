@@ -12,10 +12,12 @@ namespace WebApp.Pages;
 public class Home : PageModel
 {
     private readonly IConfigRepository _configRepository;
+    private readonly IGameRepository _gameRepository;
 
-    public Home(IConfigRepository configRepository)
+    public Home(IConfigRepository configRepository, IGameRepository gameRepository)
     {
         _configRepository = configRepository;
+        _gameRepository = gameRepository;
     }
 
     // Bindproperty voib ara votta, aga sel juhul peab panema OnGet sisse parameetri string userName ja
@@ -74,6 +76,18 @@ public class Home : PageModel
         
         if (!string.IsNullOrWhiteSpace(UserName))
         {
+            var maxGames = Settings.MaxSavedGamesPerUser;
+            if (_gameRepository.GetGameNamesForUser(UserName).Count >= maxGames)
+            {
+                Error = $"You have reached the maximum number of saved games ({maxGames})." +
+                        $" Please delete some before creating new ones.";
+                
+                return RedirectToPage("./Home", new { 
+                    userName = UserName, 
+                    error = Error
+                });
+            }
+            
             var gameMode1 = Enum.Parse<EGameMode>(SelectedGameMode);
             if (gameMode1 == EGameMode.PvAi && string.IsNullOrWhiteSpace(SelectedHumanPiece) || 
                 gameMode1 == EGameMode.PvP && string.IsNullOrWhiteSpace(SelectedHumanPiece) )

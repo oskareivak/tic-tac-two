@@ -17,7 +17,7 @@ do
 {
     Console.WriteLine("Enter your username:");
     var input = Console.ReadLine();
-    if (!string.IsNullOrEmpty(input))
+    if (!string.IsNullOrEmpty(input) && !Settings.RestrictedUsernames.Contains(input.ToLower()))
     {
         UserSession.Username = input;
     }

@@ -44,7 +44,7 @@ public static class GameController
                 {
                     Console.WriteLine("Please enter username for X player.");
                     var input = Console.ReadLine();
-                    if (!string.IsNullOrEmpty(input) && input.ToLower() != "ai" && input != "....")
+                    if (!string.IsNullOrEmpty(input) && !Settings.RestrictedUsernames.Contains(input.ToLower()))
                     {
                         newPlayersName = input;
                     }
@@ -59,7 +59,7 @@ public static class GameController
                 {
                     Console.WriteLine("Please enter username for O player.");
                     var input = Console.ReadLine();
-                    if (!string.IsNullOrEmpty(input) && input.ToLower() != "ai" && input != "....")
+                    if (!string.IsNullOrEmpty(input) && !Settings.RestrictedUsernames.Contains(input.ToLower()))
                     {
                         newPlayersName = input;
                     }
@@ -209,6 +209,25 @@ public static class GameController
                 {
                     if (input.ToLower() == "save")
                     {
+                        var tempGameState = gameEngine.GetGameState();
+                        var maxGames = Settings.MaxSavedGamesPerUser;
+                        if (GameRepository.GetGameNamesForUser(tempGameState.XPlayerUsername).Count >= maxGames)
+                        {
+                            Console.WriteLine(
+                                $"\n{tempGameState.XPlayerUsername} - You have reached the maximum number of saved games " +
+                                $"({maxGames}). Please delete some games before saving new ones.");
+                            
+                            continue;
+                        }
+                        if (GameRepository.GetGameNamesForUser(tempGameState.OPlayerUsername).Count >= maxGames)
+                        {
+                            Console.WriteLine(
+                                $"\n{tempGameState.OPlayerUsername} - You have reached the maximum number of saved games " +
+                                $"({maxGames}). Please delete some games before saving new ones.");
+                            
+                            continue;
+                        }
+                        
                         if (gameState != null && gameStateName != null)
                         {
                             GameRepository.DeleteGame(gameStateName); // TODO: maybe when saving game then save game id to UserSession? and use UpdateGame instead of 
@@ -219,11 +238,6 @@ public static class GameController
                         {
                             Console.WriteLine("Game saved!");
                             break;
-                        }
-                        else
-                        {
-                            Console.WriteLine(
-                                "You have reached the maximum number of saved games (100). Please delete some games before saving new ones.");
                         }
                     }
                 }
@@ -370,8 +384,8 @@ public static class GameController
     public static string NewConfiguration()
     {
         // var savedConfigs = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension);
-        var savedConfigsCount = ConfigRepository.GetConfigNamesForUser(UserSession.Username).Count;
-        var maxConfigs = Settings.MaxSavedConfigs;
+        var savedConfigsCount = ConfigRepository.GetOnlyUserConfigIdNamePairsForUser(UserSession.Username).Count;
+        var maxConfigs = Settings.MaxSavedConfigsPerUser;
         if (savedConfigsCount >= maxConfigs)
         {
             Console.WriteLine($"You have reached the maximum number of saved configurations ({maxConfigs}). " +

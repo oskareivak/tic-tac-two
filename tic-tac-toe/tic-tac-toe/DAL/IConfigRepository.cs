@@ -22,4 +22,5 @@ public interface IConfigRepository
     
     public Dictionary<int, string> GetConfigIdNamePairsForUser(string username);
 
+    public Dictionary<int, string> GetOnlyUserConfigIdNamePairsForUser(string username);
 }
