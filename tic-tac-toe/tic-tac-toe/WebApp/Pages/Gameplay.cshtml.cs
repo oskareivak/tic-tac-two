@@ -130,22 +130,44 @@ public class Gameplay : PageModel
             GameEngine = new TicTacTwoBrain(savedGameState);
             SelectedGameMode = GameEngine.GetGameMode().ToString();
         }
-
-        // if (!string.IsNullOrEmpty(GameOverMessage))
-        // {
-        //     _gameRepository.DeleteGameById(GameId); // 
-        // }
-        
-        
         
         if (!string.IsNullOrEmpty(GameOverMessage))
         {
-            // Execute the function asynchronously
-            Task.Run(async () =>
+            Console.WriteLine($"gameovermessage here: {GameOverMessage}");
+            Console.WriteLine($"gameid: [{GameId}]");
+            
+            // Task.Run(async () =>
+            // {
+            //     Console.WriteLine("async function is starting now");
+            //     await Task.Delay(3000); // 3-second delay
+            //     _gameRepository.DeleteGameById(GameId);
+            //     Console.WriteLine("Game deleted after 3 seconds");
+            // });
+            // Console.WriteLine("started sleep");
+            // // Thread.Sleep(3000);
+            // Console.WriteLine("ended sleep");
+
+            if (Settings.Mode == ESavingMode.Json)
             {
-                await Task.Delay(5000); // Wait for 5 seconds
-                _gameRepository.DeleteGameById(GameId);
-            });
+                Task.Run(async () =>
+                {
+                    Console.WriteLine("async function is starting now");
+                    await Task.Delay(3000); // 3-second delay
+                    _gameRepository.DeleteGameById(GameId);
+                    Console.WriteLine("Game deleted after 3 seconds");
+                });
+            }
+            if (Settings.Mode == ESavingMode.Database)
+            {
+                if (GameEngine.GetGameMode() == EGameMode.PvAi || GameEngine.GetGameMode() == EGameMode.AivAi)
+                {
+                    _gameRepository.DeleteGameById(GameId);
+                }
+                else if (_gameRepository.CanBeDeletedWeb(GameId, UserName))
+                {
+                    _gameRepository.DeleteGameById(GameId);
+                }
+            }
         }
 
         if (string.IsNullOrEmpty(GameOverMessage))
@@ -168,15 +190,11 @@ public class Gameplay : PageModel
         if (GameEngine.GetGameState().XPlayerUsername == "...." && JoinedGame)
         {
             GameEngine.GetGameState().XPlayerUsername = UserName;
-            // _gameRepository.DeleteGameById(GameId);
-            // GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
             _gameRepository.UpdateGame(GameId, GameEngine.GetGameStateJson());
         }
         else if (GameEngine.GetGameState().OPlayerUsername == "...." && JoinedGame)
         {
             GameEngine.GetGameState().OPlayerUsername = UserName;
-            // _gameRepository.DeleteGameById(GameId);
-            // GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
             _gameRepository.UpdateGame(GameId, GameEngine.GetGameStateJson());
         }
 
@@ -190,8 +208,6 @@ public class Gameplay : PageModel
         {
             CanMakeMove = true;
         }
-        // Console.WriteLine(CanMakeMove);
-        // Console.WriteLine(NextMoveBy);
 
         return Page();
     }
@@ -199,7 +215,7 @@ public class Gameplay : PageModel
 
     public IActionResult OnPost()
     {
-        Error = "";
+        Error = string.Empty;
 
         if (GameEngine == null)
         {
@@ -263,15 +279,10 @@ public class Gameplay : PageModel
         if (aiTurn)
         {
             AiBrain AI = new AiBrain(GameEngine, GameEngine.GetGameState());
-            // Stopwatch stopwatch = new Stopwatch();
-            // stopwatch.Start();
             var move = AI.GetMove();
-            // stopwatch.Stop();
-            // Console.WriteLine("Time taken: " + stopwatch.ElapsedMilliseconds + "ms");
             if (move.MoveType == EMoveType.PlaceAPiece)
             {
                 var message = GameEngine.PlaceAPiece(move.ToX, move.ToY);
-                // gameEngine.PlaceAPiece(move.ToX, move.ToY);
                 if (message != "")
                 {
                     Console.WriteLine("\n" + message);
@@ -287,43 +298,13 @@ public class Gameplay : PageModel
             {
                 GameEngine.MoveGrid(move.Direction);
             }
-
-            
-            
-            // var random = new Random();
-            // var delay = random.Next(Settings.AiDelayMin, Settings.AiDelayMax); // Delay for AI
-            // Thread.Sleep(delay);
         }
 
-        // var winnerMessage = GameEngine.CheckForWin(); // TODO: can i just remove this and keep the check in get request?
-        //
-        // if (winnerMessage != string.Empty)
-        // {
-        //     GameOverMessage = winnerMessage;
-        // }
-
         UserName = UserName.Trim();
-        var stateJson = GameEngine.GetGameStateJson();
 
         if (!string.IsNullOrWhiteSpace(UserName))
         {
-            // _gameRepository.DeleteGameById(GameId);
-            //
-            // Console.WriteLine($"gameid here: {GameId}");
-            //
-            // GameId = _gameRepository.SaveGameReturnId(stateJson, GameEngine.GetGameConfigName());
-            
             _gameRepository.UpdateGame(GameId, GameEngine.GetGameStateJson());
-
-            // if (winner != EGamePiece.Empty)
-            if (!string.IsNullOrEmpty(GameOverMessage))
-            {
-                return RedirectToPage("./Gameplay", new
-                {
-                    userName = UserName, configId = ConfigurationId, IsNewGame = false,
-                    GameOverMessage = GameOverMessage, gameId = GameId // TODO: can i just remove this and keep the winner check in get request?
-                });
-            }
 
             return RedirectToPage("./Gameplay", new
             {

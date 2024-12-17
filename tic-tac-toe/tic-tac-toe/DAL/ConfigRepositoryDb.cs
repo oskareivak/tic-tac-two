@@ -128,14 +128,7 @@ public class ConfigRepositoryDb : IConfigRepository
         };
     }
 
-    public Dictionary<int, string> GetConfigurationIdNamePairs()
-    {
-        return _context.Configurations
-            .OrderBy(c => c.Name)
-            .ToDictionary(c => c.Id, c => c.Name);
-    }
-
-    public List<string> GetConfigNamesForUser(string username) // TODO: implement
+    public List<string> GetConfigNamesForUser(string username) 
     {
         return _context.Configurations
             .Where(c => c.ConfigOwner == username || c.ConfigOwner == "GAME")
@@ -144,7 +137,7 @@ public class ConfigRepositoryDb : IConfigRepository
             .ToList();
     }
 
-    public Dictionary<int, string> GetConfigIdNamePairsForUser(string username) // TODO: implement
+    public Dictionary<int, string> GetConfigIdNamePairsForUser(string username)
     {
         return _context.Configurations
             .Where(c => c.ConfigOwner == username || c.ConfigOwner == "GAME")

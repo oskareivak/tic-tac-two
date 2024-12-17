@@ -19,4 +19,5 @@ public interface IGameRepository
     
     public void UpdateGame(int gameId, string gameStateJson);
 
+    bool CanBeDeletedWeb(int gameId, string userName);
 }

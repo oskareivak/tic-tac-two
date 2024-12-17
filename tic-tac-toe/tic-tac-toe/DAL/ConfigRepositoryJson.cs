@@ -125,30 +125,6 @@ public class ConfigRepositoryJson : IConfigRepository
         }
     }
 
-    public Dictionary<int, string> GetConfigurationIdNamePairs()
-    {
-        // CheckAndCreateInitialConfigs(); // TODO: remove
-        //
-        // var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension)
-        //     .Select(Path.GetFileNameWithoutExtension)
-        //     .Select(Path.GetFileNameWithoutExtension)
-        //     .ToList();
-        //
-        // Dictionary<int, string> idNamePairs = new();
-        //
-        // foreach (var configNameWithId in data)
-        // {
-        //     var id = int.Parse(configNameWithId!.Split("|").Last().Trim());
-        //     var name = configNameWithId.Split("|").First().Trim();
-        //     
-        //     idNamePairs.Add(id, name);
-        // }
-        //
-        // return idNamePairs;
-
-        return new Dictionary<int, string>();
-    }
-
     public List<string> GetConfigNamesForUser(string username)
     {
         CheckAndCreateInitialConfigs();

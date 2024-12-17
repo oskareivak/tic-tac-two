@@ -79,11 +79,6 @@ public class ConfigRepositoryInMemory : IConfigRepository // TODO: remove?
         throw new NotImplementedException();
     }
 
-    public Dictionary<int, string> GetConfigurationIdNamePairs()
-    {
-        throw new NotImplementedException();
-    }
-
     public List<string> GetConfigNamesForUser(string username)
     {
         throw new NotImplementedException();

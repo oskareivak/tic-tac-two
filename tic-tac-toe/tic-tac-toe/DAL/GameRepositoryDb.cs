@@ -121,14 +121,62 @@ public class GameRepositoryDb : IGameRepository
 
     public void DeleteGameById(int gameId)
     {
-        var game = _context.SavedGames
-            .FirstOrDefault(g => g.Id == gameId);
-
-        if (game != null)
+        Console.WriteLine($"Am deleting game with id [{gameId}]");
+        
+        try
         {
-            _context.SavedGames.Remove(game);
-            _context.SaveChanges();
+            if (_context == null)
+            {
+                Console.WriteLine("Something is hella wrong, context is null...");
+            }
+            else if (_context != null)
+            {
+                Console.WriteLine("everything should work, context is not null...");
+            }
         }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception: {e.Message}");
+        }
+        
+        
+        // var allGames = _context!.SavedGames.ToList(); // delete later
+        // Console.WriteLine("Existing games:");
+        // foreach (var g in allGames)
+        // {
+        //     Console.WriteLine($"ID: {g.Id}, CreatedAt: {g.CreatedAtDateTime}");
+        // } // delete later
+        //
+        // var game = _context.SavedGames
+        //     .FirstOrDefault(g => g.Id == gameId);
+        //
+        // Console.WriteLine($"game is {game}");
+
+        // if (game != null)
+        // {
+        //     Console.WriteLine($"Am deleting game with id [{gameId}] NOW");
+        //     _context.SavedGames.Remove(game);
+        //     _context.SaveChanges();
+        // }
+
+        try
+        {
+            var game = _context!.SavedGames
+                .FirstOrDefault(g => g.Id == gameId);
+
+            if (game != null)
+            {
+                _context.SavedGames.Attach(game); // Attach to context if not tracked
+                Console.WriteLine($"Am deleting game with id [{gameId}] NOW");
+                _context.SavedGames.Remove(game);
+                _context.SaveChanges();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Exception 2: {e.Message}");
+        }
+        
 
         Console.WriteLine($"Game with id [{gameId}] not found at DeleteGameById");
         // throw new Exception("Game not found");
@@ -198,5 +246,32 @@ public class GameRepositoryDb : IGameRepository
         {
             Console.WriteLine($"Game not found with id: {gameId}.");
         }
+    }
+
+    public bool CanBeDeletedWeb(int gameId, string userName)
+    {
+        var game = _context.SavedGames.Find(gameId);
+
+        if (string.IsNullOrEmpty(game!.CanDelete1) && string.IsNullOrEmpty(game.CanDelete2))
+        {
+            game.CanDelete1 = userName;
+            _context.SaveChanges();
+            return false;
+        }
+
+        if (!string.IsNullOrEmpty(game.CanDelete1) && string.IsNullOrEmpty(game.CanDelete2))
+        {
+            game.CanDelete2 = userName;
+            _context.SaveChanges();
+            return true;
+        }
+        
+        if (!string.IsNullOrEmpty(game.CanDelete1) && !string.IsNullOrEmpty(game.CanDelete2))
+        {
+            
+            return true;
+        }
+        
+        return false;
     }
 }

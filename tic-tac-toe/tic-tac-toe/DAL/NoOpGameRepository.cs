@@ -42,6 +42,11 @@ public class NoOpGameRepository : IGameRepository // TODO: remove?
         throw new NotImplementedException();
     }
 
+    public bool CanBeDeletedWeb(int gameId, string userName)
+    {
+        throw new NotImplementedException();
+    }
+
     public Dictionary<int, string> GetGameIdNamePairs()
     {
         throw new NotImplementedException();

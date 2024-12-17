@@ -14,5 +14,9 @@ public class SavedGame
     public string State { get; set; } = default!;
     
     public int ConfigurationId { get; set; }
+    
+    public string CanDelete1 { get; set; } = string.Empty;
+    
+    public string CanDelete2 { get; set; } = string.Empty;
     public Configuration Configuration { get; set; } = default!;
 }

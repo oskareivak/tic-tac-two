@@ -18,8 +18,6 @@ public interface IConfigRepository
 
     public void DeleteConfigurationById(int id);
     
-    public Dictionary<int, string> GetConfigurationIdNamePairs();
-    
     public List<string> GetConfigNamesForUser(string username);
     
     public Dictionary<int, string> GetConfigIdNamePairsForUser(string username);
