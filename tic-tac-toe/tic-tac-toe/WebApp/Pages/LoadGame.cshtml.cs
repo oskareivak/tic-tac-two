@@ -32,9 +32,10 @@ public class LoadGame : PageModel
     
     public IActionResult OnGet()
     {
-        if (string.IsNullOrEmpty(UserName))
+        if (string.IsNullOrWhiteSpace(UserName) || Settings.RestrictedUsernames.Contains(UserName.ToLower()) 
+                                                || UserName.Length > Settings.MaxUsernameLength)
         {
-            return RedirectToPage("./Index", new { error = "No username provided." });
+            return RedirectToPage("./Index", new { error = "Invalid username provided." });
         }
         
         ViewData["UserName"] = UserName;
@@ -53,7 +54,8 @@ public class LoadGame : PageModel
     {
         UserName = UserName.Trim();
 
-        if (!string.IsNullOrWhiteSpace(UserName))
+        if (!string.IsNullOrWhiteSpace(UserName) && !Settings.RestrictedUsernames.Contains(UserName.ToLower()) 
+                                                 && UserName.Length <= Settings.MaxUsernameLength)
         {
             if (_gameRepository.GetGameNamesForUser(UserName).Count == 0)
             {
@@ -64,7 +66,7 @@ public class LoadGame : PageModel
             return RedirectToPage("./Gameplay", new { userName = UserName, configId = ConfigurationId , IsNewGame = false , gameId = GameId });
         }
 
-        Error = "Please enter a username.";
+        Error = "Please enter a valid username.";
 
         return RedirectToPage("./Home", new { error = Error });
     }

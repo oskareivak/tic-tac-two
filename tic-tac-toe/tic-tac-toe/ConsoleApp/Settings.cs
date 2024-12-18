@@ -4,12 +4,14 @@ namespace ConsoleApp;
 
 public static class Settings
 {   
-    // Choose the saving mode for game. Options: Memory, Json, Database
-    public const ESavingMode Mode = ESavingMode.Json;
+    // Choose the saving mode for app. Options: Memory, Json, Database
+    public const ESavingMode Mode = ESavingMode.Database;
 
+    
+    
+    
     public const int MaxSavedConfigsPerUser = 10;
     public const int MaxSavedGamesPerUser = 30;
-    
     
     public static readonly IReadOnlyDictionary<string, int> NewConfigRules = new Dictionary<string, int>
     {
@@ -40,4 +42,6 @@ public static class Settings
         "....",
         "game"
     };
+    
+    public const int MaxUsernameLength = 15;
 }

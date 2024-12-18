@@ -35,16 +35,6 @@
                             <a class="nav-link text-dark" asp-area="" asp-page="/Options" asp-route-userName="@(ViewData["UserName"] as string)">Options</a>
                         </li>
                     }
-
-                    @if (ViewData["UserName"] as string == "admin")
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Configurations/Index" asp-route-userName="@(ViewData["UserName"] as string)">Configurations</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/SavedGames/Index" asp-route-userName="@(ViewData["UserName"] as string)">Games</a>
-                        </li>
-                    }
                 </ul>
                 
                 @if (!string.IsNullOrWhiteSpace(ViewData["UserName"] as string))
@@ -67,7 +57,7 @@
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        &copy; 2024 - WebApp - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        &copy; 2024 - Oskar Eivak<a asp-area=""></a>
     </div>
 </footer>
 

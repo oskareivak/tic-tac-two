@@ -61,9 +61,10 @@ public class Gameplay : PageModel
 
     public IActionResult OnGet()
     {
-        if (string.IsNullOrEmpty(UserName))
+        if (string.IsNullOrWhiteSpace(UserName) || Settings.RestrictedUsernames.Contains(UserName.ToLower()) 
+                                                || UserName.Length > Settings.MaxUsernameLength)
         {
-            return RedirectToPage("./Index", new { error = "No username provided." });
+            return RedirectToPage("./Index", new { error = "Invalid username provided." });
         }
 
         ViewData["UserName"] = UserName;
@@ -133,9 +134,6 @@ public class Gameplay : PageModel
         
         if (!string.IsNullOrEmpty(GameOverMessage))
         {
-            Console.WriteLine($"gameovermessage here: {GameOverMessage}");
-            Console.WriteLine($"gameid: [{GameId}]");
-            
             // Task.Run(async () =>
             // {
             //     Console.WriteLine("async function is starting now");
@@ -302,7 +300,8 @@ public class Gameplay : PageModel
 
         UserName = UserName.Trim();
 
-        if (!string.IsNullOrWhiteSpace(UserName))
+        if (!string.IsNullOrWhiteSpace(UserName) && !Settings.RestrictedUsernames.Contains(UserName.ToLower()) 
+                                                 && UserName.Length <= Settings.MaxUsernameLength)
         {
             _gameRepository.UpdateGame(GameId, GameEngine.GetGameStateJson());
 
@@ -312,7 +311,7 @@ public class Gameplay : PageModel
             });
         }
 
-        Error = "Please enter a username.";
+        Error = "Please enter a valid username.";
         return RedirectToPage("./Home", new { error = Error });
     }
 }

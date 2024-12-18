@@ -1,3 +1,4 @@
+using ConsoleApp;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -26,12 +27,13 @@ public class IndexModel : PageModel
     {
         UserName = UserName?.Trim();
         
-        if (!string.IsNullOrWhiteSpace(UserName))
+        if (!string.IsNullOrWhiteSpace(UserName) && !Settings.RestrictedUsernames.Contains(UserName.ToLower()) 
+            && UserName.Length <= Settings.MaxUsernameLength)
         {
             return RedirectToPage("./Home", new { userName = UserName });
         }
 
-        Error = "Please enter a username.";
+        Error = "Please enter a valid username.";
         
         return Page();   
     }

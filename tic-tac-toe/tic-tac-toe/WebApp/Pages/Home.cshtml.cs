@@ -44,9 +44,10 @@ public class Home : PageModel
     
     public IActionResult OnGet(int configId, string gameMode)
     {
-        if (string.IsNullOrEmpty(UserName))
+        if (string.IsNullOrWhiteSpace(UserName) || Settings.RestrictedUsernames.Contains(UserName.ToLower()) 
+                                                || UserName.Length > Settings.MaxUsernameLength)
         {
-            return RedirectToPage("./Index", new { error = "No username provided." });
+            return RedirectToPage("./Index", new { error = "Invalid username provided." });
         }
         
         ViewData["UserName"] = UserName;
@@ -74,7 +75,8 @@ public class Home : PageModel
     {
         UserName = UserName.Trim();
         
-        if (!string.IsNullOrWhiteSpace(UserName))
+        if (!string.IsNullOrWhiteSpace(UserName) && !Settings.RestrictedUsernames.Contains(UserName.ToLower()) 
+                                                 && UserName.Length <= Settings.MaxUsernameLength)
         {
             var maxGames = Settings.MaxSavedGamesPerUser;
             if (_gameRepository.GetGameNamesForUser(UserName).Count >= maxGames)
@@ -122,7 +124,7 @@ public class Home : PageModel
             }
             Error = "Invalid game mode selected.";
         }
-        Error = "Please enter a username.";
+        Error = "Please enter a valid username.";
 
         return RedirectToPage("./Home", new { error = Error });
     }

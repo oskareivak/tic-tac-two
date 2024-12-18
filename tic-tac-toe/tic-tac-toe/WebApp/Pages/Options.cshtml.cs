@@ -45,9 +45,10 @@ public class Options : PageModel
     
     public IActionResult OnGet()
     {
-        if (string.IsNullOrEmpty(UserName))
+        if (string.IsNullOrWhiteSpace(UserName) || Settings.RestrictedUsernames.Contains(UserName.ToLower()) 
+                                                || UserName.Length > Settings.MaxUsernameLength)
         {
-            return RedirectToPage("./Index", new { error = "No username provided." });
+            return RedirectToPage("./Index", new { error = "Invalid username provided." });
         }
         
         ViewData["UserName"] = UserName;
@@ -78,7 +79,8 @@ public class Options : PageModel
         
         UserName = UserName.Trim();
     
-        if (!string.IsNullOrWhiteSpace(UserName))
+        if (!string.IsNullOrWhiteSpace(UserName) && !Settings.RestrictedUsernames.Contains(UserName.ToLower()) 
+                                                 && UserName.Length <= Settings.MaxUsernameLength)
         {
             var savedConfigsCount = _configRepository.GetOnlyUserConfigIdNamePairsForUser(UserName).Count;
             var configRepositoryInMemory = new ConfigRepositoryInMemory();
@@ -184,7 +186,7 @@ public class Options : PageModel
             return RedirectToPage("./Options", new { userName = UserName, success = Success});
         }
     
-        Error = "Please enter a username.";
+        Error = "Please enter a valid username.";
         
         return RedirectToPage("./Home", new { error = Error });
     }
