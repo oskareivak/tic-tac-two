@@ -1,4 +1,4 @@
-using ConsoleApp;
+using Common;
 using DAL;
 using GameBrain;
 using Microsoft.AspNetCore.Mvc;
@@ -83,13 +83,12 @@ public class Options : PageModel
                                                  && UserName.Length <= Settings.MaxUsernameLength)
         {
             var savedConfigsCount = _configRepository.GetOnlyUserConfigIdNamePairsForUser(UserName).Count;
-            var configRepositoryInMemory = new ConfigRepositoryInMemory();
-            var defaultConfigurationsCount = configRepositoryInMemory.GetConfigurationNames().Count;
+            Console.WriteLine("savedconfigscount" + savedConfigsCount); // TODO: delete
             
             if (Request.Form.ContainsKey("deleteConfiguration"))
             {
                 
-                if (!(savedConfigsCount > defaultConfigurationsCount))
+                if (!(savedConfigsCount > 0))
                 {
                     Error = "You don't have any configurations to delete yet!";
                     return RedirectToPage("./Options", new { userName = UserName, error = Error});

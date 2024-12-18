@@ -1,4 +1,4 @@
-using ConsoleApp;
+using Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

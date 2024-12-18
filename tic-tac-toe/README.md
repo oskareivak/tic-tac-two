@@ -1,3 +1,11 @@
-# TIC-TAC-TOE
+# TIC-TAC-TWO
 
-Demo for 2024/2025 fall C# course.  
+# To play the game:
+* Run ConsoleApp or
+* Run WebApp
+
+Your account is shared between console and web app.
+
+# To change the saving mode from JSON to DB (or vice versa):
+* Change "Mode" in Common/Settings.cs - Options are ESavingMode.Json and ESavingMode.Database.
+* Other game settings and constants can also be changed at Settings.cs.

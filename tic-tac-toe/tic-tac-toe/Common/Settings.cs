@@ -1,17 +1,19 @@
 using GameBrain;
-
-namespace ConsoleApp;
+namespace Common;
 
 public static class Settings
 {   
     // Choose the saving mode for app. Options: Memory, Json, Database
-    public const ESavingMode Mode = ESavingMode.Database;
-
-    
+    public const ESavingMode Mode = ESavingMode.Json;
     
     
     public const int MaxSavedConfigsPerUser = 10;
     public const int MaxSavedGamesPerUser = 30;
+    
+    public const int MaxUsernameLength = 15;
+    
+    public const int AiDelayMin = 600;
+    public const int AiDelayMax = 1000;
     
     public static readonly IReadOnlyDictionary<string, int> NewConfigRules = new Dictionary<string, int>
     {
@@ -23,16 +25,6 @@ public static class Settings
         { "movePiecesAfterMin" , 0 },
         { "movePiecesAfterMax" , 170 }
     };
-
-    public static readonly IReadOnlyDictionary<EGameMode, string> GameModeStrings = new Dictionary<EGameMode, string>
-    {
-        { EGameMode.PvP, "Player vs Player" },
-        { EGameMode.PvAi, "Player vs AI" },
-        { EGameMode.AivAi, "AI vs AI" }
-    };
-
-    public const int AiDelayMin = 600;
-    public const int AiDelayMax = 1000;
     
     public static readonly IReadOnlySet<string> RestrictedUsernames = new HashSet<string>
     {
@@ -42,6 +34,12 @@ public static class Settings
         "....",
         "game"
     };
+
+    public static readonly IReadOnlyDictionary<EGameMode, string> GameModeStrings = new Dictionary<EGameMode, string>
+    {
+        { EGameMode.PvP, "Player vs Player" },
+        { EGameMode.PvAi, "Player vs AI" },
+        { EGameMode.AivAi, "AI vs AI" }
+    };
     
-    public const int MaxUsernameLength = 15;
 }

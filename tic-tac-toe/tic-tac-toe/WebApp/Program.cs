@@ -1,8 +1,6 @@
+using Common;
 using DAL;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Configuration;
-using ConsoleApp;
-using Settings = ConsoleApp.Settings;
 
 var dbPath = Path.Combine(FileHelper.BasePath, "app.db"); 
 if (Settings.Mode == ESavingMode.Database && !File.Exists(dbPath))
@@ -33,12 +31,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 //  .addSingleton<>(); - create one and reuse it
 //  .addScoped<>(); - create new one per request
 
-if (ConsoleApp.Settings.Mode == ESavingMode.Json)
+if (Settings.Mode == ESavingMode.Json)
 {
     builder.Services.AddScoped<IConfigRepository, ConfigRepositoryJson>();
     builder.Services.AddScoped<IGameRepository, GameRepositoryJson>();
 }
-else if (ConsoleApp.Settings.Mode == ESavingMode.Database) {
+else if (Settings.Mode == ESavingMode.Database) {
     builder.Services.AddScoped<IConfigRepository, ConfigRepositoryDb>();
     builder.Services.AddScoped<IGameRepository, GameRepositoryDb>();
 }

@@ -1,4 +1,4 @@
-namespace ConsoleApp;
+namespace Common;
 
 public enum ESavingMode
 {
