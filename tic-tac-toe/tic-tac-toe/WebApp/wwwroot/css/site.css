@@ -222,3 +222,42 @@ body {
         height: 2.5rem;
     }
 }
+
+
+.resume-btn, .pause-btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    font-family: Helvetica, sans-serif;
+    font-weight: bold;
+    text-align: center;
+    color: white;
+    background: linear-gradient(123deg, #4682b4, #5a9bd4);
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+}
+
+.resume-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(123deg, #5a9bd4, #4682b4);
+}
+
+.pause-btn {
+    background: linear-gradient(123deg, #DC143C, #FD0C0C); /* Matching red gradient */
+}
+
+.pause-btn:hover {
+    box-shadow: 0 4px 8px rgba(240, 0, 0, 0.7);
+}
+
+.resume-btn:focus, .pause-btn:focus {
+    outline: none; /* Removes the default outline */
+    box-shadow: 0 0 0 0.25rem rgba(240, 0, 0, 0.7); /* Optional: Add a custom focus style */
+}
+
+.resume-btn:active, .pause-btn:active {
+    outline: none; /* Removes the active outline */
+}
+

@@ -5,7 +5,6 @@ namespace DAL;
 
 public interface IGameRepository
 {
-    public bool SaveGame(string jsonStateString, string gameConfigName);
     public List<string> GetGameNames();
     public List<string> GetGameNamesForUser(string username);
     public GameState GetGameByName(string name);

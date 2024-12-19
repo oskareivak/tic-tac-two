@@ -25,15 +25,14 @@ public class GameState
     
     public string OPlayerUsername { get; set; }
     
-    // public GameState(EGamePiece[][] gameBoard, EGamePiece nextMoveBy, GameConfiguration gameConfiguration, int[][] currentGridCoordinates, int[][] boardCoordinates, int numberOfMovesMade, Dictionary<EGamePiece, int> numberOfPiecesOnBoard)
-
-    // public GameState(EGamePiece[][] gameBoard, EGamePiece nextMoveBy, GameConfiguration gameConfiguration, int[][] currentGridCoordinates, int[][] boardCoordinates, int numberOfMovesMade, Dictionary<EGamePiece, int> numberOfPiecesOnBoard, string gameMode)
+    public string AIGameOwner { get; set; }
+    
     
     [JsonConstructor]
     public GameState(EGamePiece[][] gameBoard, EGamePiece nextMoveBy, GameConfiguration gameConfiguration, 
                     int[][] currentGridCoordinates, int[][] boardCoordinates, int numberOfMovesMade, 
                     Dictionary<EGamePiece, int> numberOfPiecesOnBoard, EGameMode gameMode, EGamePiece aiPiece,
-                    string xPlayerUsername, string oPlayerUsername)
+                    string xPlayerUsername, string oPlayerUsername, string aiGameOwner)
     {
         GameBoard = gameBoard;
         GameConfiguration = gameConfiguration;
@@ -46,6 +45,7 @@ public class GameState
         AiPiece = aiPiece;
         XPlayerUsername = xPlayerUsername;
         OPlayerUsername = oPlayerUsername;
+        AIGameOwner = aiGameOwner;
     }
 
     public override string ToString()

@@ -31,15 +31,7 @@ public class OptionsController
     
     public static string LoadGame()
     {   
-        // TODO: remove User shouldn't actually reach this statement, but just in case (temporary precaution).
-        if (Settings.Mode != ESavingMode.Json && Settings.Mode != ESavingMode.Database)
-        {
-            Console.WriteLine("Loading games is not supported in in-memory mode.");
-            return "";
-        }
-        
         var gameMenuItems = new List<MenuItem>();
-        // var gameNames = GameRepository.GetGameNames();
         var gameNamesForUser = GameRepository.GetGameNamesForUser(UserSession.Username);
         
         if (gameNamesForUser.Count == 0)
@@ -54,7 +46,6 @@ public class OptionsController
             gameMenuItems.Add(new MenuItem()
             {
                 Title = gameNamesForUser[i].Split("|")[0] + "|" + gameNamesForUser[i].Split("|")[1] + "|" + gameNamesForUser[i].Split("|")[3],
-                // Title = gameNames[i],
                 Shortcut = (i+1).ToString(),
                 MenuItemAction = () => returnValue.Split("|")[0] + "|" + returnValue.Split("|")[1] + "| " + returnValue.Split("|")[2].Trim()
             });
@@ -83,13 +74,6 @@ public class OptionsController
 
     public static string DeleteSavedGame()
     {   
-        // TODO: remove User shouldn't actually reach this statement, but just in case (temporary precaution).
-        if (Settings.Mode != ESavingMode.Json && Settings.Mode != ESavingMode.Database)
-        {
-            Console.WriteLine("Deleting saved games is not supported in in-memory mode.");
-            return "";
-        }
-        
         var gameMenuItems = new List<MenuItem>();
         
         var gameNamesForUser = GameRepository.GetGameNamesForUser(UserSession.Username);
@@ -202,14 +186,6 @@ public class OptionsController
             configRepositoryDb = new ConfigRepositoryDb(context);
         }
         
-        
-        // TODO: remove User shouldn't actually reach this statement, but just in case (temporary precaution).
-        if (Settings.Mode != ESavingMode.Json && Settings.Mode != ESavingMode.Database)
-        {
-            Console.WriteLine("Deleting configurations is not supported in in-memory mode.");
-            return "";
-        }
-        
         var configMenuItems = new List<MenuItem>();
         var configRepositoryInMemory = new ConfigRepositoryInMemory();
         List<string> configNames;
@@ -277,6 +253,17 @@ public class OptionsController
             else
             {
                 ConfigRepository.DeleteConfiguration(chosenConfigName);
+                
+                var usersGames = GameRepository.GetGameNamesForUser(UserSession.Username)
+                    .Where(gameName => gameName.Split("|")[0].Trim() == chosenConfigName.Split("|")[0].Trim())
+                    .ToList();
+                
+                foreach (var gameName in usersGames)
+                {
+                    var split = gameName.Split("|");
+                    GameRepository.DeleteGame($"{split[0].Trim()} | {split[1].Trim()} | {split[2].Trim()}");
+                }
+                
             }
             Console.WriteLine("Configuration deleted successfully.");
         }

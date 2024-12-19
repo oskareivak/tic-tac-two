@@ -3,9 +3,9 @@ using GameBrain;
 
 namespace DAL;
 
-public class ConfigRepositoryInMemory : IConfigRepository // TODO: remove?
+public class ConfigRepositoryInMemory : IConfigRepository
 {
-    private List<GameConfiguration> _gameConfigurations = new List<GameConfiguration>()
+    private readonly List<GameConfiguration> _gameConfigurations = new List<GameConfiguration>()
     {
         new GameConfiguration()
         {

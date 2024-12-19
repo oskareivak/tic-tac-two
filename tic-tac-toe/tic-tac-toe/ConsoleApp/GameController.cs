@@ -45,7 +45,7 @@ public static class GameController
                         newPlayersName = input;
                     }
                 } while (newPlayersName == string.Empty);
-                
+
                 gameState.XPlayerUsername = newPlayersName;
             }
 
@@ -76,11 +76,9 @@ public static class GameController
             }
 
             var configString = ConfigRepository.GetConfigNamesForUser(UserSession.Username)[configNo];
-            
+
             var chosenConfig = ConfigRepository.GetConfigurationByName(configString);
 
-            // UserSession.ConfigId = configString.Split("|").Last().Trim(); // TODO: fully implement this everywhere + webapp ?
-            
             var chosenGameModeShortcut = OptionsController.ChooseGamemode();
             if (chosenGameModeShortcut == "R")
             {
@@ -96,6 +94,7 @@ public static class GameController
 
             var xPlayerUsername = string.Empty;
             var oPlayerUsername = string.Empty;
+            var aiGameOwner = string.Empty;
 
             var aiPiece = EGamePiece.Empty;
             if (chosenGameMode == EGameMode.PvAi)
@@ -124,6 +123,7 @@ public static class GameController
             {
                 xPlayerUsername = "AI1";
                 oPlayerUsername = "AI2";
+                aiGameOwner = UserSession.Username;
             }
 
 
@@ -159,12 +159,11 @@ public static class GameController
                 } while (xPlayerUsername != UserSession.Username && oPlayerUsername != UserSession.Username);
             }
 
-            gameEngine = new TicTacTwoBrain(chosenConfig, chosenGameMode, aiPiece, xPlayerUsername, oPlayerUsername);
-            // gameEngine = new TicTacTwoBrain(chosenConfig, Enum.Parse<EGameMode>(gameMode));
+            gameEngine = new TicTacTwoBrain(chosenConfig, chosenGameMode, aiPiece, xPlayerUsername,
+                oPlayerUsername, aiGameOwner);
         }
 
         var gameStateGameMode = gameEngine.GetGameMode();
-        // var aiPiece = EGamePiece.Empty;
         if (gameStateGameMode == EGameMode.PvP)
         {
             Console.WriteLine("\n" + Settings.GameModeStrings[EGameMode.PvP]);
@@ -195,126 +194,158 @@ public static class GameController
             Console.Write($"It's {gameEngine.WhoseTurn()}'s turn. ({gameEngine.NextMoveBy})\n");
             Console.Write($"Pieces left- X: {gameEngine.XPlayerPiecesLeft()} | O: {gameEngine.OPlayerPiecesLeft()}\n");
             Console.Write(">");
-            var input = "";
-            if (!aiTurn)
+            
+            if (gameStateGameMode == EGameMode.PvP || gameStateGameMode == EGameMode.AivAi
+                                                   || gameStateGameMode == EGameMode.PvAi && !aiTurn) 
             {
-                input = Console.ReadLine()!;
-            }
+                var input = Console.ReadLine()!;
 
-            if (!aiTurn)
-            {
-                // Not used when using in-memory saving:
-                if (Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database)
+                if (input.ToLower() == "save")
                 {
-                    if (input.ToLower() == "save")
+                    var tempGameState = gameEngine.GetGameState();
+                    var maxGames = Settings.MaxSavedGamesPerUser;
+                    if (GameRepository.GetGameNamesForUser(tempGameState.XPlayerUsername).Count >= maxGames)
                     {
-                        var tempGameState = gameEngine.GetGameState();
-                        var maxGames = Settings.MaxSavedGamesPerUser;
-                        if (GameRepository.GetGameNamesForUser(tempGameState.XPlayerUsername).Count >= maxGames)
-                        {
-                            Console.WriteLine(
-                                $"\n{tempGameState.XPlayerUsername} - You have reached the maximum number of saved games " +
-                                $"({maxGames}). Please delete some games before saving new ones.");
-                            
-                            continue;
-                        }
-                        if (GameRepository.GetGameNamesForUser(tempGameState.OPlayerUsername).Count >= maxGames)
-                        {
-                            Console.WriteLine(
-                                $"\n{tempGameState.OPlayerUsername} - You have reached the maximum number of saved games " +
-                                $"({maxGames}). Please delete some games before saving new ones.");
-                            
-                            continue;
-                        }
-                        
-                        if (gameState != null && gameStateName != null)
-                        {
-                            GameRepository.DeleteGame(gameStateName); // TODO: maybe when saving game then save game id to UserSession? and use UpdateGame instead of 
-                            // delete and save. and maybe make saving automatic anyway?
-                        }
+                        Console.WriteLine(
+                            $"\n{tempGameState.XPlayerUsername} - You have reached the maximum number of saved games " +
+                            $"({maxGames}). Please delete some games before saving new ones.");
 
-                        if (GameRepository.SaveGame(gameEngine.GetGameStateJson(), gameEngine.GetGameConfigName())) //TODO: why is this still using old saving method?
-                        {
-                            Console.WriteLine("Game saved!");
-                            break;
-                        }
+                        continue;
                     }
-                }
 
+                    if (GameRepository.GetGameNamesForUser(tempGameState.OPlayerUsername).Count >= maxGames)
+                    {
+                        Console.WriteLine(
+                            $"\n{tempGameState.OPlayerUsername} - You have reached the maximum number of saved games " +
+                            $"({maxGames}). Please delete some games before saving new ones.");
+
+                        continue;
+                    }
+
+                    if (gameState != null && gameStateName != null)
+                    {
+                        GameRepository.DeleteGame(gameStateName);
+                    }
+
+                    GameRepository.SaveGameReturnId(gameEngine.GetGameStateJson(), gameEngine.GetGameConfigName());
+                    
+                    Console.WriteLine("Game saved!"); 
+                    break;
+                    
+                }
 
                 if (input.ToLower() == "exit")
                 {
                     return "R";
                 }
 
-                if (gameEngine.DirectionMap.ContainsKey(input.ToLower()))
+                if (gameStateGameMode == EGameMode.PvP || gameStateGameMode == EGameMode.PvAi && !aiTurn)
                 {
-                    var message = gameEngine.MoveGrid(input.ToLower());
-                    if (message != "")
+                    if (gameEngine.DirectionMap.ContainsKey(input.ToLower()))
                     {
-                        Console.WriteLine("\n" + message);
-                    }
-
-                    skip = true;
-                }
-                else if (!input.Contains(','))
-                {
-                    Console.WriteLine($"\nInvalid command: {input}");
-                    skip = true;
-                }
-
-                if (!skip)
-                {
-                    if (input.Contains(' '))
-                    {
-                        var inputSplit = input.Split(" ");
-                        if (inputSplit[0].Contains(',') && inputSplit[1].Contains(','))
-                        {
-                            try
-                            {
-                                var splitFrom = inputSplit[0].Split(',');
-                                var splitTo = inputSplit[1].Split(',');
-                                var fromX = int.Parse(splitFrom[0]);
-                                var fromY = int.Parse(splitFrom[1]);
-                                var toX = int.Parse(splitTo[0]);
-                                var toY = int.Parse(splitTo[1]);
-
-                                var message = gameEngine.MoveAPiece((fromX, fromY), (toX, toY));
-                                if (message != "")
-                                {
-                                    Console.WriteLine("\n" + message);
-                                }
-
-                                skip = true;
-                            }
-                            catch (Exception)
-                            {
-                                skip = true;
-                                Console.WriteLine("\nPlease write the coordinates according to the correct formula." +
-                                                  "\nPlease make sure that your given coordinates actually fit on the board.");
-                            }
-                        }
-                    }
-                }
-
-                if (!skip)
-                {
-                    try
-                    {
-                        var inputSplit = input.Split(",");
-                        var inputX = int.Parse(inputSplit[0]);
-                        var inputY = int.Parse(inputSplit[1]);
-
-                        var message = gameEngine.PlaceAPiece(inputX, inputY);
+                        var message = gameEngine.MoveGrid(input.ToLower());
                         if (message != "")
                         {
                             Console.WriteLine("\n" + message);
                         }
+
+                        skip = true;
                     }
-                    catch (Exception)
+                    else if (!input.Contains(','))
                     {
-                        Console.WriteLine("\nPlease write the coordinates according to the formula below. " +
-                                          "\nPlease make sure that your given coordinates actually fit on the board.");
+                        Console.WriteLine($"\nInvalid command: {input}");
+                        skip = true;
+                    }
+
+                    if (!skip)
+                    {
+                        if (input.Contains(' '))
+                        {
+                            var inputSplit = input.Split(" ");
+                            if (inputSplit[0].Contains(',') && inputSplit[1].Contains(','))
+                            {
+                                try
+                                {
+                                    var splitFrom = inputSplit[0].Split(',');
+                                    var splitTo = inputSplit[1].Split(',');
+                                    var fromX = int.Parse(splitFrom[0]);
+                                    var fromY = int.Parse(splitFrom[1]);
+                                    var toX = int.Parse(splitTo[0]);
+                                    var toY = int.Parse(splitTo[1]);
+
+                                    var message = gameEngine.MoveAPiece((fromX, fromY), (toX, toY));
+                                    if (message != "")
+                                    {
+                                        Console.WriteLine("\n" + message);
+                                    }
+
+                                    skip = true;
+                                }
+                                catch (Exception)
+                                {
+                                    skip = true;
+                                    Console.WriteLine(
+                                        "\nPlease write the coordinates according to the correct formula." +
+                                        "\nPlease make sure that your given coordinates actually fit on the board.");
+                                }
+                            }
+                        }
+                    }
+
+                    if (!skip)
+                    {
+                        if (input.Contains(' '))
+                        {
+                            var inputSplit = input.Split(" ");
+                            if (inputSplit[0].Contains(',') && inputSplit[1].Contains(','))
+                            {
+                                try
+                                {
+                                    var splitFrom = inputSplit[0].Split(',');
+                                    var splitTo = inputSplit[1].Split(',');
+                                    var fromX = int.Parse(splitFrom[0]);
+                                    var fromY = int.Parse(splitFrom[1]);
+                                    var toX = int.Parse(splitTo[0]);
+                                    var toY = int.Parse(splitTo[1]);
+
+                                    var message = gameEngine.MoveAPiece((fromX, fromY), (toX, toY));
+                                    if (message != "")
+                                    {
+                                        Console.WriteLine("\n" + message);
+                                    }
+
+                                    skip = true;
+                                }
+                                catch (Exception)
+                                {
+                                    skip = true;
+                                    Console.WriteLine(
+                                        "\nPlease write the coordinates according to the correct formula." +
+                                        "\nPlease make sure that your given coordinates actually fit on the board.");
+                                }
+                            }
+                        }
+                    }
+
+                    if (!skip)
+                    {
+                        try
+                        {
+                            var inputSplit = input.Split(",");
+                            var inputX = int.Parse(inputSplit[0]);
+                            var inputY = int.Parse(inputSplit[1]);
+
+                            var message = gameEngine.PlaceAPiece(inputX, inputY);
+                            if (message != "")
+                            {
+                                Console.WriteLine("\n" + message);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("\nPlease write the coordinates according to the formula below. " +
+                                              "\nPlease make sure that your given coordinates actually fit on the board.");
+                        }
                     }
                 }
             }
@@ -342,9 +373,12 @@ public static class GameController
                     gameEngine.MoveGrid(move.Direction);
                 }
 
-                var random = new Random();
-                var delay = random.Next(Settings.AiDelayMin, Settings.AiDelayMax); // Delay for AI
-                Thread.Sleep(delay);
+                if (gameStateGameMode == EGameMode.PvAi)
+                {
+                    var random = new Random();
+                    var delay = random.Next(Settings.AiDelayMin, Settings.AiDelayMax); // Delay for AI
+                    Thread.Sleep(delay);
+                }
             }
 
 
@@ -366,7 +400,6 @@ public static class GameController
                 Console.WriteLine(winnerMessage);
                 break;
             }
-            
         } while (true);
 
         return "M";
@@ -374,14 +407,13 @@ public static class GameController
 
     public static string NewConfiguration()
     {
-        // var savedConfigs = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.ConfigExtension);
         var savedConfigsCount = ConfigRepository.GetOnlyUserConfigIdNamePairsForUser(UserSession.Username).Count;
         var maxConfigs = Settings.MaxSavedConfigsPerUser;
         if (savedConfigsCount >= maxConfigs)
         {
             Console.WriteLine($"You have reached the maximum number of saved configurations ({maxConfigs}). " +
                               $"Please delete some configurations before saving new ones.");
-            
+
             return "";
         }
 
@@ -401,19 +433,18 @@ public static class GameController
 
                 var rule1 = Settings.NewConfigRules["gameNameLengthMin"];
                 var rule2 = Settings.NewConfigRules["gameNameLengthMax"];
-                // Settings.NewConfigRules.TryGetValue("gameNameLengthMin", out var rule12);
-                // Settings.NewConfigRules.TryGetValue("gameNameLengthMax", out var rule2);
 
                 var nameInput = Console.ReadLine();
-                
+
                 var existingConfigNames = new List<string>();
 
+                
                 if (Settings.Mode == ESavingMode.Json)
                 {
                     existingConfigNames = ConfigRepository.GetConfigurationNames()
-                        .Select(name => name.Split('|').First())   // Split each string and take the first part
-                        .Select(part => part.ToLower())            // Convert the first part to lowercase
-                        .ToList(); 
+                        .Select(name => name.Split('|').First().Trim()) // Split each string and take the first part
+                        .Select(part => part.ToLower()) // Convert the first part to lowercase
+                        .ToList();
                 }
                 else
                 {
@@ -428,7 +459,7 @@ public static class GameController
                     continue;
                 }
 
-                if (existingConfigNames.Contains(nameInput))
+                if (existingConfigNames.Contains(nameInput.ToLower()))
                 {
                     Console.WriteLine("Configuration name is already taken!");
                     continue;
@@ -608,7 +639,6 @@ public static class GameController
             ConfigRepository.AddConfiguration(name, boardSize, gridSize, winCondition, whoStarts,
                 movePieceAfterNMoves, numberOfPiecesPerPlayer, UserSession.Username);
             Console.WriteLine("Configuration saved!");
-            // MainLoop();
             Menus.MainMenu.Run();
 
             return "";

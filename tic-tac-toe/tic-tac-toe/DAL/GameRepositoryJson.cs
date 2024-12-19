@@ -6,32 +6,6 @@ namespace DAL;
 
 public class GameRepositoryJson : IGameRepository
 {
-    public bool SaveGame(string jsonStateString, string gameConfigName)
-    {
-        var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
-            .Select(Path.GetFileNameWithoutExtension)
-            .Select(Path.GetFileNameWithoutExtension)
-            .ToList();
-        
-        var existingIds = data
-            .Select(game => game!.Split('|').Last())
-            .Select(idStr => int.TryParse(idStr, out var id) ? id : (int?)null)
-            .Where(id => id.HasValue)
-            .Select(id => id.Value)
-            .ToList();
-        
-        var newId = 1;
-        while (existingIds.Contains(newId))
-        {
-            newId++;
-        }
-        
-        var fileName = FileHelper.BasePath + $"{gameConfigName} | {DateTime.Now:f} | {newId}{FileHelper.GameExtension}";
-        File.WriteAllText(fileName, jsonStateString);
-        
-        return true;
-    }
-
     public List<string> GetGameNames()
     {   
         if (!Directory.Exists(FileHelper.BasePath))
@@ -65,7 +39,8 @@ public class GameRepositoryJson : IGameRepository
             var fileNameParts = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(fullFileName));
             
             var gameState = GetGameByName(fileNameParts);
-            if (gameState.XPlayerUsername == username || gameState.OPlayerUsername == username)
+            if (gameState.XPlayerUsername == username || gameState.OPlayerUsername == username 
+                                                      || gameState.AIGameOwner == username)
             {
                 result.Add(fileNameParts + " | " + gameState.XPlayerUsername + " VS " + gameState.OPlayerUsername);
             }
@@ -85,6 +60,8 @@ public class GameRepositoryJson : IGameRepository
     
     public void DeleteGame(string name)
     {
+        
+        Console.WriteLine($"gamename that is to be deleted: {name}");
         
         var fileToDelete = FileHelper.BasePath + name + FileHelper.GameExtension;
         if (File.Exists(fileToDelete))
@@ -158,6 +135,7 @@ public class GameRepositoryJson : IGameRepository
 
     public int SaveGameReturnId(string jsonStateString, string gameConfigName)
     {
+        Console.WriteLine("i am saving game");
         var data = Directory.GetFiles(FileHelper.BasePath, "*" + FileHelper.GameExtension)
             .Select(Path.GetFileNameWithoutExtension)
             .Select(Path.GetFileNameWithoutExtension)
@@ -201,7 +179,8 @@ public class GameRepositoryJson : IGameRepository
             
             
             
-            if (gameState!.XPlayerUsername == username || gameState.OPlayerUsername == username)
+            if (gameState!.XPlayerUsername == username || gameState.OPlayerUsername == username 
+                                                       || gameState.AIGameOwner == username)
             {
                 var name = fileName.Split("|")[0] + "|" + fileName.Split("|")[1] + " | " +  
                            gameState.XPlayerUsername + " VS " + gameState.OPlayerUsername;
@@ -247,6 +226,6 @@ public class GameRepositoryJson : IGameRepository
 
     public bool CanBeDeletedWeb(int gameId, string userName)
     {
-        throw new NotImplementedException();
+        throw new Exception("This method is not used with JSON repository!");
     }
 }

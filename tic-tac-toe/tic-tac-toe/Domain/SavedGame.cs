@@ -9,7 +9,6 @@ public class SavedGame
     [MaxLength(128)]
     public string CreatedAtDateTime { get; set; } = default!;
     
-    // TODO: Arvuta välja max string length mis saab olla gamestate puhul ja pane maxlength peale?
     [MaxLength(10240)]
     public string State { get; set; } = default!;
     

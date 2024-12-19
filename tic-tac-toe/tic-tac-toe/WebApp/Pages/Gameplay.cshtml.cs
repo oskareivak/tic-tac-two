@@ -20,9 +20,7 @@ public class Gameplay : PageModel
         _configRepository = configRepository;
         _gameRepository = gameRepository;
     }
-
-    // TODO: add sound effects!
-
+    
     [BindProperty(SupportsGet = true)] public string? GameOverMessage { get; set; }
 
     [BindProperty] public string ArrowDirection { get; set; } = string.Empty;
@@ -57,6 +55,8 @@ public class Gameplay : PageModel
     public bool CanMakeMove { get; set; } = default!;
 
     [BindProperty(SupportsGet = true)] public bool JoinedGame { get; set; }
+    
+    [BindProperty(SupportsGet = true)] public bool Paused { get; set; } = default!;
 
 
     public IActionResult OnGet()
@@ -74,6 +74,7 @@ public class Gameplay : PageModel
             var aiPiece = EGamePiece.Empty;
             var xPlayerName = string.Empty;
             var oPlayerName = string.Empty;
+            var aiGameOwner = string.Empty;
 
             if (SelectedGameMode == "PvAi")
             {
@@ -112,11 +113,12 @@ public class Gameplay : PageModel
             {
                 xPlayerName = "AI1";
                 oPlayerName = "AI2";
+                aiGameOwner = UserName;
             }
 
             var config = _configRepository.GetConfigurationById(ConfigurationId);
             var gameMode = Enum.Parse<EGameMode>(SelectedGameMode);
-            GameEngine = new TicTacTwoBrain(config, gameMode, aiPiece, xPlayerName, oPlayerName);
+            GameEngine = new TicTacTwoBrain(config, gameMode, aiPiece, xPlayerName, oPlayerName, aiGameOwner);
             GameId = _gameRepository.SaveGameReturnId(GameEngine.GetGameStateJson(), GameEngine.GetGameConfigName());
             return RedirectToPage("./Gameplay", new
             {
@@ -262,7 +264,12 @@ public class Gameplay : PageModel
             }
         }
 
-        if (aiTurn)
+        if (!string.IsNullOrEmpty(Request.Form["Paused"]))
+        {
+            Paused = bool.Parse(Request.Form["Paused"]);
+        }
+        
+        if (aiTurn && !Paused)
         {
             AiBrain AI = new AiBrain(GameEngine, GameEngine.GetGameState());
             var move = AI.GetMove();
@@ -295,7 +302,8 @@ public class Gameplay : PageModel
 
             return RedirectToPage("./Gameplay", new
             {
-                userName = UserName, configId = ConfigurationId, IsNewGame = false, gameId = GameId, error = Error
+                userName = UserName, configId = ConfigurationId, IsNewGame = false, gameId = GameId, error = Error,
+                paused = Paused
             });
         }
 

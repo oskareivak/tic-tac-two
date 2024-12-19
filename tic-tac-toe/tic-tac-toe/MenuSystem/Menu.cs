@@ -7,7 +7,7 @@ namespace MenuSystem;
 public class Menu
 {
     private string MenuHeader { get; set; }
-    private static string _menuDivider = "=====================";
+    private static string _menuDivider = "=================================";
     
     private List<MenuItem> MenuItems { get; set; }
 

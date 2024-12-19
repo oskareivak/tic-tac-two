@@ -9,7 +9,6 @@ if (Settings.Mode == ESavingMode.Database && !File.Exists(dbPath))
 {
     var contextFactory = new AppDbContextFactory();
     var context = contextFactory.CreateDbContext([]);
-    // Use the correct path for the database
     context.Database.Migrate();
 }
 

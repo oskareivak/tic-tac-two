@@ -50,24 +50,44 @@
                     class="badge">@Settings.GameModeStrings[Enum.Parse<EGameMode>(Model.SelectedGameMode)]</span>
             </div>
 
-            @* @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage)) *@
-            @* { *@
-            @*     <span class="badge"></span> *@
-            @* } *@
             @if (string.IsNullOrWhiteSpace(Model.GameOverMessage))
             {
                 <div class="my-2">
                     <span class="badge">It's @Model.GameEngine.WhoseTurn()'s<br>turn (@Model.NextMoveBy)</span>
-                </div>    
+                </div>
             }
-            
+
             <div class="my-2">
                 <span class="badge">Pieces left:<br>X: @Model.GameEngine.XPlayerPiecesLeft()<br>
-                     O: @Model.GameEngine.OPlayerPiecesLeft()
-                </span>    
+                    O: @Model.GameEngine.OPlayerPiecesLeft()
+                </span>
             </div>
-            
-            
+
+            @if (Model.GameEngine.GetGameState().GameMode == EGameMode.AivAi && string.IsNullOrEmpty(Model.GameOverMessage))
+            {
+                <div class="mt-5">
+                    <div class="mt-5">
+                        <form method="post" id="pauseGame">
+
+                            @if (Model.Paused)
+                            {
+                                <button type="submit" class="resume-btn" name="Paused" value="false"
+                                        aria-label="Resume Game Button">Resume
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="pause-btn" name="Paused" value="true"
+                                        aria-label="Pause Game Button">Pause
+                                </button>
+                            }
+
+                        </form>
+                    </div>
+                </div>
+            }
+
+
         </div>
         <div class="col-md-8 d-flex justify-content-center">
             @if (Model.CanMakeMove)
@@ -138,7 +158,6 @@
                 </div>
             }
         </div>
-        @* TODO: vb kaota arrowid ara kui neid veel kasutada ei saa. samas probs ei*@
         <div class="col-md-2 d-flex justify-content-center align-items-center">
             @if (string.IsNullOrWhiteSpace(Model.GameOverMessage) && Model.GameEngine.GetMovePieceAfterNMoves() != 0 && Model.CanMakeMove)
             {
@@ -215,6 +234,8 @@
                 }
             }
         </div>
+
+
         <form method="post">
             <button type="submit" id="invisibleSubmit" style="display:none;"></button>
         </form>
@@ -225,28 +246,25 @@
      Model.GameEngine.NextMoveBy == Model.GameEngine.GetGameState().AiPiece ||
      Model.GameEngine.GetGameState().GameMode == EGameMode.AivAi)
 {
-    if (string.IsNullOrWhiteSpace(Model.GameOverMessage))
+    if (string.IsNullOrWhiteSpace(Model.GameOverMessage) && !Model.Paused)
     {
-        @* <script> *@
-        @*     document.getElementById('invisibleSubmit').click(); *@
-        @* </script> *@
-
         var random = new Random();
         var delay = random.Next(Settings.AiDelayMin, Settings.AiDelayMax); // Delay for AI
         <script>
             setTimeout(function () {
                 document.getElementById('invisibleSubmit').click();
-            }, @delay); // Inject delay value from server-side
-        </script> // TODO: fix, cannot leave ai games as they are not saved then.
+            }, @delay); 
+        </script> 
     }
 }
 @if (Model.GameEngine.WhoseTurn() != Model.UserName && Model.GameEngine.WhoseTurn().ToLower() != "ai"
-                                                    && Model.GameEngine.WhoseTurn().ToLower() != "ai1" && Model.GameEngine.WhoseTurn().ToLower() != "ai2"
+                                                    && Model.GameEngine.WhoseTurn().ToLower() != "ai1"
+                                                    && Model.GameEngine.WhoseTurn().ToLower() != "ai2"
                                                     && string.IsNullOrEmpty(Model.GameOverMessage))
 {
     <script>
         setInterval(function () {
             location.reload();
-        }, 1000); // Refresh every 1000 milliseconds (1 second)
+        }, 1000);
     </script>
 }

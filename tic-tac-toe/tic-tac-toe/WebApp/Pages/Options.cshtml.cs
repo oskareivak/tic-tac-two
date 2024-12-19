@@ -34,7 +34,7 @@ public class Options : PageModel
     
     [BindProperty] public int GameId { get; set; }
     
-    // New configuration properties
+    // New configuration properties:
     [BindProperty(SupportsGet = true)] public string NewConfigName { get; set; } = default!;
     [BindProperty(SupportsGet = true)] public int BoardSize { get; set; }
     [BindProperty(SupportsGet = true)] public int GridSize { get; set; }
@@ -60,10 +60,6 @@ public class Options : PageModel
         
         GameSelectList = new SelectList(gameSelectListData, "id", "value");
         
-        
-        var configRepositoryInMemory = new ConfigRepositoryInMemory();
-        var defaultConfigurations = configRepositoryInMemory.GetConfigurationNames();
-        
         var configSelectListData = _configRepository.GetOnlyUserConfigIdNamePairsForUser(UserName)
             .Select(pair => new { id = pair.Key, value = pair.Value })
             .ToList();
@@ -83,7 +79,6 @@ public class Options : PageModel
                                                  && UserName.Length <= Settings.MaxUsernameLength)
         {
             var savedConfigsCount = _configRepository.GetOnlyUserConfigIdNamePairsForUser(UserName).Count;
-            Console.WriteLine("savedconfigscount" + savedConfigsCount); // TODO: delete
             
             if (Request.Form.ContainsKey("deleteConfiguration"))
             {
@@ -93,8 +88,28 @@ public class Options : PageModel
                     Error = "You don't have any configurations to delete yet!";
                     return RedirectToPage("./Options", new { userName = UserName, error = Error});
                 }
+
+                if (Settings.Mode == ESavingMode.Json)
+                {
+                    var chosenConfigName = _configRepository.GetConfigurationById(ConfigurationId).Name;
                 
-                _configRepository.DeleteConfigurationById(ConfigurationId); 
+                    var usersGames = _gameRepository.GetGameNamesForUser(UserName)
+                        .Where(gameName => gameName.Split("|")[0].Trim() == chosenConfigName.Split("|")[0].Trim())
+                        .ToList();
+                
+                    foreach (var gameName in usersGames)
+                    {
+                        var split = gameName.Split("|");
+                        _gameRepository.DeleteGame($"{split[0].Trim()} | {split[1].Trim()} | {split[2].Trim()}");
+                    }
+                    
+                    _configRepository.DeleteConfigurationById(ConfigurationId);
+                }
+                else
+                {
+                    _configRepository.DeleteConfigurationById(ConfigurationId);
+                }
+                
                 Success = "Configuration deleted!";
                 
             }
@@ -119,26 +134,28 @@ public class Options : PageModel
                     Errors.Add($"Configuration name must be between {gameNameLengthMin}-{gameNameLengthMax} " +
                                $"characters long.");
                 }
-
-                var existingConfigNames = new List<string>();
-
-                if (Settings.Mode == ESavingMode.Json)
-                {
-                    existingConfigNames = _configRepository.GetConfigurationNames()
-                        .Select(name => name.Split('|').First())   // Split each string and take the first part
-                        .Select(part => part.ToLower())            // Convert the first part to lowercase
-                        .ToList(); 
-                }
                 else
                 {
-                    existingConfigNames = _configRepository.GetConfigurationNames()
-                        .Select(name => name.ToLower())
-                        .ToList();
-                }
+                    var existingConfigNames = new List<string>();
+
+                    if (Settings.Mode == ESavingMode.Json)
+                    {
+                        existingConfigNames = _configRepository.GetConfigurationNames()
+                            .Select(name => name.Split('|').First().Trim())   // Split each string and take the first part
+                            .Select(part => part.ToLower())            // Convert the first part to lowercase
+                            .ToList(); 
+                    }
+                    else
+                    {
+                        existingConfigNames = _configRepository.GetConfigurationNames()
+                            .Select(name => name.ToLower())
+                            .ToList();
+                    }
                 
-                if (existingConfigNames.Contains(NewConfigName))
-                {
-                    Errors.Add($"Configuration name '{NewConfigName}' is already taken.");
+                    if (existingConfigNames.Contains(NewConfigName.ToLower()))
+                    {
+                        Errors.Add($"Configuration name '{NewConfigName}' is already taken.");
+                    }
                 }
                 
                 Settings.NewConfigRules.TryGetValue("boardSideLengthMin", out var boardSideLengthMin);

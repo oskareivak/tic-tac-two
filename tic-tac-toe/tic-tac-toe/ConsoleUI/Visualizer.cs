@@ -11,20 +11,28 @@ public static class Visualizer
             .ToList();
 
         List<string> guide = [];
-        if (gameInstance.CanPlacePiece())
+        if (gameInstance.GetGameMode() != EGameMode.AivAi)
         {
-            guide.Add("   | * Place a piece by writing coordinates: X,Y");
-        }
-        if (gameInstance.CanMovePieceOrMoveGrid())
-        {   
-            if (gameInstance.CanPlacePieceOutsideGrid())
+            if (gameInstance.CanPlacePiece())
             {
-                guide.Add("   |   (You can now also place a piece outside of the grid)");
+                guide.Add("   | * Place a piece by writing coordinates: X,Y");
             }
-            guide.Add("   | * Move a piece by writing coordinates: X,Y X,Y");
-            guide.Add("   | * Move the grid by writing a direction acronym: ");
-            guide.Add("   |   N, S, E, W, NE, NW, SE, SW");
+            if (gameInstance.CanMovePieceOrMoveGrid())
+            {   
+                if (gameInstance.CanPlacePieceOutsideGrid())
+                {
+                    guide.Add("   |   (You can now also place a piece outside of the grid)");
+                }
+                guide.Add("   | * Move a piece by writing coordinates: X,Y X,Y");
+                guide.Add("   | * Move the grid by writing a direction acronym: ");
+                guide.Add("   |   N, S, E, W, NE, NW, SE, SW");
+            }
         }
+        else
+        {
+            guide.Add("   | * Press enter for AI to make a move.");
+        }
+        
         guide.Add("   | * Save the game by writing: save");
         guide.Add("   | * Exit the game by writing: exit");
         guide.Add("");

@@ -13,28 +13,6 @@ public class GameRepositoryDb : IGameRepository
         _context = context;
     }
 
-    public bool SaveGame(string jsonStateString, string gameConfigName)
-    {   
-        var config = _context.Configurations
-            .FirstOrDefault(c => c.Name == gameConfigName);
-
-        if (config == null)
-        {
-            throw new Exception("Configuration not found");
-        }
-
-        var newGame = new SavedGame
-        {
-            CreatedAtDateTime = DateTime.Now.ToString("f"),
-            State = jsonStateString,
-            ConfigurationId = config.Id
-        };
-
-        _context.SavedGames.Add(newGame);
-        _context.SaveChanges();
-        return true;
-    }
-
     public List<string> GetGameNames()
     {
         return _context.SavedGames
@@ -49,7 +27,8 @@ public class GameRepositoryDb : IGameRepository
         foreach (var game in _context.SavedGames)
         {   
             var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(game.State);
-            if (gameState!.XPlayerUsername == username || gameState.OPlayerUsername == username)
+            if (gameState!.XPlayerUsername == username || gameState.OPlayerUsername == username 
+                                                       || gameState.AIGameOwner == username)
             {   
                 result.Add($"{gameState.GameConfiguration.Name} | {game.CreatedAtDateTime} | {game.Id} | " +
                            $"{gameState.XPlayerUsername} VS {gameState.OPlayerUsername}");
@@ -164,7 +143,8 @@ public class GameRepositoryDb : IGameRepository
         foreach (var game in _context.SavedGames)
         {
             var gameState = System.Text.Json.JsonSerializer.Deserialize<GameState>(game.State);
-            if (gameState!.XPlayerUsername == username || gameState.OPlayerUsername == username)
+            if (gameState!.XPlayerUsername == username || gameState.OPlayerUsername == username 
+                                                       || gameState.AIGameOwner == username)
             {
                 result[game.Id] = $"{gameState.GameConfiguration.Name} | {game.CreatedAtDateTime} | " +
                                   $"{gameState.XPlayerUsername} VS {gameState.OPlayerUsername}";

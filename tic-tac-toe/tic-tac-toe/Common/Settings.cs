@@ -4,13 +4,13 @@ namespace Common;
 public static class Settings
 {   
     // Choose the saving mode for app. Options: Json, Database
-    public const ESavingMode Mode = ESavingMode.Json;
+    public const ESavingMode Mode = ESavingMode.Database;
     
     
     public const int MaxSavedConfigsPerUser = 10;
     public const int MaxSavedGamesPerUser = 30;
     
-    public const int MaxUsernameLength = 10;
+    public const int MaxUsernameLength = 24;
     
     public const int AiDelayMin = 600;
     public const int AiDelayMax = 1000;

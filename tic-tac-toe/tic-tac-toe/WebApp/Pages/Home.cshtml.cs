@@ -19,9 +19,7 @@ public class Home : PageModel
         _configRepository = configRepository;
         _gameRepository = gameRepository;
     }
-
-    // Bindproperty voib ara votta, aga sel juhul peab panema OnGet sisse parameetri string userName ja
-    // OnGet meetodis panna UserName = userName;
+    
     [BindProperty(SupportsGet = true)] public string UserName { get; set; } = default!;
     
     [BindProperty(SupportsGet = true)] public string? Error { get; set; }

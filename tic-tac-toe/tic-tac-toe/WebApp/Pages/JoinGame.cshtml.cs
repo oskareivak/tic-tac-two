@@ -9,17 +9,13 @@ namespace WebApp.Pages;
 
 public class JoinGame : PageModel
 {
-    // private readonly IConfigRepository _configRepository;
     private readonly IGameRepository _gameRepository;
 
     public JoinGame(IGameRepository gameRepository)
     {
         _gameRepository = gameRepository;
-        // _configRepository = configRepository;
     }
-
-    // Bindproperty voib ara votta, aga sel juhul peab panema OnGet sisse parameetri string userName ja
-    // OnGet meetodis panna UserName = userName;
+    
     [BindProperty(SupportsGet = true)] public string UserName { get; set; } = default!;
     
     [BindProperty(SupportsGet = true)] public string? Error { get; set; }
