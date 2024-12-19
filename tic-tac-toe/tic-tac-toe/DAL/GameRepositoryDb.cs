@@ -15,11 +15,6 @@ public class GameRepositoryDb : IGameRepository
 
     public bool SaveGame(string jsonStateString, string gameConfigName)
     {   
-        // if (_context.SavedGames.Count() >= 100)
-        // {
-        //     return false;
-        // } 
-        
         var config = _context.Configurations
             .FirstOrDefault(c => c.Name == gameConfigName);
 
@@ -121,44 +116,6 @@ public class GameRepositoryDb : IGameRepository
 
     public void DeleteGameById(int gameId)
     {
-        Console.WriteLine($"Am deleting game with id [{gameId}]");
-        
-        try
-        {
-            if (_context == null)
-            {
-                Console.WriteLine("Something is hella wrong, context is null...");
-            }
-            else if (_context != null)
-            {
-                Console.WriteLine("everything should work, context is not null...");
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Exception: {e.Message}");
-        }
-        
-        
-        // var allGames = _context!.SavedGames.ToList(); // delete later
-        // Console.WriteLine("Existing games:");
-        // foreach (var g in allGames)
-        // {
-        //     Console.WriteLine($"ID: {g.Id}, CreatedAt: {g.CreatedAtDateTime}");
-        // } // delete later
-        //
-        // var game = _context.SavedGames
-        //     .FirstOrDefault(g => g.Id == gameId);
-        //
-        // Console.WriteLine($"game is {game}");
-
-        // if (game != null)
-        // {
-        //     Console.WriteLine($"Am deleting game with id [{gameId}] NOW");
-        //     _context.SavedGames.Remove(game);
-        //     _context.SaveChanges();
-        // }
-
         try
         {
             var game = _context!.SavedGames
@@ -174,21 +131,12 @@ public class GameRepositoryDb : IGameRepository
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Exception 2: {e.Message}");
+            Console.WriteLine($"Exception: {e.Message}");
         }
-        
-
-        Console.WriteLine($"Game with id [{gameId}] not found at DeleteGameById");
-        // throw new Exception("Game not found");
     }
     
     public int SaveGameReturnId(string jsonStateString, string gameConfigName)
     {   
-        // if (_context.SavedGames.Count() >= 100)
-        // {
-        //     return null;
-        // }  TODO: Implement this check in web and check console implementation
-    
         var config = _context.Configurations
             .FirstOrDefault(c => c.Name == gameConfigName);
 
@@ -224,12 +172,6 @@ public class GameRepositoryDb : IGameRepository
         }
 
         return result;
-        
-        // return _context.SavedGames
-        //     .Include(c => c.Configuration) // Ensure Configuration is eagerly loaded
-        //     .Where(c => c.Configuration != null)
-        //     .OrderBy(c => c.CreatedAtDateTime)
-        //     .ToDictionary(c => c.Id, c => c.Configuration!.Name + " | " + c.CreatedAtDateTime + " | " + c.State);
     }
 
     public void UpdateGame(int gameId, string gameStateJson)

@@ -17,7 +17,7 @@ public static class GameController
             ConfigRepository = new ConfigRepositoryJson();
             GameRepository = new GameRepositoryJson();
         }
-        else if (Settings.Mode == ESavingMode.Database)
+        else
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             optionsBuilder.UseSqlite($"Data Source={FileHelper.BasePath}app.db");
@@ -25,11 +25,6 @@ public static class GameController
 
             ConfigRepository = new ConfigRepositoryDb(context);
             GameRepository = new GameRepositoryDb(context);
-        }
-        else
-        {
-            ConfigRepository = new ConfigRepositoryInMemory();
-            GameRepository = new NoOpGameRepository();
         }
     }
 
@@ -198,6 +193,7 @@ public static class GameController
             }
 
             Console.Write($"It's {gameEngine.WhoseTurn()}'s turn. ({gameEngine.NextMoveBy})\n");
+            Console.Write($"Pieces left- X: {gameEngine.XPlayerPiecesLeft()} | O: {gameEngine.OPlayerPiecesLeft()}\n");
             Console.Write(">");
             var input = "";
             if (!aiTurn)
@@ -248,15 +244,7 @@ public static class GameController
 
                 if (input.ToLower() == "exit")
                 {
-                    Console.WriteLine("\nExiting...");
-                    return "E";
-                }
-
-                if (input.ToLower() == "reset")
-                {
-                    gameEngine.ResetGame();
-                    Console.WriteLine("\nSuccessfully reset the game!");
-                    continue;
+                    return "R";
                 }
 
                 if (gameEngine.DirectionMap.ContainsKey(input.ToLower()))
@@ -417,7 +405,22 @@ public static class GameController
                 // Settings.NewConfigRules.TryGetValue("gameNameLengthMax", out var rule2);
 
                 var nameInput = Console.ReadLine();
-                var existingConfigNames = ConfigRepository.GetConfigurationNames(); // TODO: should this limit be based on forUser / hardcoded / overall?
+                
+                var existingConfigNames = new List<string>();
+
+                if (Settings.Mode == ESavingMode.Json)
+                {
+                    existingConfigNames = ConfigRepository.GetConfigurationNames()
+                        .Select(name => name.Split('|').First())   // Split each string and take the first part
+                        .Select(part => part.ToLower())            // Convert the first part to lowercase
+                        .ToList(); 
+                }
+                else
+                {
+                    existingConfigNames = ConfigRepository.GetConfigurationNames()
+                        .Select(name => name.ToLower())
+                        .ToList();
+                }
 
                 if (string.IsNullOrEmpty(nameInput) || nameInput.Length < rule1 || nameInput.Length > rule2)
                 {

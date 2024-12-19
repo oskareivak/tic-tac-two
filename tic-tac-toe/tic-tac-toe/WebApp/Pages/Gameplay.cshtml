@@ -45,20 +45,29 @@
 
         <div class="col-md-2 d-flex flex-column align-items-center" id="moveMaker">
 
-            <div class="mb-2">
+            <div class="my-2">
                 <span
-                    class="badge bg-secondary">@Settings.GameModeStrings[Enum.Parse<EGameMode>(Model.SelectedGameMode)]</span>
-                @* Model.SelectedGameMode</span> *@
+                    class="badge">@Settings.GameModeStrings[Enum.Parse<EGameMode>(Model.SelectedGameMode)]</span>
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage))
+            @* @if (!string.IsNullOrWhiteSpace(Model.GameOverMessage)) *@
+            @* { *@
+            @*     <span class="badge"></span> *@
+            @* } *@
+            @if (string.IsNullOrWhiteSpace(Model.GameOverMessage))
             {
-                <span class="badge bg-secondary"></span>
+                <div class="my-2">
+                    <span class="badge">It's @Model.GameEngine.WhoseTurn()'s<br>turn (@Model.NextMoveBy)</span>
+                </div>    
             }
-            else
-            {
-                <span class="badge bg-secondary">It's @Model.GameEngine.WhoseTurn()'s turn (@Model.NextMoveBy)</span>
-            }
+            
+            <div class="my-2">
+                <span class="badge">Pieces left:<br>X: @Model.GameEngine.XPlayerPiecesLeft()<br>
+                     O: @Model.GameEngine.OPlayerPiecesLeft()
+                </span>    
+            </div>
+            
+            
         </div>
         <div class="col-md-8 d-flex justify-content-center">
             @if (Model.CanMakeMove)
@@ -177,7 +186,8 @@
                         <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
                                 aria-label="Arrow Top Left">&#8598;
                         </button>
-                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection" aria-label="Arrow Up">
+                        <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
+                                aria-label="Arrow Up">
                             &#8593;
                         </button>
                         <button type="submit" class="btn btn-primary arrow-btn" name="ArrowDirection"
@@ -216,25 +226,24 @@
      Model.GameEngine.GetGameState().GameMode == EGameMode.AivAi)
 {
     if (string.IsNullOrWhiteSpace(Model.GameOverMessage))
-    {   
+    {
         @* <script> *@
         @*     document.getElementById('invisibleSubmit').click(); *@
         @* </script> *@
-        
+
         var random = new Random();
         var delay = random.Next(Settings.AiDelayMin, Settings.AiDelayMax); // Delay for AI
         <script>
-            setTimeout(function() {
+            setTimeout(function () {
                 document.getElementById('invisibleSubmit').click();
             }, @delay); // Inject delay value from server-side
         </script> // TODO: fix, cannot leave ai games as they are not saved then.
     }
 }
 @if (Model.GameEngine.WhoseTurn() != Model.UserName && Model.GameEngine.WhoseTurn().ToLower() != "ai"
-     && Model.GameEngine.WhoseTurn().ToLower() != "ai1" && Model.GameEngine.WhoseTurn().ToLower() != "ai2"
-     && string.IsNullOrEmpty(Model.GameOverMessage))
+                                                    && Model.GameEngine.WhoseTurn().ToLower() != "ai1" && Model.GameEngine.WhoseTurn().ToLower() != "ai2"
+                                                    && string.IsNullOrEmpty(Model.GameOverMessage))
 {
-    
     <script>
         setInterval(function () {
             location.reload();

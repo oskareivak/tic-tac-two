@@ -3,14 +3,14 @@ namespace Common;
 
 public static class Settings
 {   
-    // Choose the saving mode for app. Options: Memory, Json, Database
+    // Choose the saving mode for app. Options: Json, Database
     public const ESavingMode Mode = ESavingMode.Json;
     
     
     public const int MaxSavedConfigsPerUser = 10;
     public const int MaxSavedGamesPerUser = 30;
     
-    public const int MaxUsernameLength = 15;
+    public const int MaxUsernameLength = 10;
     
     public const int AiDelayMin = 600;
     public const int AiDelayMax = 1000;
@@ -20,7 +20,7 @@ public static class Settings
         { "gameNameLengthMin" , 1 },
         { "gameNameLengthMax" , 30 },
         { "boardSideLengthMin" , 3 },
-        { "boardSideLengthMax" , 20 },
+        { "boardSideLengthMax" , 12 },
         { "winConditionLengthMin" , 3 },
         { "movePiecesAfterMin" , 0 },
         { "movePiecesAfterMax" , 170 }

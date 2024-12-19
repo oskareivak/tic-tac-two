@@ -26,8 +26,8 @@ public static class Visualizer
             guide.Add("   |   N, S, E, W, NE, NW, SE, SW");
         }
         guide.Add("   | * Save the game by writing: save");
-        guide.Add("   | * Reset the game by writing: reset");
         guide.Add("   | * Exit the game by writing: exit");
+        guide.Add("");
         var guideLinesPrinted = 0;
         var guideStartRow = Math.Max(0, gameInstance.DimY - guide.Count);
         

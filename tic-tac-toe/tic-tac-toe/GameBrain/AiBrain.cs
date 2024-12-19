@@ -33,7 +33,7 @@ public class AiBrain
         {
             moveScores[move] = 8;
         }
-
+        
         int maxScore = moveScores.Values.Max();
 
         var bestMoves = moveScores.Where(pair => pair.Value == maxScore)

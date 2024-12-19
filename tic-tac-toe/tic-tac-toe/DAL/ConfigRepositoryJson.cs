@@ -248,7 +248,3 @@ public class ConfigRepositoryJson : IConfigRepository
         
     }
 }
-
-// getconfigurationbyname tee nullable siin ehk kui !file.exists siis tuleb null ja gameloopis ytleb, et sorri ei saa
-// seda mangu alustada ja vali midagi muud      ??
-// ehk seal palju validationit et keegi ei save mangu ja siis muuda asju ja reload vms

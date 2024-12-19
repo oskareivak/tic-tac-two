@@ -18,7 +18,7 @@ public class OptionsController
             ConfigRepository = new ConfigRepositoryJson();
             GameRepository = new GameRepositoryJson();
         }
-        if (Settings.Mode == ESavingMode.Database)
+        else
         {
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
             optionsBuilder.UseSqlite($"Data Source={FileHelper.BasePath}app.db");
@@ -26,11 +26,6 @@ public class OptionsController
 
             ConfigRepository = new ConfigRepositoryDb(context);
             GameRepository = new GameRepositoryDb(context);
-        }
-        if (Settings.Mode == ESavingMode.Memory)
-        {
-            ConfigRepository = new ConfigRepositoryInMemory();
-            GameRepository = new NoOpGameRepository();
         }
     }
     

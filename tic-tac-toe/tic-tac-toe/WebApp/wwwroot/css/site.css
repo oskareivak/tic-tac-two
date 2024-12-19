@@ -95,10 +95,29 @@ body {
     text-align: left;
     min-height: 100%; 
     display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    font-size: 52px; 
+    justify-content: center;
+    align-items: center;
     box-sizing: border-box; 
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.5rem 1rem; 
+    font-size: 1rem; 
+    font-family: Helvetica, sans-serif;
+    font-weight: bold;
+    text-align: center;
+    color: white; 
+    background: linear-gradient(123deg, #4682b4, #5a9bd4); 
+    border-radius: 12px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+    transition: all 0.3s ease-in-out; 
+}
+
+.badge:hover {
+    transform: scale(1.05); 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+    background: linear-gradient(123deg, #5a9bd4, #4682b4); 
 }
 
 .arrow-grid {

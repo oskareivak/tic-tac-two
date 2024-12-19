@@ -3,10 +3,8 @@
 public class TicTacTwoBrain
 {
     private readonly GameState _gameState;
-
+    
     // Constructor for new game
-    // public TicTacTwoBrain(GameConfiguration gameConfiguration)
-    // public TicTacTwoBrain(GameConfiguration gameConfiguration, string gameMode)
     public TicTacTwoBrain(GameConfiguration gameConfiguration, EGameMode gameMode, EGamePiece aiPiece,
         string xPlayerUsername, string oPlayerUsername)
     {
@@ -29,8 +27,6 @@ public class TicTacTwoBrain
         _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
             initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard, gameMode, aiPiece,
             xPlayerUsername, oPlayerUsername);
-        // _gameState = new GameState(gameBoard, gameConfiguration.WhoStarts, gameConfiguration,
-        //     initialGridCoordinates, boardCoordinates, 0, _numberOfPiecesOnBoard);
     }
 
     // Constructor for loading existing game
@@ -54,6 +50,16 @@ public class TicTacTwoBrain
     public EGameMode GetGameMode()
     {
         return _gameState.GameMode;
+    }
+    
+    public int XPlayerPiecesLeft()
+    {
+        return _gameState.GameConfiguration.NumberOfPiecesPerPlayer - _numberOfPiecesOnBoard[EGamePiece.X];
+    }
+    
+    public int OPlayerPiecesLeft()
+    {
+        return _gameState.GameConfiguration.NumberOfPiecesPerPlayer - _numberOfPiecesOnBoard[EGamePiece.O];
     }
 
     public EGamePiece NextMoveBy => _gameState.NextMoveBy;
@@ -86,7 +92,6 @@ public class TicTacTwoBrain
     private EGamePiece[][] GetBoard()
     {
         var copyOfBoard = new EGamePiece[_gameState.GameBoard.GetLength(0)][];
-        //, _gameState.GameBoard.GetLength(1)];
         for (var x = 0; x < _gameState.GameBoard.Length; x++)
         {
             copyOfBoard[x] = new EGamePiece[_gameState.GameBoard[x].Length];
@@ -120,13 +125,11 @@ public class TicTacTwoBrain
     {
         var coordinates = new int[boardSize * boardSize][];
         int index = 0;
-        // List<(int x, int y)> coordinates = new();
         for (int x = 0; x < boardSize; x++)
         {
             for (int y = 0; y < boardSize; y++)
             {
                 coordinates[index++] = new int[] { x, y };
-                // coordinates.Add((x, y));
             }
         }
 
@@ -164,7 +167,7 @@ public class TicTacTwoBrain
         _numberOfPiecesOnBoard[_gameState.NextMoveBy] += 1;
         _numberOfPiecesOnBoard[EGamePiece.Empty] -= 1;
 
-        // flip the next move maker/piece
+        // flip the next move maker
         _gameState.NextMoveBy = _gameState.NextMoveBy == EGamePiece.X ? EGamePiece.O : EGamePiece.X;
 
         _gameState.NumberOfMovesMade += 1;
@@ -308,13 +311,6 @@ public class TicTacTwoBrain
             }
         }
 
-
-        // if (xWins && oWins) return null; // tie
-        // if (xWins) return EGamePiece.X;
-        // if (oWins) return EGamePiece.O;
-        //
-        // return EGamePiece.Empty; // no winner
-
         if (xWins && oWins)
         {
             return "It's a tie!";
@@ -386,19 +382,6 @@ public class TicTacTwoBrain
         }
 
         return false;
-    }
-
-    public void ResetGame()
-    {
-        var gameBoard = new EGamePiece[_gameState.GameConfiguration.BoardSize][];
-        for (var x = 0; x < gameBoard.Length; x++)
-        {
-            gameBoard[x] = new EGamePiece[_gameState.GameConfiguration.BoardSize];
-        }
-
-        _gameState.GameBoard = gameBoard;
-        _gameState.NextMoveBy = _gameState.GameConfiguration.WhoStarts;
-        _gameState.NumberOfMovesMade = 0;
     }
 
     public bool CanPlacePiece()

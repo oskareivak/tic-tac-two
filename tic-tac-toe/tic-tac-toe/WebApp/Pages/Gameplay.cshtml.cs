@@ -134,25 +134,13 @@ public class Gameplay : PageModel
         
         if (!string.IsNullOrEmpty(GameOverMessage))
         {
-            // Task.Run(async () =>
-            // {
-            //     Console.WriteLine("async function is starting now");
-            //     await Task.Delay(3000); // 3-second delay
-            //     _gameRepository.DeleteGameById(GameId);
-            //     Console.WriteLine("Game deleted after 3 seconds");
-            // });
-            // Console.WriteLine("started sleep");
-            // // Thread.Sleep(3000);
-            // Console.WriteLine("ended sleep");
 
             if (Settings.Mode == ESavingMode.Json)
             {
                 Task.Run(async () =>
                 {
-                    Console.WriteLine("async function is starting now");
-                    await Task.Delay(3000); // 3-second delay
+                    await Task.Delay(3000); 
                     _gameRepository.DeleteGameById(GameId);
-                    Console.WriteLine("Game deleted after 3 seconds");
                 });
             }
             if (Settings.Mode == ESavingMode.Database)

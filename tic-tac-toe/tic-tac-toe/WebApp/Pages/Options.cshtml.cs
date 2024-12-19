@@ -119,27 +119,66 @@ public class Options : PageModel
                     Errors.Add($"Configuration name must be between {gameNameLengthMin}-{gameNameLengthMax} " +
                                $"characters long.");
                 }
+
+                var existingConfigNames = new List<string>();
+
+                if (Settings.Mode == ESavingMode.Json)
+                {
+                    existingConfigNames = _configRepository.GetConfigurationNames()
+                        .Select(name => name.Split('|').First())   // Split each string and take the first part
+                        .Select(part => part.ToLower())            // Convert the first part to lowercase
+                        .ToList(); 
+                }
+                else
+                {
+                    existingConfigNames = _configRepository.GetConfigurationNames()
+                        .Select(name => name.ToLower())
+                        .ToList();
+                }
+                
+                if (existingConfigNames.Contains(NewConfigName))
+                {
+                    Errors.Add($"Configuration name '{NewConfigName}' is already taken.");
+                }
                 
                 Settings.NewConfigRules.TryGetValue("boardSideLengthMin", out var boardSideLengthMin);
                 Settings.NewConfigRules.TryGetValue("boardSideLengthMax", out var boardSideLengthMax);
 
                 if (BoardSize < boardSideLengthMin || BoardSize > boardSideLengthMax)
                 {
-                    Errors.Add($"Board side length must be between {boardSideLengthMin}-{boardSideLengthMax}.");
+                    Errors.Add($"Board size must be between {boardSideLengthMin}-{boardSideLengthMax}.");
                 }
                 
                 if (GridSize < boardSideLengthMin || GridSize > BoardSize)
                 {
-                    Errors.Add($"Grid size must be between {boardSideLengthMin}-{BoardSize}. " +
-                               $"(Based on your board size)");
+                    if (BoardSize == 0)
+                    {
+                        Errors.Add($"Grid size must be between {boardSideLengthMin}-.... " +
+                                   $"(Based on your board size)");
+                    }
+                    else
+                    {
+                        Errors.Add($"Grid size must be between {boardSideLengthMin}-{BoardSize}. " +
+                                   $"(Based on your board size)");
+                    }
+                    
                 }
                 
                 Settings.NewConfigRules.TryGetValue("winConditionLengthMin", out var winConditionLengthMin);
                 
                 if (WinCondition < winConditionLengthMin || WinCondition > GridSize)
                 {
-                    Errors.Add($"Winning condition must be between {winConditionLengthMin}-{GridSize}. " +
-                               $"(Based on your grid size)");
+                    if (GridSize == 0)
+                    {
+                        Errors.Add($"Winning condition must be between {winConditionLengthMin}-.... " +
+                                   $"(Based on your grid size)");
+                    }
+                    else
+                    {
+                        Errors.Add($"Winning condition must be between {winConditionLengthMin}-{GridSize}. " +
+                                   $"(Based on your grid size)");
+                    }
+                    
                 }
                 
                 Settings.NewConfigRules.TryGetValue("movePiecesAfterMin", out var movePiecesAfterMin);

@@ -52,45 +52,37 @@ public class ConfigRepositoryInMemory : IConfigRepository // TODO: remove?
     public void AddConfiguration(string name, int boardSize, int gridSize, int winCondition, EGamePiece whoStarts, 
                                 int movePieceAfterNMoves, int numberOfPiecesPerPlayer, string configOwner)
     {
-        _gameConfigurations.Add(new GameConfiguration()
-        {
-            Name = name,
-            BoardSize = boardSize,
-            GridSize = gridSize,
-            WinCondition = winCondition,
-            WhoStarts = whoStarts,
-            MovePieceAfterNMoves = movePieceAfterNMoves,
-            NumberOfPiecesPerPlayer = numberOfPiecesPerPlayer
-        });
+        throw new Exception("How did you even call this out?");
     }
     
     public void DeleteConfiguration(string name)
     {
-        return;
+        throw new Exception("How did you even call this out?");
+        
     }
 
     public GameConfiguration GetConfigurationById(int id)
     {
-        throw new NotImplementedException();
+        throw new Exception("How did you even call this out?");
     }
 
     public void DeleteConfigurationById(int id)
     {
-        throw new NotImplementedException();
+        throw new Exception("How did you even call this out?");
     }
 
     public List<string> GetConfigNamesForUser(string username)
     {
-        throw new NotImplementedException();
+        throw new Exception("How did you even call this out?");
     }
 
     public Dictionary<int, string> GetConfigIdNamePairsForUser(string username)
     {
-        throw new NotImplementedException();
+        throw new Exception("How did you even call this out?");
     }
 
     public Dictionary<int, string> GetOnlyUserConfigIdNamePairsForUser(string username)
     {
-        throw new NotImplementedException();
+        throw new Exception("How did you even call this out?");
     }
 }

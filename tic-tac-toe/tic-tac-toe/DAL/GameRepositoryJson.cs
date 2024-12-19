@@ -13,11 +13,6 @@ public class GameRepositoryJson : IGameRepository
             .Select(Path.GetFileNameWithoutExtension)
             .ToList();
         
-        // if (data.Count >= 100)
-        // {
-        //     return false;
-        // }
-        
         var existingIds = data
             .Select(game => game!.Split('|').Last())
             .Select(idStr => int.TryParse(idStr, out var id) ? id : (int?)null)
@@ -158,7 +153,6 @@ public class GameRepositoryJson : IGameRepository
         else
         {   
             Console.WriteLine($"Game not found with id: {gameId}.");
-            // throw new Exception($"Game not found with id: {gameId}.");
         }
     }
 
@@ -225,10 +219,8 @@ public class GameRepositoryJson : IGameRepository
         
         foreach (var fullFileName in data)
         {
-            // Extract the file name without extension
             var filenameWithoutExt = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(fullFileName));
 
-            // Check if the game ID matches
             if (filenameWithoutExt.Split("|").Last().Trim() == gameId.ToString())
             {
                 var gameConfigName = filenameWithoutExt.Split("|")[0].Trim();
