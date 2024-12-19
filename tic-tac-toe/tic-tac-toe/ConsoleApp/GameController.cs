@@ -80,10 +80,12 @@ public static class GameController
                 return chosenConfigShortcut;
             }
 
-            var chosenConfig = ConfigRepository.GetConfigurationByName(
-                ConfigRepository.GetConfigNamesForUser(UserSession.Username)[configNo]
-            );
+            var configString = ConfigRepository.GetConfigNamesForUser(UserSession.Username)[configNo];
+            
+            var chosenConfig = ConfigRepository.GetConfigurationByName(configString);
 
+            // UserSession.ConfigId = configString.Split("|").Last().Trim(); // TODO: fully implement this everywhere + webapp ?
+            
             var chosenGameModeShortcut = OptionsController.ChooseGamemode();
             if (chosenGameModeShortcut == "R")
             {

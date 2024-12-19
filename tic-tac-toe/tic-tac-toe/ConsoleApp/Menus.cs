@@ -9,17 +9,6 @@ public static class Menus
     
     private static readonly ConfigRepositoryInMemory ConfigRepositoryInMemory = new ConfigRepositoryInMemory();
     
-    public static readonly Menu DeepMenu = new Menu(
-        EMenuLevel.Deep,
-        "TIC-TAC-TWO DEEP", [
-            new MenuItem()
-            {
-                Shortcut = "T",
-                Title = "To be implemented...",
-            }
-        ]
-    );
-    
     public static readonly Menu OptionsMenu = new Menu(
         EMenuLevel.Secondary,
         "TIC-TAC-TWO Options", new List<MenuItem>
@@ -30,7 +19,7 @@ public static class Menus
                 Title = "Make a new game configuration",
                 MenuItemAction = GameController.NewConfiguration
             },
-            Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database ? new MenuItem()
+            Settings.Mode == ESavingMode.Json || Settings.Mode == ESavingMode.Database ? new MenuItem() // TODO: cleanup
             {
                 Shortcut = "DC",
                 Title = "Delete a game configuration",
