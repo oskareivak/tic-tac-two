@@ -24,7 +24,7 @@ jobs:
         run: dotnet restore tic-tac-toe/tic-tac-toe/tic-tac-two.sln
 
       - name: Create appsettings.json
-        run: cp tic-tac-toe/tic-tac-toe/WebApp/appsettings.Template.json tic-tac-toe/tic-tac-toe/WebApp/appsettings.json
+        run: cp tic-tac-toe/tic-tac-toe/WebApp/Appsettings.Template.json tic-tac-toe/tic-tac-toe/WebApp/appsettings.json
 
       - name: Build
         run: dotnet build tic-tac-toe/tic-tac-toe/tic-tac-two.sln --configuration Release --no-restore
