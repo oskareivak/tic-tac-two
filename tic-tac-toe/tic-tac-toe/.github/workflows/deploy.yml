@@ -1,0 +1,54 @@
+name: Build Push Deploy WebApp
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/tic-tac-two:latest
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
+      - name: Restore
+        run: dotnet restore tic-tac-toe/tic-tac-two.sln
+
+      - name: Create appsettings.json
+        run: cp tic-tac-toe/WebApp/appsettings.Template.json tic-tac-toe/WebApp/appsettings.json
+
+      - name: Build
+        run: dotnet build tic-tac-toe/tic-tac-two.sln --configuration Release --no-restore
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+
+      - name: Build Image
+        run: docker build --platform linux/amd64 -t ${{ env.IMAGE_NAME }} tic-tac-toe
+
+      - name: Push Image
+        run: docker push ${{ env.IMAGE_NAME }}
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          script_stop: true
+          script: |
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+            cd /opt/tictactwo
+            docker compose pull web
+            docker compose up -d web
+            docker image prune -f

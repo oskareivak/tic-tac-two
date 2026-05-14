@@ -7,9 +7,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "!Solution Items", "!Solution Items", "{39C892A9-E472-43F6-B981-6B4A8D2BF37D}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
-		README_personal.md = README_personal.md
 		..\..\.gitignore = ..\..\.gitignore
 		..\README.md = ..\README.md
+		.github\workflows\deploy.yml = .github\workflows\deploy.yml
+		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBrain", "GameBrain\GameBrain.csproj", "{EF48F2AB-7C88-481A-A019-B8CDA609EDA5}"
