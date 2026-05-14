@@ -21,19 +21,19 @@ jobs:
           dotnet-version: '9.x'
 
       - name: Restore
-        run: dotnet restore tic-tac-toe/tic-tac-two.sln
+        run: dotnet restore tic-tac-toe/tic-tac-toe/tic-tac-two.sln
 
       - name: Create appsettings.json
-        run: cp tic-tac-toe/WebApp/appsettings.Template.json tic-tac-toe/WebApp/appsettings.json
+        run: cp tic-tac-toe/tic-tac-toe/WebApp/appsettings.Template.json tic-tac-toe/tic-tac-toe/WebApp/appsettings.json
 
       - name: Build
-        run: dotnet build tic-tac-toe/tic-tac-two.sln --configuration Release --no-restore
+        run: dotnet build tic-tac-toe/tic-tac-toe/tic-tac-two.sln --configuration Release --no-restore
 
       - name: Login to GHCR
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
 
       - name: Build Image
-        run: docker build --platform linux/amd64 -t ${{ env.IMAGE_NAME }} tic-tac-toe
+        run: docker build --platform linux/amd64 -t ${{ env.IMAGE_NAME }} tic-tac-toe/tic-tac-toe
 
       - name: Push Image
         run: docker push ${{ env.IMAGE_NAME }}
