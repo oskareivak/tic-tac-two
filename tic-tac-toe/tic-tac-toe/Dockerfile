@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 COPY tic-tac-two.sln ./
+COPY Directory.Build.props ./
 COPY Common/Common.csproj Common/
 COPY ConsoleApp/ConsoleApp.csproj ConsoleApp/
 COPY ConsoleUI/ConsoleUI.csproj ConsoleUI/
